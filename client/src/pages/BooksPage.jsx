@@ -4,7 +4,7 @@ const BooksPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="mt-24  relative py-32 bg-white">
+      <div className="mt-24 relative py-32 bg-white">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-24 h-24 bg-secondary/10 rounded-full"></div>
           <div className="absolute top-40 right-20 w-32 h-32 bg-secondary/5 rounded-full"></div>
