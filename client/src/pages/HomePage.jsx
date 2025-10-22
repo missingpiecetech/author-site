@@ -99,7 +99,7 @@ const HomePage = () => {
                   <div className="bg-white rounded-3xl p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
                     <div className="grid lg:grid-cols-5 gap-12 items-center">
                       <div className="lg:col-span-1">
-                        <div className="w-48 h-72 mx-auto bg-gradient-to-br bg-gray-700  rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-500">
+                        <div className="w-48 h-72 mx-auto bg-gradient-to-br from-slate-700 via-gray-800 to-slate-900  rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-500 text-white text-6xl">
                           {book.icon}
                         </div>
                       </div>
@@ -167,7 +167,7 @@ const HomePage = () => {
                     to="/podcast"
                     className="bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 text-center transform hover:scale-105 shadow-lg hover:shadow-xl"
                   >
-                    Watch Now
+                    Learn More
                   </Link>
                   <a
                     href="https://youtube.com/@AuthorAdjacent"

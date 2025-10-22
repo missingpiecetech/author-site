@@ -37,12 +37,12 @@ const Navigation = () => {
               <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105">
                 <GiCrystalGrowth className="text-white text-2xl" />
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden sm:block text-left">
                 <div className="text-gray-900 text-xl font-bold tracking-tight">
                   Michael Vadney
                 </div>
                 <div className="text-secondary text-sm font-medium">
-                  Fantasy Author
+                  Fantasy Author & Podcaster
                 </div>
               </div>
             </Link>

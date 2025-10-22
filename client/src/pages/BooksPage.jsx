@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
-import { BOOKS } from "../BOOK_DATA";
+import { BOOKS, BOOK_STATUS } from "../BOOK_DATA";
 
 const BooksPage = () => {
   return (
@@ -27,50 +25,33 @@ const BooksPage = () => {
 
       {/* Books Section */}
       <div className="max-w-full py-32 px-8 lg:px-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto space-y-32">
+        <div className="max-w-7xl mx-auto space-y-16">
           {BOOKS.map((book, index) => (
             <div
               id={book.title.toLowerCase()}
               key={book.id}
               className="relative"
             >
-              <div className="grid lg:grid-cols-5 gap-16 items-center">
-                {/* Book Cover - Left side for odd index, right side for even */}
+              <div className="grid lg:grid-cols-5 gap-16 items-center relative">
                 <div
-                  className={`lg:col-span-2 ${index % 2 === 1 ? "lg:order-2" : ""}`}
+                  className={`lg:col-span-2 lg:sticky ${index % 2 === 1 ? "lg:order-2" : ""}`}
                 >
-                  <div className="relative group">
-                    <div
-                      className={`aspect-[3/4] bg-gradient-to-br ${book.coverColor} rounded-3xl shadow-2xl flex items-center justify-center relative overflow-hidden transform group-hover:scale-105 transition-all duration-500`}
+                  <div
+                    className={`aspect-[3/4] bg-gradient-to-br from-slate-700 via-gray-800 to-slate-900 rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden transform group-hover:scale-105 transition-all duration-500`}
+                  >
+                    {/* Book cover design */}
+                    <div className="text-white text-8xl md:text-10xl item">
+                      {book.icon}
+                    </div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="absolute -top-6 -right-6 z-20">
+                    <span
+                      className={`inline-block bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-full text-lg font-bold shadow-xl`}
                     >
-                      {/* Book cover design */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                      <div className="text-center z-10 p-8">
-                        <FontAwesomeIcon
-                          icon={faBook}
-                          className="text-white text-8xl mb-6"
-                        />
-                        <h3 className="text-white font-bold text-2xl mb-3">
-                          {book.title}
-                        </h3>
-                        <p className="text-white/80 text-lg">{book.subtitle}</p>
-                      </div>
-
-                      {/* Decorative elements */}
-                      <div className="absolute top-6 right-6 w-16 h-16 border border-white/20 rounded-full flex items-center justify-center">
-                        <div className="w-8 h-8 bg-white/20 rounded-full"></div>
-                      </div>
-                      <div className="absolute bottom-6 left-6 w-10 h-10 border border-white/20 rounded-lg rotate-45"></div>
-                    </div>
-
-                    {/* Status Badge */}
-                    <div className="absolute -top-6 -right-6 z-20">
-                      <span
-                        className={`inline-block bg-gradient-to-r ${book.statusColor} text-white px-6 py-3 rounded-full text-lg font-bold shadow-xl`}
-                      >
-                        {book.status}
-                      </span>
-                    </div>
+                      {book.status}
+                    </span>
                   </div>
                 </div>
 
@@ -101,75 +82,78 @@ const BooksPage = () => {
                     </div>
 
                     <div className="max-w-none">
-                      <p className="text-gray-700 leading-relaxed text-xl">
+                      <p className="text-gray-700 leading-relaxed text-lg text-left">
                         {book.blurb}
-                      </p>
-                      <p className="text-gray-600 leading-relaxed text-lg">
-                        {book.fullSummary}
                       </p>
                     </div>
 
                     {/* Quote */}
-                    <blockquote className="border-l-4 border-secondary pl-8 py-6 bg-gray-50 rounded-r-2xl">
-                      <p className="text-gray-800 italic text-xl leading-relaxed">
-                        "{book.quote}"
-                      </p>
-                    </blockquote>
+                    {book.quote && (
+                      <blockquote className="border-l-4 border-secondary pl-8 py-6 bg-gray-50 rounded-r-2xl">
+                        <p className="text-gray-800 italic text-xl leading-relaxed text-left">
+                          {book.quote}
+                        </p>
+                      </blockquote>
+                    )}
 
                     {/* Book Details Grid */}
-                    <div className="grid sm:grid-cols-2 gap-6">
-                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                            <span className="text-secondary text-xl">📅</span>
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-900 block text-lg">
-                              Release Date
-                            </span>
-                            <span className="text-gray-600 text-lg">
-                              {book.release}
-                            </span>
+                    {book.status === BOOK_STATUS.COMING_SOON && (
+                      <div className="grid sm:grid-cols-2 gap-6 text-left">
+                        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                              <span className="text-secondary text-xl">📅</span>
+                            </div>
+                            <div>
+                              <span className="font-semibold text-gray-900 block text-lg">
+                                Release Date
+                              </span>
+                              <span className="text-gray-600 text-lg">
+                                {book.release}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                            <span className="text-secondary text-xl">🛒</span>
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-900 block text-lg">
-                              Availability
-                            </span>
-                            <span className="text-gray-600 text-lg">
-                              Pre-order Soon
-                            </span>
+                        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                              <span className="text-secondary text-xl">🛒</span>
+                            </div>
+                            <div>
+                              <span className="font-semibold text-gray-900 block text-lg">
+                                Availability
+                              </span>
+                              <span className="text-gray-600 text-lg">
+                                Pre-order Soon
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-6">
-                      <button
-                        disabled
-                        className="bg-gray-200 text-gray-500 px-8 py-4 rounded-full cursor-not-allowed font-semibold transition-all duration-200 shadow-sm flex-1 sm:flex-none text-lg"
-                      >
-                        Pre-order Coming Soon
-                      </button>
-                      <button className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-white px-8 py-4 rounded-full font-semibold transition-all duration-200 flex-1 sm:flex-none text-lg transform hover:scale-105 shadow-lg hover:shadow-xl">
-                        Add to Wishlist
-                      </button>
-                    </div>
+                    {book.status === BOOK_STATUS.RELEASED && (
+                      <div className="flex flex-col sm:flex-row gap-6">
+                        <button
+                          disabled
+                          className="bg-gray-200 text-gray-500 px-8 py-4 rounded-full cursor-not-allowed font-semibold transition-all duration-200 shadow-sm flex-1 sm:flex-none text-lg"
+                        >
+                          Pre-order Coming Soon
+                        </button>
+                        <button className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-white px-8 py-4 rounded-full font-semibold transition-all duration-200 flex-1 sm:flex-none text-lg transform hover:scale-105 shadow-lg hover:shadow-xl">
+                          Add to Wishlist
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Divider */}
               {index < BOOKS.length - 1 && (
-                <div className="mt-32 flex justify-center">
+                <div className="mt-15 flex justify-center">
                   <div className="w-32 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
                 </div>
               )}
@@ -178,7 +162,7 @@ const BooksPage = () => {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="mt-32 bg-gray-50 p-12 lg:p-16 rounded-3xl shadow-2xl relative overflow-hidden border border-gray-200">
+        <div className="mt-15 bg-gray-50 p-12 lg:p-16 rounded-3xl shadow-2xl relative overflow-hidden border border-gray-200">
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-10 right-10 w-20 h-20 bg-secondary/10 rounded-full animate-float"></div>
             <div className="absolute bottom-10 left-10 w-16 h-16 bg-secondary/5 rounded-full animate-float-delayed"></div>

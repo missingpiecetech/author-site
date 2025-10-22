@@ -56,9 +56,9 @@ const PodcastPage = () => {
                   <strong>Author Adjacent</strong> is a weekly podcast hosted by
                   Michael Vadney, chronicling the journey from hobbyist writer
                   to published author. Through author interviews, bite sized
-                  writing craft lessons, and book reviews, each episode delves
-                  into the realities of writing, publishing, and the ups and
-                  downs of pursuing a dream in the literary world.
+                  writing craft lessons, book reviews and more, each episode
+                  delves into the realities of writing, publishing, and the ups
+                  and downs of pursuing a dream in the literary world.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
                   Whether you're an aspiring author, a seasoned writer, or just
