@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
+import { BOOKS } from "../BOOK_DATA";
 
 const HomePage = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -92,107 +93,52 @@ const HomePage = () => {
           </div>
 
           <div className="max-w-7xl mx-auto">
-            {/* Horizontal Book Layout */}
             <div className="space-y-16">
-              {/* Book 1 - Full Width */}
-              <div className="group animate-slide-in-left">
-                <div className="bg-white rounded-3xl p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                  <div className="grid lg:grid-cols-5 gap-12 items-center">
-                    <div className="lg:col-span-1">
-                      <div className="w-48 h-72 mx-auto bg-gradient-to-br from-secondary via-teal-600 to-secondary-dark rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-500">
-                        <GiCrystalGrowth className="text-white text-6xl" />
-                        {/* <img src="/src/assets/crownfall_cover.jpeg" alt="Crownfall Cover" className="w-48 rounded-lg shadow-lg" /> */}
+              {BOOKS.map((book, index) => (
+                <div key={index} className="group animate-slide-in-left">
+                  <div className="bg-white rounded-3xl p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                    <div className="grid lg:grid-cols-5 gap-12 items-center">
+                      <div className="lg:col-span-1">
+                        <div className="w-48 h-72 mx-auto bg-gradient-to-br bg-gray-700  rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-500">
+                          {book.icon}
+                        </div>
                       </div>
-                    </div>
-                    <div className="lg:col-span-4 text-center lg:text-left space-y-6">
-                      <div className="space-y-4">
-                        <span className="inline-block bg-secondary text-white px-6 py-2 rounded-full text-lg font-semibold">
-                          Coming Feb 28, 2026
-                        </span>
-                        <h3 className="text-4xl md:text-5xl font-bold text-gray-900">
-                          Crownfall
-                        </h3>
-                        <p className="text-xl text-gray-600 leading-relaxed max-w-3xl">
-                          Nearly a decade under the empire’s grip has left
-                          Burunt a troubled land, its unrest simmering beneath a
-                          fragile surface. In the fight for power, justice, and
-                          survival, everyone must decide: who they will become?
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                        <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
-                          Nobledark Fantasy
-                        </span>
-                        <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
-                          Political Intrigue
-                        </span>
-                        <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
-                          Action Adventure
-                        </span>
-                      </div>
-                      <Link
-                        to="/books"
-                        className="inline-flex items-center bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 group"
-                      >
-                        Learn More
-                        <span className="ml-3 transform group-hover:translate-x-1 transition-transform">
-                          →
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Book 2 - Full Width, Reversed Layout */}
-              <div className="group animate-slide-in-right">
-                <div className="bg-white rounded-3xl p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                  <div className="grid lg:grid-cols-5 gap-12 items-center">
-                    <div className="lg:col-span-4 text-center lg:text-left space-y-6 order-2 lg:order-1">
-                      <div className="space-y-4">
-                        <span className="inline-block bg-gray-600 text-white px-6 py-2 rounded-full text-lg font-semibold">
-                          In World Building
-                        </span>
-                        <h3 className="text-4xl md:text-5xl font-bold text-gray-900">
-                          Chrono-Stained
-                        </h3>
-                        <p className="text-xl text-gray-600 leading-relaxed max-w-3xl">
-                          Two half brothers travel back in time to save their
-                          mother from a fatal accident only to discover that she
-                          never died. Snapped back to their present, the
-                          adventure begins to find their mother and to ask her
-                          where has she been this whole time.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                        <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
-                          Time Travel
-                        </span>
-                        <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
-                          Sci-Fantasy
-                        </span>
-                        <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm">
-                          Action Adventure
-                        </span>
-                      </div>
-                      <Link
-                        to="/books"
-                        className="inline-flex items-center bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 group"
-                      >
-                        Learn More
-                        <span className="ml-3 transform group-hover:translate-x-1 transition-transform">
-                          →
-                        </span>
-                      </Link>
-                    </div>
-                    <div className="lg:col-span-1 order-1 lg:order-2">
-                      <div className="w-48 h-72 mx-auto bg-gradient-to-br from-slate-600 via-gray-700 to-slate-800 rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:-rotate-3 transition-transform duration-500">
-                        <GiClockwork className="text-white text-6xl" />
+                      <div className="lg:col-span-4 text-center lg:text-left space-y-6">
+                        <div className="space-y-4">
+                          <span className="inline-block bg-gray-700 text-white px-6 py-2 rounded-full text-lg font-semibold">
+                            {book.status}
+                          </span>
+                          <h3 className="text-4xl md:text-5xl font-bold text-gray-900">
+                            {book.title}
+                          </h3>
+                          <p className="text-xl text-gray-600 leading-relaxed max-w-3xl">
+                            {book.shortBlurb}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                          {book.genres.map((genre) => (
+                            <span
+                              key={genre}
+                              className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm"
+                            >
+                              {genre}
+                            </span>
+                          ))}
+                        </div>
+                        <Link
+                          to={book.link}
+                          className="inline-flex items-center bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 group"
+                        >
+                          Learn More
+                          <span className="ml-3 transform group-hover:translate-x-1 transition-transform">
+                            →
+                          </span>
+                        </Link>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -203,15 +149,15 @@ const HomePage = () => {
         <div className="max-w-full px-8 lg:px-16">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="text-gray-900 animate-fade-in-up">
-                <h2 className="text-4xl md:text-6xl font-bold mb-8">
+              <div className="text-gray-900 animate-fade-in-up flex flex-col space-y-6">
+                <h2 className="text-4xl md:text-6xl font-bold">
                   Author <span className="text-secondary">Adjacent</span>
                 </h2>
-                <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+                <p className="text-xl text-gray-700 leading-relaxed text-center lg:text-left">
                   Join the honest conversation about the writing journey from
                   hobbyist to professional author.
                 </p>
-                <p className="text-gray-600 mb-12 leading-relaxed text-lg">
+                <p className="text-gray-600 leading-relaxed text-lg text-center lg:text-left">
                   Every episode dives deep into the challenges, victories, and
                   everything in between on the path to becoming a published
                   author. Real talk, practical advice, and community support.
@@ -235,11 +181,11 @@ const HomePage = () => {
               </div>
 
               <div className="relative animate-scale-in">
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-10 shadow-2xl border border-gray-200">
+                <div className="aspect-square bg-secondary rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
                   <img
-                    src="src/assets/author_adjacent_logo.png"
-                    alt="Author Adjacent Podcast"
-                    className="rounded-3xl "
+                    src="/src/assets/author_adjacent_logo_no_text.jpeg"
+                    alt="Author Adjacent Podcast Cover"
+                    className="w-full h-full object-cover rounded-2xl shadow-2xl"
                   />
                 </div>
               </div>

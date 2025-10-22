@@ -8,9 +8,9 @@ const PodcastPage = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="mt-24  relative py-32 bg-white">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-24 h-24 bg-secondary/10 rounded-full animate-float"></div>
-          <div className="absolute top-40 right-20 w-32 h-32 bg-secondary/5 rounded-full animate-float-delayed"></div>
-          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-secondary/8 rounded-full animate-float-slow"></div>
+          <div className="absolute top-10 left-50 w-24 h-24 bg-secondary/10 rounded-full"></div>
+          <div className="absolute top-30 right-30 w-32 h-32 bg-secondary/5 rounded-full"></div>
+          <div className="absolute bottom-25 left-1/5 w-28 h-28 bg-secondary/8 rounded-full"></div>
         </div>
         <div className="relative max-w-7xl mx-auto px-8 lg:px-16 text-center">
           <div className="space-y-8">
@@ -31,18 +31,11 @@ const PodcastPage = () => {
           <div className="lg:col-span-2">
             <div className="relative group">
               <div className="aspect-square bg-secondary rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
-                <div className="text-center z-10">
-                  {/* <FontAwesomeIcon
-                    icon={faUser}
-                    className="text-gray-900 text-8xl mb-4"
-                  /> */}
-                  <p className="text-gray-900 font-bold text-xl">
-                    Michael Vadney
-                  </p>
-                  <p className="text-gray-900/80 text-sm mt-2">
-                    Author Photo Coming Soon
-                  </p>
-                </div>
+                <img
+                  src="/src/assets/author_adjacent_logo_no_text.jpeg"
+                  alt="Author Adjacent Podcast Cover"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
 
                 {/* Decorative elements */}
                 <div className="absolute top-4 right-4 w-12 h-12 border border-white/20 rounded-full flex items-center justify-center">

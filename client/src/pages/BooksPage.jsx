@@ -1,68 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
-const BooksPage = () => {
-  const books = [
-    {
-      id: 1,
-      title: "Crownfall",
-      subtitle: "Trust is the hardest Lesson",
-      blurb: (
-        <>
-          Nearly a decade under the empire’s grip has left Burunt a troubled
-          land, its unrest simmering beneath a fragile surface.
-          <br />
-          Kyndel Heim knows the truth behind the Viceroy’s rise to power. After
-          years of torture and experimentation, his only goal is vengeance. But
-          to master his powers he needs a mentor, one that won’t kill him first.
-          <br />
-          Major Jelert Egarro travelled to Burunt to build a better world. But
-          in the wrong hands, his skills become a tool of destruction, and those
-          hands are everywhere. Jelert must decide whether to stay true to his
-          ideals or let others dictate his path.
-          <br />
-          Lady Amara Khar rose fast when her once-powerful family fell. Sharp
-          and ruthless, she’s kept her house alive through illicit trade, but
-          clawing back power in Burunt means making enemies and unsavory
-          friends.
-          <br />
-          In the fight for power, justice, and survival, everyone must decide:
-          who they will become?
-        </>
-      ),
-      quote:
-        "In the fight for power, justice, and survival, everyone must decide: who they will become?",
-      release: "February 28, 2026",
-      status: "Coming Soon",
-      statusColor: "from-emerald-500 to-teal-600",
-      coverColor: "from-slate-700 via-gray-800 to-slate-900",
-      genres: ["Nobledark Fantasy", "Dark Fantasy", "Adventure"],
-    },
-    {
-      id: 2,
-      title: "Chrono-Stained",
-      subtitle: "Where Time Bends and Reality Fractures",
-      summary:
-        "A thrilling adventure through time where past and future collide in unexpected ways. Fullmetal Alchemist meets the Licanius Trilogy in this upcoming fantasy epic.",
-      fullSummary:
-        "When the fabric of time itself becomes a battlefield, heroes must navigate through fractured realities to save not just their world, but all possible worlds. Every choice echoes across timelines, and every decision could unravel existence itself.",
-      quote:
-        "Time is not a river, but a storm—and we are all caught in its eye.",
-      release: "TBA",
-      status: "in World Building",
-      statusColor: "from-amber-500 to-orange-600",
-      coverColor: "from-indigo-600 via-purple-700 to-pink-700",
-      genres: ["Time Travel", "Sci-Fantasy", ""],
-    },
-  ];
+import { BOOKS } from "../BOOK_DATA";
 
+const BooksPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="mt-24  relative py-32 bg-white">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-24 h-24 bg-secondary/10 rounded-full animate-float"></div>
-          <div className="absolute top-40 right-20 w-32 h-32 bg-secondary/5 rounded-full animate-float-delayed"></div>
-          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-secondary/8 rounded-full animate-float-slow"></div>
+          <div className="absolute top-20 left-10 w-24 h-24 bg-secondary/10 rounded-full"></div>
+          <div className="absolute top-40 right-20 w-32 h-32 bg-secondary/5 rounded-full"></div>
+          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-secondary/8 rounded-full"></div>
         </div>
         <div className="relative max-w-7xl mx-auto px-8 lg:px-16 text-center">
           <div className="space-y-8">
@@ -73,17 +21,6 @@ const BooksPage = () => {
               Nobledark fantasy worlds where the worlds are dark and the
               characters are hopeful.
             </p>
-            {/* <div className="flex flex-wrap justify-center gap-4 text-lg">
-              <span className="bg-secondary/10 text-secondary px-6 py-3 rounded-full font-semibold">
-                Nobledark Fantasy
-              </span>
-              <span className="bg-secondary/10 text-secondary px-6 py-3 rounded-full font-semibold">
-                Dark Fantasy
-              </span>
-              <span className="bg-secondary/10 text-secondary px-6 py-3 rounded-full font-semibold">
-                Adventure
-              </span>
-            </div> */}
           </div>
         </div>
       </div>
@@ -91,8 +28,12 @@ const BooksPage = () => {
       {/* Books Section */}
       <div className="max-w-full py-32 px-8 lg:px-16 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-32">
-          {books.map((book, index) => (
-            <div key={book.id} className="relative">
+          {BOOKS.map((book, index) => (
+            <div
+              id={book.title.toLowerCase()}
+              key={book.id}
+              className="relative"
+            >
               <div className="grid lg:grid-cols-5 gap-16 items-center">
                 {/* Book Cover - Left side for odd index, right side for even */}
                 <div
@@ -227,7 +168,7 @@ const BooksPage = () => {
               </div>
 
               {/* Divider */}
-              {index < books.length - 1 && (
+              {index < BOOKS.length - 1 && (
                 <div className="mt-32 flex justify-center">
                   <div className="w-32 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
                 </div>
