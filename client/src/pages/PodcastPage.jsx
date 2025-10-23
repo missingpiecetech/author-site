@@ -2,6 +2,7 @@ import EmailSignup from "../components/EmailSignup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faYoutube, faXTwitter } from "@fortawesome/free-brands-svg-icons";
+import NewsLetter from "../components/NewsLetter";
 
 const PodcastPage = () => {
   return (
@@ -108,7 +109,7 @@ const PodcastPage = () => {
               href="https://x.com/AuthorAdjacent"
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-gray-50 hover:bg-blue-500 hover:text-gray-900 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 p-6 text-center"
+              className="group bg-gray-50 hover:bg-gray-500 hover:text-gray-900 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 p-6 text-center"
             >
               <FontAwesomeIcon
                 icon={faXTwitter}
@@ -148,23 +149,17 @@ const PodcastPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Call to Action */}
-      <div className="bg-white  text-gray-900 p-12 lg:p-16 relative overflow-hidden">
-        <div className="relative text-center max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+      <NewsLetter
+        title={
+          <>
             Join the <span className="text-secondary">Journey</span>
-          </h2>
-          <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-            Whether you're a fellow hobbyist writer or just curious about the
+          </>
+        }
+        description="Whether you're a fellow hobbyist writer or just curious about the
             book community, you're welcome to follow along as we navigate this
-            journey together.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <EmailSignup label="Subscribe for Updates" buttonText="Subscribe" />
-          </div>
-        </div>
-      </div>
+            journey together."
+        card={false}
+      />
     </div>
   );
 };

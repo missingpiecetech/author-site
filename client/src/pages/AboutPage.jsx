@@ -11,6 +11,7 @@ import {
   faMapMarkerAlt,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import NewsLetter from "../components/NewsLetter";
 const AboutPage = () => {
   const socialLinks = [
     {
@@ -70,7 +71,7 @@ const AboutPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
         {/* Author Profile Section */}
         <div className="grid lg:grid-cols-5 gap-12 items-center mb-20">
           {/* Bio Content */}
@@ -227,6 +228,16 @@ const AboutPage = () => {
             </div>
           </div>
         </div>
+        <NewsLetter
+          title={
+            <>
+              Join the <span className="text-secondary">Journey</span>
+            </>
+          }
+          description="Whether you're a fellow hobbyist writer or just curious about the
+            book community, you're welcome to follow along as we navigate this
+            journey together."
+        />
       </div>
     </div>
   );

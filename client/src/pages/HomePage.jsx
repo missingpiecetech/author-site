@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
 import { BOOKS } from "../BOOK_DATA";
+import NewsLetter from "../components/NewsLetter";
 
 const HomePage = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -194,35 +194,16 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-32 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-8 lg:px-16 text-center">
-          <div className="animate-fade-in-up">
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-8">
-              Stay Connected
-            </h2>
-            <p className="text-xl text-gray-600 mb-16 max-w-3xl mx-auto leading-relaxed">
-              Get updates on new releases, podcast episodes, and
-              behind-the-scenes insights from the writing journey.
-            </p>
-            <div className="bg-white rounded-3xl p-12 max-w-2xl mx-auto shadow-2xl border border-gray-200">
-              <div className="space-y-6">
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent text-lg"
-                />
-                <button className="w-full bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  Subscribe to Updates
-                </button>
-                <p className="text-sm text-gray-500">
-                  No spam, unsubscribe at any time.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <NewsLetter
+        title={
+          <>
+            Stay <span className="text-secondary">Connected</span>
+          </>
+        }
+        description="Get updates on new releases, podcast episodes, and
+              behind-the-scenes insights from the writing journey."
+        card={false}
+      />
     </div>
   );
 };
