@@ -10,12 +10,8 @@ const NewsLetter = ({ title, description, card = true }) => {
 
   return (
     <div
-      className={`mt-15 bg-white p-12 lg:p-16 ${card ? "rounded-3xl" : ""} shadow-2xl relative overflow-hidden border border-gray-200`}
+      className={`mt-15 bg-white p-12 lg:p-16 ${card ? "rounded-3xl shadow-2xl" : ""}  relative overflow-hidden border border-gray-200`}
     >
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 right-10 w-20 h-20 bg-secondary/10 rounded-full" />
-        <div className="absolute bottom-10 left-10 w-16 h-16 bg-secondary/5 rounded-full " />
-      </div>
       <div className="relative text-center max-w-4xl mx-auto">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
           {title}

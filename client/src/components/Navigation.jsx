@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { GiCrystalGrowth } from "react-icons/gi";
 
 const Navigation = () => {
@@ -21,6 +21,11 @@ const Navigation = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useLayoutEffect(() => {
+    // Scroll to the top of the page when the route changes
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [location.pathname]);
+
   return (
     <nav
       className={`sticky  bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300 z-50 border-b border-gray-100 ${
@@ -32,7 +37,7 @@ const Navigation = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center space-x-4">
-            {/* Logo Placeholder */}
+            {/* Icon representing the latest book */}
             <Link to="/" className="flex items-center space-x-3 group">
               <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105">
                 <GiCrystalGrowth className="text-white text-2xl" />
