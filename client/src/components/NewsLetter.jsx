@@ -13,8 +13,8 @@ const NewsLetter = ({ title, description, card = true }) => {
       className={`mt-15 bg-white p-12 lg:p-16 ${card ? "rounded-3xl" : ""} shadow-2xl relative overflow-hidden border border-gray-200`}
     >
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 right-10 w-20 h-20 bg-secondary/10 rounded-full animate-float"></div>
-        <div className="absolute bottom-10 left-10 w-16 h-16 bg-secondary/5 rounded-full animate-float-delayed"></div>
+        <div className="absolute top-10 right-10 w-20 h-20 bg-secondary/10 rounded-full" />
+        <div className="absolute bottom-10 left-10 w-16 h-16 bg-secondary/5 rounded-full " />
       </div>
       <div className="relative text-center max-w-4xl mx-auto">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
@@ -23,7 +23,9 @@ const NewsLetter = ({ title, description, card = true }) => {
         <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
           {description}
         </p>
-        <div className="bg-white rounded-2xl p-6 max-w-md mx-auto shadow-lg border border-gray-200">
+        <div
+          className={`bg-white max-w-md mx-auto items-center rounded-2xl ${!card && " p-6 shadow-lg border border-gray-200"}`}
+        >
           <div className="space-y-4">
             <input
               type="email"

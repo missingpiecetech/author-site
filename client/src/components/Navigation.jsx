@@ -42,7 +42,7 @@ const Navigation = () => {
                   Michael Vadney
                 </div>
                 <div className="text-secondary text-sm font-medium">
-                  Fantasy Author & Podcaster
+                  Author & Podcaster
                 </div>
               </div>
             </Link>

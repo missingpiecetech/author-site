@@ -56,11 +56,12 @@ const AboutPage = () => {
                 <p className="">
                   Through his debut novel <strong>Crownfall</strong> and the{" "}
                   <strong>Author Adjacent</strong> podcast, Michael explores
-                  themes of power, justice, and survival while sharing the real
-                  challenges and victories of the writing life. His work
-                  embodies a passion for captivating narratives, immersive
-                  worlds, and the conviction that every moment deserves
-                  discovery.
+                  themes of power, justice, and survival while sharing the
+                  challenges and victories of the writing life. His approach to
+                  storytelling emphasizes complex characters facing impossible
+                  choices, intricate world-building that serves the narrative,
+                  and themes that resonate with real human experiences, even in
+                  fantastical settings.
                 </p>
               </div>
             </div>
@@ -143,14 +144,6 @@ const AboutPage = () => {
               questions about power, justice, and survival, and maybe find some
               answers along the way."
             </blockquote>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-2xl mx-auto">
-              <p className="text-gray-600 leading-relaxed">
-                Michael's approach to storytelling emphasizes complex characters
-                facing impossible choices, intricate world-building that serves
-                the narrative, and themes that resonate with real human
-                experiences, even in fantastical settings.
-              </p>
-            </div>
           </div>
         </div>
         <NewsLetter

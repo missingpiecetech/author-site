@@ -1,10 +1,10 @@
 import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
 
 export const BOOK_STATUS = {
-  IN_DEVELOPMENT: "Worldbuilding & Development",
-  OUTLINE_STAGE: "Outline Stage",
-  WRITING_STAGE: "Writing Stage",
-  EDITING_STAGE: "Editing Stage",
+  IN_DEVELOPMENT: "Worldbuilding",
+  OUTLINE_STAGE: "Outlining",
+  WRITING_STAGE: "Writing",
+  EDITING_STAGE: "Editing",
   COMING_SOON: "Coming Soon",
   PRE_ORDER: "Available for Pre-order",
   RELEASED: "Released",
