@@ -38,12 +38,12 @@ const AboutPage = () => {
               <div className="prose prose-lg max-w-none text-left text-gray-700 leading-relaxed text-lg space-y-4">
                 <p className="">
                   <strong>Michael Vadney</strong> is an American fantasy author
-                  and podcaster based in Fort Worth, Texas. Born in Key West,
-                  Florida and raised in the woods of Pennsylvania, Michael's
-                  love for storytelling began at an early age. His passion for
-                  fantasy literature was ignited by classics like "The Hobbit"
-                  and "Redwall," inspiring him to create his own worlds filled
-                  with complex characters and fantastic magic.
+                  and podcaster. Born in the Florida Keys and raised in the
+                  woods of Pennsylvania, Michael's love for storytelling began
+                  at an early age. His passion for fantasy literature was
+                  ignited by classics like "The Hobbit" and "Redwall," inspiring
+                  him to create his own worlds filled with complex characters
+                  and fantastic magic.
                 </p>
                 <p className="">
                   Like many writers, Michael's path to writing started late. In
@@ -140,7 +140,7 @@ const AboutPage = () => {
             </h2>
             <blockquote className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed italic">
               "Every story worth telling explores the space between who we are
-              and who we could become. In fantasy, we get to ask the biggest
+              and who we could become. In writing, we get to ask the biggest
               questions about power, justice, and survival, and maybe find some
               answers along the way."
             </blockquote>

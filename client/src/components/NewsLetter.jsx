@@ -10,7 +10,7 @@ const NewsLetter = ({ title, description, card = true }) => {
 
   return (
     <div
-      className={`mt-15 bg-white p-12 lg:p-16 ${card ? "rounded-3xl shadow-2xl" : ""}  relative overflow-hidden border border-gray-200`}
+      className={`bg-white p-12 lg:p-16 ${card ? "rounded-3xl shadow-2xl mt-15" : ""}  relative overflow-hidden border border-gray-200`}
     >
       <div className="relative text-center max-w-4xl mx-auto">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900">

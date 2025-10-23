@@ -18,14 +18,14 @@ const PodcastPage = () => {
               Author <span className="text-secondary">Adjacent</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-              From hobbyist writer to professional author—the honest journey
+              From hobbyist writer to professional author
             </p>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto pt-20 px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-5 gap-12 items-center mb-20">
           {/* Profile Image */}
           <div className="lg:col-span-2">
