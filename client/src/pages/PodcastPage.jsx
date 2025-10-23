@@ -1,4 +1,3 @@
-import EmailSignup from "../components/EmailSignup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faYoutube, faXTwitter } from "@fortawesome/free-brands-svg-icons";
