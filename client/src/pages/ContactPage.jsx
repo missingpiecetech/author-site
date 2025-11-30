@@ -111,10 +111,10 @@ const ContactPage = () => {
                       Author Adjacent Podcast
                     </p>
                     <a
-                      href="mailto:authorAdjacent@gmail.com"
+                      href="mailto:AuthorAdjacent@gmail.com"
                       className="text-secondary hover:text-secondary-dark transition-colors text-lg font-semibold hover:underline"
                     >
-                      authorAdjacent@gmail.com
+                      AuthorAdjacent@gmail.com
                     </a>
                   </div>
                 </div>

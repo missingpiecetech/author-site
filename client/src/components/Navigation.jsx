@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { GiCrystalGrowth } from "react-icons/gi";
+import ShoppingCart from "./ShoppingCart";
 
 const Navigation = () => {
   const location = useLocation();
@@ -11,6 +12,7 @@ const Navigation = () => {
     { path: "/books", label: "Books" },
     { path: "/podcast", label: "Podcast" },
     { path: "/about", label: "About" },
+    { path: "/store", label: "Store" },
     { path: "/contact", label: "Contact" },
   ];
 
@@ -71,6 +73,7 @@ const Navigation = () => {
                 )}
               </Link>
             ))}
+            <ShoppingCart />
           </div>
 
           {/* Mobile menu button */}

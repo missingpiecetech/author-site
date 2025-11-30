@@ -68,19 +68,23 @@ Simply build the project and upload the contents of the `dist` directory to your
 ## Content Structure
 
 ### Books
+
 - **Crownfall**: Release date Feb 28, 2026
 - **Chrono-Stained**: Work in progress
 
 ### Podcast
+
 - **Author Adjacent**: Journey from hobbyist writer to professional author
 - YouTube: [@AuthorAdjacent](https://www.youtube.com/@AuthorAdjacent)
 - X (Twitter): [@AuthorAdjacent](https://x.com/AuthorAdjacent)
 
 ### Contact
+
 - Business: mjvadney@gmail.com
-- Podcast: authorAdjacent@gmail.com
+- Podcast: AuthorAdjacent@gmail.com
 
 ### Social Media
+
 - X (Twitter): [@Michael_Vadney](https://x.com/Michael_Vadney)
 - Bluesky: [michaelvadney.bsky.social](https://bsky.app/profile/michaelvadney.bsky.social)
 - Threads: [@michael_vadney](https://www.threads.com/@michael_vadney)

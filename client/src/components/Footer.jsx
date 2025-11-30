@@ -1,9 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faXTwitter,
-  faInstagram,
-  faBluesky,
-} from "@fortawesome/free-brands-svg-icons";
+import SOCIAL_LINKS from "../SOCIAL_LINKS";
 
 const Footer = () => (
   <footer className="bg-gray-100 border-t border-gray-200 py-12 text-gray-700">
@@ -28,38 +23,26 @@ const Footer = () => (
         <a href="/about" className="hover:text-secondary">
           About
         </a>
+        <a href="/store" className="hover:text-secondary">
+          Store
+        </a>
         <a href="/contact" className="hover:text-secondary">
           Contact
         </a>
       </nav>
       <div className="flex gap-4">
-        <a
-          href="https://x.com/Michael_Vadney"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="X"
-          className="hover:text-secondary text-xl"
-        >
-          <FontAwesomeIcon icon={faXTwitter} />
-        </a>
-        <a
-          href="https://bsky.app/profile/michaelvadney.bsky.social"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Bluesky"
-          className="hover:text-secondary text-xl"
-        >
-          <FontAwesomeIcon icon={faBluesky} />
-        </a>
-        <a
-          href="https://www.instagram.com/michael_vadney/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Instagram"
-          className="hover:text-secondary text-xl"
-        >
-          <FontAwesomeIcon icon={faInstagram} />
-        </a>
+        {SOCIAL_LINKS.map((social) => (
+          <a
+            key={social.platform}
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={social.platform}
+            className="hover:text-secondary text-xl"
+          >
+            {social.icon}
+          </a>
+        ))}
       </div>
     </div>
   </footer>

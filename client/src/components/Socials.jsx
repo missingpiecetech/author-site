@@ -1,57 +1,4 @@
-import {
-  faXTwitter,
-  faInstagram,
-  faTiktok,
-  faThreads,
-  faBluesky,
-  faYoutube,
-} from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-const socialLinks = [
-  {
-    platform: "YouTube",
-    url: "https://www.youtube.com/@AuthorAdjacent",
-    icon: <FontAwesomeIcon icon={faYoutube} />,
-    color: "hover:bg-red-500",
-    handle: "@AuthorAdjacent",
-  },
-  {
-    platform: "X",
-    url: "https://x.com/Michael_Vadney",
-    icon: <FontAwesomeIcon icon={faXTwitter} />,
-    color: "hover:bg-gray-500",
-    handle: "@Michael_Vadney",
-  },
-  {
-    platform: "Instagram",
-    url: "https://www.instagram.com/michael_vadney/",
-    icon: <FontAwesomeIcon icon={faInstagram} />,
-    color: "hover:bg-purple-500",
-    handle: "@michael_vadney",
-  },
-  {
-    platform: "TikTok",
-    url: "https://www.tiktok.com/@michael_vadney",
-    icon: <FontAwesomeIcon icon={faTiktok} />,
-    color: "hover:bg-pink-500",
-    handle: "@michael_vadney",
-  },
-  {
-    platform: "Bluesky",
-    url: "https://bsky.app/profile/michaelvadney.bsky.social",
-    icon: <FontAwesomeIcon icon={faBluesky} />,
-    color: "hover:bg-sky-500",
-    handle: "@michaelvadney.bsky.social",
-  },
-  {
-    platform: "Threads",
-    url: "https://www.threads.com/@michael_vadney",
-    icon: <FontAwesomeIcon icon={faThreads} />,
-    color: "hover:bg-yellow-500",
-    handle: "@michael_vadney",
-  },
-];
+import SOCIAL_LINKS from "../SOCIAL_LINKS";
 
 const Socials = () => (
   <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-xl border border-gray-100 mb-20">
@@ -63,7 +10,7 @@ const Socials = () => (
       insights from the author life.
     </p>
     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {socialLinks.map((social) => (
+      {SOCIAL_LINKS.map((social) => (
         <a
           key={social.platform}
           href={social.url}

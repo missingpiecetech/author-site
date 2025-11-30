@@ -155,7 +155,7 @@ const HomePage = () => {
                 </h2>
                 <p className="text-xl text-gray-700 leading-relaxed text-center lg:text-left">
                   Join the honest conversation about the writing journey from
-                  hobbyist to professional author.
+                  hobbyist writer to professional author.
                 </p>
                 <p className="text-gray-600 leading-relaxed text-lg text-center lg:text-left">
                   Every episode dives deep into the challenges, victories, and

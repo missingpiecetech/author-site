@@ -43,15 +43,27 @@ export const BOOKS = [
     ),
     shortBlurb:
       "Nearly a decade under the empire’s grip has left Burunt a troubled land, its unrest simmering beneath a fragile surface. In the fight for power, justice, and survival, everyone must decide: who they will become?",
-    quote: (
+    quotes: [
       <>
-        "A fantastic debut novel that is brimming with characters as captivating
-        as magical crystals and a world that is equal parts hopeful and dark."
+        "An excellent debut novel. Crownfall brims with a captivating cast of
+        complex characters and a mesmerizing world of hope and darkness."
         <br />
         &mdash; Adrian M Gibson, award winning author of Mushroom Blues
-      </>
-    ),
-    release: "February 2026",
+      </>,
+      <>
+        "Crownfall had me on the edge of my seat from the first page to the
+        last. This is a masterclass in political fantasy that I couldn't put
+        down!"
+        <br />
+        &mdash; Greta Kelly, author of The Queen of Day's and The Frozen Crown
+      </>,
+      <>
+        "A compelling debut that needs to be on your TBR."
+        <br />
+        &mdash; M.J. Kuhn, internationally bestselling author of Among Thieves
+      </>,
+    ],
+    release: "April 2026",
     status: BOOK_STATUS.EDITING_STAGE,
     genres: ["Nobledark Fantasy", "Political Intrigue", "Action Adventure"],
     icon: <GiCrystalGrowth />,
@@ -62,7 +74,7 @@ export const BOOKS = [
     id: 2,
     title: "Chrono-Stained",
     subtitle: "Claim your past. Change your future.",
-    quote: "",
+    quotes: [],
     release: "TBA",
     status: BOOK_STATUS.IN_DEVELOPMENT,
     color: "bg-gray-600",
@@ -70,23 +82,40 @@ export const BOOKS = [
     icon: <GiClockwork />,
     blurb: (
       <>
-        This story follows two half-brothers who attempt to travel back in time
-        to save their mother from a car accident only to uncover a shocking
-        truth: their mother never died.
+        Two half-brothers risk everything to rewrite history and save their
+        mother from a tragic accident—only to discover she never died at all.
         <br />
         <br />
-        Desperate for answers, the brothers agree to work for a shadowy
-        organization in exchange for its resources—despite deep suspicions about
-        its true motives. Their mission to find their mother soon unearths a
-        plot to destroy the city.
+        Driven by hope and suspicion, they join a mysterious organization
+        offering the means to uncover the truth. But as they dig deeper, the
+        brothers find themselves entangled in a web of secrets, conspiracies,
+        and a looming threat that could destroy their city.
         <br />
         <br />
-        Though the conspiracy runs deeper than they imagined, pointing to
-        dangerous secrets at the highest levels of government.
+        Their journey will test their loyalty, challenge their beliefs, and
+        force them to confront the shadows of their own past.
       </>
     ),
+    //  blurb: (
+    //   <>
+    //     This story follows two half-brothers who attempt to travel back in time
+    //     to save their mother from a car accident only to uncover a shocking
+    //     truth: their mother never died.
+    //     <br />
+    //     <br />
+    //     Desperate for answers, the brothers agree to work for a shadowy
+    //     organization in exchange for its resources—despite deep suspicions about
+    //     its true motives. Their mission to find their mother soon unearths a
+    //     plot to destroy the city.
+    //     <br />
+    //     <br />
+    //     Though the conspiracy runs deeper than they imagined, pointing to
+    //     dangerous secrets at the highest levels of government.
+    //   </>
+    // ),
     shortBlurb:
-      "Two half brothers travel back in time to save their mother from a fatal accident only to discover that she never died. Snapped back to their present, the adventure begins to find their mother and to ask her where has she been this whole time.",
+      "Two brothers defy time itself to save their mother, only to uncover a conspiracy that threatens everything. Fullmetal Alchemist Brotherhood meets The Licanius Trilogy. More details coming as development progresses.",
+    // "Two half brothers travel back in time to save their mother from a fatal accident only to discover that she never died. Snapped back to their present, the adventure begins to find their mother and to ask her where has she been this whole time.",
     cover: "",
     link: "/books#chrono-stained", // Should link to the book page in the store
   },

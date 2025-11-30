@@ -17,8 +17,8 @@ const BooksPage = () => {
               Books & <span className="text-secondary">Works</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-              Nobledark fantasy worlds where the worlds are dark and the
-              characters are hopeful.
+              Nobledark fantasy where the worlds are dark and the characters are
+              hopeful.
             </p>
           </div>
         </div>
@@ -69,7 +69,6 @@ const BooksPage = () => {
                         {book.subtitle}
                       </p>
                     </div>
-
                     {/* Genres */}
                     <div className="flex flex-wrap gap-3">
                       {book.genres.map((genre) => (
@@ -81,23 +80,23 @@ const BooksPage = () => {
                         </span>
                       ))}
                     </div>
-
                     <div className="max-w-none">
                       <p className="text-gray-700 leading-relaxed text-lg text-left">
                         {book.blurb}
                       </p>
                     </div>
-
                     {/* Quote */}
-                    {book.quote && (
+                    {book.quotes.length > 0 && (
                       <blockquote className="border-l-4 border-secondary pl-8 py-6 bg-gray-50 rounded-r-2xl">
                         <p className="text-gray-800 italic text-xl leading-relaxed text-left">
-                          {book.quote}
+                          {
+                            book.quotes[
+                              Math.floor(Math.random() * book.quotes.length)
+                            ]
+                          }
                         </p>
                       </blockquote>
                     )}
-
-                    {/* Book Details Grid */}
                     {book.status === BOOK_STATUS.COMING_SOON && (
                       <div className="grid sm:grid-cols-2 gap-6 text-left">
                         <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
@@ -133,7 +132,6 @@ const BooksPage = () => {
                         </div>
                       </div>
                     )}
-
                     {/* Action Buttons */}
                     {book.status === BOOK_STATUS.RELEASED && (
                       <div className="flex flex-col sm:flex-row gap-6">
