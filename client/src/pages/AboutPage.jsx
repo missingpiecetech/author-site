@@ -46,8 +46,7 @@ const AboutPage = () => {
                   and fantastic magic.
                 </p>
                 <p className="">
-                  Like many writers, Michael's path to writing started late. In
-                  his early-thirties, he rekindled his childhood dream of
+                  In his early-thirties, he rekindled his childhood dream of
                   becoming an author. Balancing a full-time career in software,
                   he dedicated nights, weekends, and many dawns to writing,
                   learning the craft through trial and error, online videos, and

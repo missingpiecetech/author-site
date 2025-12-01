@@ -37,14 +37,22 @@ const BooksPage = () => {
                 <div
                   className={`lg:col-span-2 lg:sticky ${index % 2 === 1 ? "lg:order-2" : ""}`}
                 >
-                  <div
-                    className={`aspect-[3/4] bg-gradient-to-br from-slate-700 via-gray-800 to-slate-900 rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden transform group-hover:scale-105 transition-all duration-500`}
-                  >
-                    {/* Book cover design */}
-                    <div className="text-white text-8xl md:text-10xl item">
-                      {book.icon}
+                  {book.cover ? (
+                    <img
+                      src={book.cover}
+                      alt={book.title}
+                      className="bg-gradient-to-br from-slate-700 via-gray-800 to-slate-900 rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden transform group-hover:scale-105 transition-all duration-500 object-cover"
+                    />
+                  ) : (
+                    <div
+                      className={`aspect-[3/4] bg-gradient-to-br from-slate-700 via-gray-800 to-slate-900 rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden transform group-hover:scale-105 transition-all duration-500`}
+                    >
+                      {/* Book cover design */}
+                      <div className="text-white text-8xl md:text-10xl item">
+                        {book.icon}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Status Badge */}
                   <div className="absolute -top-6 -right-6 z-20">
