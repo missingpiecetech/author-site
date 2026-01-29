@@ -65,37 +65,38 @@ export const BOOKS = [
     ],
     release: "April 2026",
     status: BOOK_STATUS.EDITING_STAGE,
-    genres: ["Nobledark Fantasy", "Political Intrigue", "Action Adventure"],
+    genres: ["Nobledark Fantasy", "Political Intrigue", "New Adult"],
     icon: <GiCrystalGrowth />,
     // cover: "/src/assets/crownfall_cover.jpg",
     link: "/books#crownfall", // Should link to the book page in the store
   },
   {
     id: 2,
-    title: "Chrono-Stained",
+    // title: "Chrono-Stained",
+    title: "Project: Arcanist",
     subtitle: "Claim your past. Change your future.",
     quotes: [],
     release: "TBA",
     status: BOOK_STATUS.IN_DEVELOPMENT,
     color: "bg-gray-600",
-    genres: ["Time Travel", "Sci-Fantasy", "Action Adventure"],
+    // genres: ["Time Travel", "Sci-Fantasy", "Action Adventure"],
     icon: <GiClockwork />,
-    blurb: (
-      <>
-        Two half-brothers risk everything to rewrite history and save their
-        mother from a tragic accident—only to discover she never died at all.
-        <br />
-        <br />
-        Driven by hope and suspicion, they join a mysterious organization
-        offering the means to uncover the truth. But as they dig deeper, the
-        brothers find themselves entangled in a web of secrets, conspiracies,
-        and a looming threat that could destroy their city.
-        <br />
-        <br />
-        Their journey will test their loyalty, challenge their beliefs, and
-        force them to confront the shadows of their own past.
-      </>
-    ),
+    // blurb: (
+    //   <>
+    //     Two half-brothers risk everything to rewrite history and save their
+    //     mother from a tragic accident—only to discover she never died at all.
+    //     <br />
+    //     <br />
+    //     Driven by hope and suspicion, they join a mysterious organization
+    //     offering the means to uncover the truth. But as they dig deeper, the
+    //     brothers find themselves entangled in a web of secrets, conspiracies,
+    //     and a looming threat that could destroy their city.
+    //     <br />
+    //     <br />
+    //     Their journey will test their loyalty, challenge their beliefs, and
+    //     force them to confront the shadows of their own past.
+    //   </>
+    // ),
     //  blurb: (
     //   <>
     //     This story follows two half-brothers who attempt to travel back in time
@@ -117,6 +118,6 @@ export const BOOKS = [
       "Two brothers defy time itself to save their mother, only to uncover a conspiracy that threatens everything. Fullmetal Alchemist Brotherhood meets The Licanius Trilogy. More details coming as development progresses.",
     // "Two half brothers travel back in time to save their mother from a fatal accident only to discover that she never died. Snapped back to their present, the adventure begins to find their mother and to ask her where has she been this whole time.",
     cover: "",
-    link: "/books#chrono-stained", // Should link to the book page in the store
+    link: "/books#project-arcanist", // Should link to the book page in the store
   },
 ];

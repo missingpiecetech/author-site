@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faYoutube, faXTwitter } from "@fortawesome/free-brands-svg-icons";
-import NewsLetter from "../components/NewsLetter";
 
 const PodcastPage = () => {
   return (
@@ -148,17 +147,6 @@ const PodcastPage = () => {
           </div>
         </div>
       </div>
-      <NewsLetter
-        title={
-          <>
-            Join the <span className="text-secondary">Journey</span>
-          </>
-        }
-        description="Whether you're a fellow hobbyist writer or just curious about the
-            book community, you're welcome to follow along as we navigate this
-            journey together."
-        card={false}
-      />
     </div>
   );
 };

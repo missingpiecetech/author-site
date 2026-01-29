@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { BOOKS } from "../BOOK_DATA";
-import NewsLetter from "../components/NewsLetter";
 
 const HomePage = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -123,16 +122,18 @@ const HomePage = () => {
                             {book.shortBlurb}
                           </p>
                         </div>
-                        <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                          {book.genres.map((genre) => (
-                            <span
-                              key={genre}
-                              className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm"
-                            >
-                              {genre}
-                            </span>
-                          ))}
-                        </div>
+                        {book.genres && (
+                          <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                            {book.genres.map((genre) => (
+                              <span
+                                key={genre}
+                                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm"
+                              >
+                                {genre}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <Link
                           to={book.link}
                           className="inline-flex items-center bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 group"
@@ -201,17 +202,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      <NewsLetter
-        title={
-          <>
-            Stay <span className="text-secondary">Connected</span>
-          </>
-        }
-        description="Get updates on new releases, podcast episodes, and
-              behind-the-scenes insights from the writing journey."
-        card={false}
-      />
     </div>
   );
 };

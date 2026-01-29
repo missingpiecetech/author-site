@@ -1,7 +1,7 @@
 import SOCIAL_LINKS from "../SOCIAL_LINKS";
 
 const Socials = () => (
-  <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-xl border border-gray-100 mb-20">
+  <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-xl border border-gray-100">
     <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8">
       Connect & Follow the Journey
     </h2>

@@ -1,4 +1,3 @@
-import NewsLetter from "../components/NewsLetter";
 import Socials from "../components/Socials";
 
 import {
@@ -182,16 +181,6 @@ const ContactPage = () => {
 
         {/* Social Media Section */}
         <Socials />
-
-        <NewsLetter
-          title={
-            <>
-              Receive <span className="text-secondary">Updates</span>
-            </>
-          }
-          description="Be the first to know about new book releases, latest episodes, and
-          behind-the-scenes content from me."
-        />
       </div>
     </div>
   );

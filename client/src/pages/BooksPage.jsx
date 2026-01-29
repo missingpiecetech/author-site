@@ -1,5 +1,4 @@
 import { BOOKS, BOOK_STATUS } from "../BOOK_DATA";
-import NewsLetter from "../components/NewsLetter";
 
 const BooksPage = () => {
   return (
@@ -78,16 +77,18 @@ const BooksPage = () => {
                       </p>
                     </div>
                     {/* Genres */}
-                    <div className="flex flex-wrap gap-3">
-                      {book.genres.map((genre) => (
-                        <span
-                          key={genre}
-                          className="bg-secondary/10 text-secondary px-4 py-2 rounded-full text-lg font-medium"
-                        >
-                          {genre}
-                        </span>
-                      ))}
-                    </div>
+                    {book.genres && (
+                      <div className="flex flex-wrap gap-3">
+                        {book.genres.map((genre) => (
+                          <span
+                            key={genre}
+                            className="bg-secondary/10 text-secondary px-4 py-2 rounded-full text-lg font-medium"
+                          >
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <div className="max-w-none">
                       <p className="text-gray-700 leading-relaxed text-lg text-left">
                         {book.blurb}
@@ -167,15 +168,6 @@ const BooksPage = () => {
             </div>
           ))}
         </div>
-        <NewsLetter
-          title={
-            <>
-              Never Miss a <span className="text-secondary">Release</span>
-            </>
-          }
-          description="Be the first to know about new book releases, exclusive excerpts, and
-          behind-the-scenes content from the writing process."
-        />
       </div>
     </div>
   );
