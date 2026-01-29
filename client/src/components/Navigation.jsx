@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { GiCrystalGrowth } from "react-icons/gi";
-import ShoppingCart from "./ShoppingCart";
+// import ShoppingCart from "./ShoppingCart";
 
 const Navigation = () => {
   const location = useLocation();
@@ -73,7 +73,7 @@ const Navigation = () => {
                 )}
               </Link>
             ))}
-            <ShoppingCart />
+            {/* <ShoppingCart /> */}
           </div>
 
           {/* Mobile menu button */}

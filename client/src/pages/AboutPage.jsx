@@ -4,6 +4,7 @@ import {
   faMapMarkerAlt,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import Socials from "../components/Socials";
 
 const AboutPage = () => {
   return (
@@ -125,6 +126,11 @@ const AboutPage = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Social Media Section */}
+        <div className="mb-20">
+          <Socials />
         </div>
 
         {/* Writing Philosophy */}

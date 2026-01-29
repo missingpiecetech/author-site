@@ -178,9 +178,6 @@ const ContactPage = () => {
             </p>
           </div>
         </div>
-
-        {/* Social Media Section */}
-        <Socials />
       </div>
     </div>
   );
