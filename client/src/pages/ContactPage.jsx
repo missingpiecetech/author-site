@@ -145,7 +145,7 @@ const ContactPage = () => {
         </div>
 
         {/* Response Time & Expectations */}
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
+        <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
             <div className="inline-block bg-green-100 p-4 rounded-full mb-4">
               <GiExtraTime className="text-green-600 text-2xl" />
