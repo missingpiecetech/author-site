@@ -40,8 +40,9 @@ This site is configured for **Cloudflare Pages** deployment.
 **See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment instructions.**
 
 Quick build settings:
-- **Build command**: `cd client && npm install && npm run build`
-- **Build output directory**: `client/dist`
+- **Root directory**: `client`
+- **Build command**: `npm run build`
+- **Build output directory**: `dist`
 - **Node version**: 20
 
 ## License

@@ -30,9 +30,9 @@ This guide provides step-by-step instructions for deploying the Michael Vadney A
    - **Project name**: `author-site` (or your preferred name)
    - **Production branch**: `main` (or your default branch)
    - **Framework preset**: None (or select Vite if available)
-   - **Build command**: `cd client && npm install && npm run build`
-   - **Build output directory**: `client/dist`
-   - **Root directory**: `/` (leave empty)
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+   - **Root directory**: `client`
    - **Environment variables**: None required (unless you add API keys later)
 
 5. **Deploy**
@@ -64,13 +64,15 @@ This guide provides step-by-step instructions for deploying the Michael Vadney A
 
 ### Build Command
 ```bash
-cd client && npm install && npm run build
+npm run build
 ```
 
 ### Output Directory
 ```
-client/dist
+dist
 ```
+
+When the root directory is set to `client`, the output directory is relative to that root.
 
 ### Node Version
 The project requires Node.js v20 or higher. A `.nvmrc` file is included in the repository root.
@@ -154,8 +156,9 @@ This serves the production build locally at `http://localhost:4173`
 ### Build Failures
 
 **Issue**: Build fails with "command not found" errors
-- **Solution**: Ensure build command includes `cd client &&` prefix
-- **Check**: Build output directory is set to `client/dist`
+- **Solution**: Ensure the root directory is set to `client` in Cloudflare Pages settings
+- **Check**: Build command should be `npm run build` (not `cd client && npm run build`)
+- **Check**: Build output directory is set to `dist` (not `client/dist`)
 
 **Issue**: Build runs out of memory
 - **Solution**: Cloudflare Pages provides 8GB memory for builds, which should be sufficient for this project. If issues persist, optimize dependencies.
