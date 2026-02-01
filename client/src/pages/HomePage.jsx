@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { BOOKS } from "../BOOK_DATA";
+import authorPic from "../assets/author_pic.jpeg";
+import authorAdjacentLogo from "../assets/logo_no_text.png";
 
 const HomePage = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -30,7 +32,7 @@ const HomePage = () => {
           {/* Author Image */}
           <div className="flex relative m-8 mt-40 mb-4 md:mt-8 md:m-24">
             <img
-              src="/src/assets/author_pic.jpeg"
+              src={authorPic}
               alt="Michael Vadney"
               className="w-80 h-80 rounded-full object-cover outline-10 outline-secondary z-25"
             />
@@ -190,11 +192,11 @@ const HomePage = () => {
               </div>
 
               <div className="relative animate-scale-in">
-                <div className="aspect-square bg-secondary rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
+                <div className="aspect-square bg-white rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
                   <img
-                    src="/src/assets/author_adjacent_logo_no_text.jpeg"
+                    src={authorAdjacentLogo}
                     alt="Author Adjacent Podcast Cover"
-                    className="w-full h-full object-cover rounded-2xl shadow-2xl"
+                    className="w-full h-full object-cover p-8"
                   />
                 </div>
               </div>
