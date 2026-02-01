@@ -178,11 +178,11 @@ This serves the production build locally at `http://localhost:4173`
 
 ## Security & Best Practices
 
-- ✅ **HTTPS**: Automatically enabled on all Cloudflare Pages deployments
-- ✅ **CDN**: Content automatically distributed across Cloudflare's global network
-- ✅ **DDoS Protection**: Included with Cloudflare Pages
-- ⚠️ **Secrets**: Never commit API keys or secrets to the repository. Use Environment Variables instead
-- ⚠️ **Dependencies**: Regularly update dependencies to patch security vulnerabilities
+- **HTTPS**: Automatically enabled on all Cloudflare Pages deployments
+- **CDN**: Content automatically distributed across Cloudflare's global network
+- **DDoS Protection**: Included with Cloudflare Pages
+- **Secrets**: Never commit API keys or secrets to the repository. Use Environment Variables instead
+- **Dependencies**: Regularly update dependencies to patch security vulnerabilities
 
 ## CI/CD Integration
 

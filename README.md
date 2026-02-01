@@ -2,13 +2,13 @@
 
 A modern, responsive website for fantasy author and podcaster Michael Vadney.
 
-## 🚀 Quick Start
+## Quick Start
 
 For detailed project documentation, see [client/README.md](client/README.md).
 
 For deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 author-site-temp/
@@ -21,7 +21,7 @@ author-site-temp/
 └── DEPLOYMENT.md       # Cloudflare Pages deployment guide
 ```
 
-## 🔧 Development
+## Development
 
 Navigate to the `client` directory for development:
 
@@ -33,17 +33,17 @@ npm run dev
 
 See [client/README.md](client/README.md) for full development documentation.
 
-## 🌐 Deployment
+## Deployment
 
 This site is configured for **Cloudflare Pages** deployment.
 
-**👉 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment instructions.**
+**See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment instructions.**
 
 Quick build settings:
 - **Build command**: `cd client && npm install && npm run build`
 - **Build output directory**: `client/dist`
 - **Node version**: 20
 
-## 📝 License
+## License
 
 This project is private and proprietary to Michael Vadney.

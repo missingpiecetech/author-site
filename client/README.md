@@ -57,7 +57,7 @@ npm run preview
 
 This site is configured for deployment to **Cloudflare Pages**.
 
-📖 **For detailed deployment instructions, see [DEPLOYMENT.md](../DEPLOYMENT.md)**
+**For detailed deployment instructions, see [DEPLOYMENT.md](../DEPLOYMENT.md)**
 
 ### Quick Deploy
 
