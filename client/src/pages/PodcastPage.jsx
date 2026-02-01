@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faYoutube, faXTwitter } from "@fortawesome/free-brands-svg-icons";
+import authorAdjacentLogo from "../assets/logo_no_text.png";
 
 const PodcastPage = () => {
   return (
@@ -29,11 +30,11 @@ const PodcastPage = () => {
           {/* Profile Image */}
           <div className="lg:col-span-2">
             <div className="relative group">
-              <div className="aspect-square bg-secondary rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
+              <div className="aspect-square bg-white rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
                 <img
-                  src="/src/assets/author_adjacent_logo_no_text.jpeg"
+                  src={authorAdjacentLogo}
                   alt="Author Adjacent Podcast Cover"
-                  className="w-full h-full object-cover rounded-2xl"
+                  className="w-full h-full object-cover p-8"
                 />
 
                 {/* Decorative elements */}
