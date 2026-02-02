@@ -55,15 +55,19 @@ npm run preview
 
 ## Deployment
 
-The site is built as a static single-page application and can be deployed to any static hosting service such as:
+This site is configured for deployment to **Cloudflare Pages**.
 
-- Vercel
-- Netlify
-- GitHub Pages
-- AWS S3 + CloudFront
-- Azure Static Web Apps
+**For detailed deployment instructions, see [DEPLOYMENT.md](../DEPLOYMENT.md)**
 
-Simply build the project and upload the contents of the `dist` directory to your hosting service.
+### Quick Deploy
+
+The site is built as a static single-page application and can be deployed to Cloudflare Pages with these settings:
+
+- **Build command**: `cd client && npm install && npm run build`
+- **Build output directory**: `client/dist`
+- **Node version**: 20
+
+The site can also be deployed to other static hosting services such as Vercel, Netlify, GitHub Pages, AWS S3 + CloudFront, or Azure Static Web Apps.
 
 ## Content Structure
 
