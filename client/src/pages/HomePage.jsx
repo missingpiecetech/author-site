@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { BOOKS } from "../BOOK_DATA";
-import authorPic from "../assets/author_pic.jpeg";
+// import authorPic from "../assets/author_pic.jpeg";
 import authorAdjacentLogo from "../assets/logo_no_text.png";
 
 const HomePage = () => {
@@ -30,7 +30,7 @@ const HomePage = () => {
         {/* Hero Content Side-by-Side */}
         <div className="relative flex flex-row flex-wrap items-center justify-around md:text-left">
           {/* Author Image */}
-          <div className="flex relative m-8 mt-40 mb-4 md:mt-8 md:m-24">
+          {/* <div className="flex relative m-8 mt-40 mb-4 md:mt-8 md:m-24">
             <img
               src={authorPic}
               alt="Michael Vadney"
@@ -38,7 +38,7 @@ const HomePage = () => {
             />
             <div className="absolute -top-6 -left-6 w-24 h-24 bg-secondary-dark rounded-full" />
             <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-secondary-dark rounded-full" />
-          </div>
+          </div> */}
           {/* Author Text */}
           <div
             className="w-1/2 flex-1 space-y-1 text-center"
