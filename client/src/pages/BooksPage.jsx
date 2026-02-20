@@ -106,7 +106,7 @@ const BooksPage = () => {
                         </p>
                       </blockquote>
                     )}
-                    {book.status === BOOK_STATUS.COMING_SOON && (
+                    {/* {book.status === BOOK_STATUS.COMING_SOON && (
                       <div className="grid sm:grid-cols-2 gap-6 text-left">
                         <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
                           <div className="flex items-center space-x-4">
@@ -140,7 +140,7 @@ const BooksPage = () => {
                           </div>
                         </div>
                       </div>
-                    )}
+                    )} */}
                     {/* Action Buttons */}
                     {book.status === BOOK_STATUS.RELEASED && (
                       <div className="flex flex-col sm:flex-row gap-6">

@@ -74,6 +74,10 @@ const Navigation = () => {
               </Link>
             ))}
             <Link
+              to={
+                "https://drive.google.com/drive/folders/14IFIoZJv-jHsS2bXliF1bx5kUXnI9_bC?usp=sharing"
+              }
+              target="_blank"
               className={`text-gray-700 hover:text-secondary hover:bg-secondary/5 transition-all duration-200 px-6 py-3 rounded-full text-sm font-semibold tracking-wide relative group `}
             >
               Press Kit

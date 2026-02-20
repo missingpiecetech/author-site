@@ -3,8 +3,8 @@ import {
   faInstagram,
   // Add these back later if desired
   // faTiktok,
-  // faThreads,
-  // faBluesky,
+  faThreads,
+  faBluesky,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -39,20 +39,20 @@ const SOCIAL_LINKS = [
   //   color: "hover:bg-pink-500",
   //   handle: "@michael_vadney",
   // },
-  // {
-  //   platform: "Bluesky",
-  //   url: "https://bsky.app/profile/michaelvadney.bsky.social",
-  //   icon: <FontAwesomeIcon icon={faBluesky} />,
-  //   color: "hover:bg-sky-500",
-  //   handle: "@michaelvadney.bsky.social",
-  // },
-  // {
-  //   platform: "Threads",
-  //   url: "https://www.threads.com/@michael_vadney",
-  //   icon: <FontAwesomeIcon icon={faThreads} />,
-  //   color: "hover:bg-yellow-500",
-  //   handle: "@michael_vadney",
-  // },
+  {
+    platform: "Bluesky",
+    url: "https://bsky.app/profile/michaelvadney.bsky.social",
+    icon: <FontAwesomeIcon icon={faBluesky} />,
+    color: "hover:bg-sky-500",
+    handle: "@michaelvadney.bsky.social",
+  },
+  {
+    platform: "Threads",
+    url: "https://www.threads.com/@michael_vadney",
+    icon: <FontAwesomeIcon icon={faThreads} />,
+    color: "hover:bg-yellow-500",
+    handle: "@michael_vadney",
+  },
 ];
 
 export default SOCIAL_LINKS;
