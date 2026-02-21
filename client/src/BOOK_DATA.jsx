@@ -62,7 +62,7 @@ export const BOOKS = [
       </>,
     ],
     release: "April 2026",
-    status: BOOK_STATUS.COMING_SOON,
+    status: BOOK_STATUS.PRE_ORDER,
     genres: ["Nobledark Fantasy", "Political Intrigue", "New Adult"],
     icon: <GiCrystalGrowth />,
     cover: "/src/assets/crownfall_cover.jpg",
