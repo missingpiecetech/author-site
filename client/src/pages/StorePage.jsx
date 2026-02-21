@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import useCart from "../hooks/useCart";
 import useSquare from "../hooks/useSquare";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSearchPlus,
+  faChevronRight,
+  faChevronLeft,
+} from "@fortawesome/free-solid-svg-icons";
 
 const StorePage = () => {
   const { cartItems, addItem, updateQuantity } = useCart();
@@ -10,6 +16,7 @@ const StorePage = () => {
   const [imageLoadingByProduct, setImageLoadingByProduct] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lightboxImage, setLightboxImage] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -149,12 +156,12 @@ const StorePage = () => {
                       key={product.id}
                       className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden"
                     >
-                      <div className="aspect-[4/3] bg-gray-100 relative">
+                      <div className="aspect-[4/3] bg-gray-100 relative group">
                         {activeImage ? (
                           <img
                             src={activeImage}
                             alt={product.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             loading="lazy"
                             onLoad={() =>
                               setImageLoadingByProduct((current) => ({
@@ -192,9 +199,9 @@ const StorePage = () => {
                                   productImages.length,
                                 )
                               }
-                              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-gray-900 border border-gray-200 hover:bg-white transition-colors"
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-gray-600 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
                             >
-                              ←
+                              <FontAwesomeIcon icon={faChevronLeft} />
                             </button>
                             <button
                               type="button"
@@ -202,12 +209,24 @@ const StorePage = () => {
                               onClick={() =>
                                 goToNextImage(product.id, productImages.length)
                               }
-                              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-gray-900 border border-gray-200 hover:bg-white transition-colors"
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-gray-600  hover:bg-white transition-all opacity-0 group-hover:opacity-100"
                             >
-                              →
+                              <FontAwesomeIcon icon={faChevronRight} />
                             </button>
                           </>
                         )}
+
+                        <button
+                          type="button"
+                          onClick={() => setLightboxImage(activeImage)}
+                          className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all text-gray-600 bg-white/90 rounded-full h-8 w-8 flex items-center justify-center hover:bg-white cursor-pointer"
+                          aria-label="Enlarge image"
+                        >
+                          <FontAwesomeIcon
+                            icon={faSearchPlus}
+                            className="text-sm"
+                          />
+                        </button>
                       </div>
                       <div className="p-6 text-left">
                         <h2 className="text-xl font-semibold text-gray-900 mb-2">
@@ -276,6 +295,19 @@ const StorePage = () => {
           </div>
         </div>
       </div>
+
+      {lightboxImage && (
+        <div
+          className="fixed inset-0  bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setLightboxImage(null)}
+        >
+          <img
+            src={lightboxImage}
+            alt="Enlarged view"
+            className="max-w-[90vw] max-h-[90vh] object-contain"
+          />
+        </div>
+      )}
     </>
   );
 };
