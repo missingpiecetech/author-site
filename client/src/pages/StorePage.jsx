@@ -107,11 +107,11 @@ const StorePage = () => {
     <>
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <div className="mt-24 relative py-8 bg-white">
+        <div className="pt-24 relative py-8 bg-white">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-22 left-13 w-24 h-24 bg-secondary/10 rounded-full"></div>
+            <div className="absolute top-32 left-13 w-24 h-24 bg-secondary/10 rounded-full"></div>
             <div className="absolute top-41 right-22 w-32 h-32 bg-secondary/5 rounded-full"></div>
-            <div className="absolute bottom-28 left-1/4 w-28 h-28 bg-secondary/8 rounded-full"></div>
+            <div className="absolute top-5 left-1/4 w-28 h-28 bg-secondary/8 rounded-full"></div>
           </div>
           <div className="relative w-full text-center">
             <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-gray-900 leading-tight mb-6">
