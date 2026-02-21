@@ -1,7 +1,6 @@
 import { useCallback, useRef } from "react";
 
-const DEFAULT_API_BASE_URL =
-  import.meta.env.VITE_SQUARE_API_BASE_URL || "/api/square";
+const DEFAULT_API_BASE_URL = "/api/square";
 const DEFAULT_SUCCESS_PATH = "/checkout/success";
 
 const toError = async (response) => {
@@ -17,7 +16,7 @@ const toError = async (response) => {
   return new Error(message);
 };
 
-const mapCatalogProducts = (catalog = [], stockByVariation = {}) => {
+const mapCatalogProducts = (catalog = []) => {
   const imageById = new Map(
     catalog
       .filter((obj) => obj.type === "IMAGE")
@@ -27,7 +26,11 @@ const mapCatalogProducts = (catalog = [], stockByVariation = {}) => {
   return catalog
     .filter(
       (item) =>
-        item.type === "ITEM" && item.itemData?.ecom_visibility === "VISIBLE",
+        item.type === "ITEM" &&
+        item.itemData?.isArchived !== true &&
+        item.isDeleted !== true &&
+        item.itemData?.ecom_visibility !== "HIDDEN" &&
+        item.itemData?.ecom_visibility !== "UNINDEXED",
     )
     .map((item) => {
       const itemData = item.itemData || {};
@@ -48,8 +51,6 @@ const mapCatalogProducts = (catalog = [], stockByVariation = {}) => {
         featureImage: featureImage || null,
         images,
         price: Number(priceInCents) / 100,
-        stock: stockByVariation[variationId] || 0,
-        available: (stockByVariation[variationId] || 0) > 0,
         variationId,
       };
     });
@@ -61,7 +62,6 @@ const useSquare = (options = {}) => {
     successPath = DEFAULT_SUCCESS_PATH,
   } = options;
   const productsRef = useRef([]);
-  const inventoryRef = useRef({});
 
   const request = useCallback(
     async (path, init = {}) => {
@@ -81,69 +81,42 @@ const useSquare = (options = {}) => {
         return null;
       }
 
+      const responseContentType = response.headers.get("content-type") || "";
+      if (!responseContentType.includes("application/json")) {
+        throw new Error(
+          "Square API returned a non-JSON response. Verify your local Square API route is running.",
+        );
+      }
+
       return response.json();
     },
     [apiBaseUrl],
   );
-
-  const getInventory = useCallback(async () => {
-    if (Object.keys(inventoryRef.current).length > 0) {
-      return inventoryRef.current;
-    }
-
-    const data = await request("/inventory");
-    const counts = data?.counts || data || [];
-
-    const stockByVariation = {};
-    counts.forEach((count) => {
-      if (!count?.catalogObjectId) return;
-      stockByVariation[count.catalogObjectId] =
-        parseInt(count.quantity, 10) || 0;
-    });
-
-    inventoryRef.current = stockByVariation;
-    return inventoryRef.current;
-  }, [request]);
 
   const getProducts = useCallback(async () => {
     if (productsRef.current.length > 0) {
       return productsRef.current;
     }
 
-    const [inventory, productData] = await Promise.all([
-      getInventory(),
-      request("/catalog"),
-    ]);
-
-    if (Array.isArray(productData?.products)) {
-      productsRef.current = productData.products;
-      return productsRef.current;
-    }
+    const productData = await request("/catalog");
 
     const catalog = productData?.objects || [];
-    productsRef.current = mapCatalogProducts(catalog, inventory);
+    productsRef.current = mapCatalogProducts(catalog);
     return productsRef.current;
-  }, [getInventory, request]);
+  }, [request]);
 
   const getProductById = useCallback(
     async (productId) => {
-      const [allProducts, stockByVariation] = await Promise.all([
-        getProducts(),
-        getInventory(),
-      ]);
+      const allProducts = await getProducts();
       const product = allProducts.find((item) => item.id === productId) || null;
 
       const relatedProducts = allProducts
-        .filter(
-          (item) =>
-            item.id !== productId &&
-            (stockByVariation[item.variationId] || 0) > 0,
-        )
+        .filter((item) => item.id !== productId)
         .slice(0, 3);
 
       return { product, relatedProducts };
     },
-    [getInventory, getProducts],
+    [getProducts],
   );
 
   const createCheckoutLink = useCallback(
@@ -209,7 +182,6 @@ const useSquare = (options = {}) => {
 
   return {
     getProducts,
-    getInventory,
     getProductById,
     createCheckoutLink,
     createPickupOrder,

@@ -1,18 +1,35 @@
 import { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import useCart from "../hooks/useCart";
+import useSquare from "../hooks/useSquare";
 
 const ShoppingCart = () => {
   const { cartItems, totalItems, removeItem } = useCart();
+  const { createCheckoutLink } = useSquare();
   const [open, setOpen] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
 
-  const onCheckout = () => {
-    alert("Checkout clicked!");
+  const onCheckout = async () => {
+    if (!cartItems.length || isCheckingOut) {
+      return;
+    }
+
+    setIsCheckingOut(true);
+    setCheckoutError("");
+
+    try {
+      const checkoutUrl = await createCheckoutLink(cartItems);
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      setCheckoutError(error.message || "Unable to start checkout.");
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -53,11 +70,15 @@ const ShoppingCart = () => {
                 <span>Total:</span>
                 <span>${total.toFixed(2)}</span>
               </div>
+              {checkoutError && (
+                <p className="text-sm text-red-600 mb-3">{checkoutError}</p>
+              )}
               <button
                 onClick={onCheckout}
-                className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition cursor-pointer"
+                disabled={isCheckingOut}
+                className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Checkout
+                {isCheckingOut ? "Redirecting..." : "Checkout"}
               </button>
             </>
           )}

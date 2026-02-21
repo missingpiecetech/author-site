@@ -1,8 +1,54 @@
-import ShoppingCart from "../components/ShoppingCart";
+import { useEffect, useState } from "react";
 import useCart from "../hooks/useCart";
+import useSquare from "../hooks/useSquare";
 
 const StorePage = () => {
   const { addItem } = useCart();
+  const { getProducts } = useSquare();
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const fetchedProducts = await getProducts();
+        if (isMounted) {
+          setProducts(Array.isArray(fetchedProducts) ? fetchedProducts : []);
+        }
+      } catch (fetchError) {
+        if (isMounted) {
+          setError(fetchError.message || "Unable to load store products.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [getProducts]);
+
+  const onAddToCart = (product) => {
+    addItem({
+      id: product.id,
+      variationId: product.variationId,
+      name: product.title,
+      title: product.title,
+      price: product.price,
+      image: product.featureImage,
+    });
+  };
 
   return (
     <>
@@ -19,58 +65,73 @@ const StorePage = () => {
               Book <span className="text-secondary">Store</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Coming Soon: Explore and purchase my latest works and exclusive
-              merchandise right here.
+              Explore and purchase products directly from the Square store.
             </p>
           </div>
         </div>
 
-        {/* Crownfall */}
-        <div
-          className=" py-20 px-4 sm:px-6 lg:px-8 relative"
-          style={{
-            backgroundImage: "url('../src/assets/crownfall_cover.jpeg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/50 pointer-events-none"></div>
-          <div className="max-w-7xl mx-auto relative bg-gray-50 border border-gray-200 rounded-3xl p-8 lg:p-10 shadow-xl text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Crownfall Series
-            </h2>
-            <p className="text-gray-700 mb-8">
-              Dive into the epic fantasy world of Crownfall, where magic,
-              intrigue, and adventure await. Available in paperback and eBook
-              formats.
-            </p>
-            <div className="space-x-4">
-              <button
-                className="inline-block bg-secondary text-white px-6 py-3 rounded-full font-semibold hover:bg-secondary-dark transition-colors"
-                onClick={() =>
-                  addItem({
-                    id: "paperback",
-                    name: "Crownfall Paperback",
-                    price: 19.99,
-                  })
-                }
-              >
-                Buy Paperback
-              </button>
-              <button
-                className="inline-block bg-secondary/10 text-secondary px-6 py-3 rounded-full font-semibold hover:bg-secondary/20 transition-colors"
-                onClick={() =>
-                  addItem({
-                    id: "ebook",
-                    name: "Crownfall Hardback",
-                    price: 24.99,
-                  })
-                }
-              >
-                Buy Hardback
-              </button>
-            </div>
+        <div className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            {isLoading && (
+              <p className="text-center text-gray-600">Loading products...</p>
+            )}
+
+            {!isLoading && error && (
+              <p className="text-center text-red-600">{error}</p>
+            )}
+
+            {!isLoading && !error && products.length === 0 && (
+              <p className="text-center text-gray-600">
+                No products are currently available.
+              </p>
+            )}
+
+            {!isLoading && !error && products.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {products.map((product) => (
+                  <article
+                    key={product.id}
+                    className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden"
+                  >
+                    <div className="aspect-[4/3] bg-gray-100">
+                      {product.featureImage ? (
+                        <img
+                          src={product.featureImage}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        {product.title}
+                      </h2>
+                      <p className="text-gray-600 text-sm mb-4 min-h-10">
+                        {product.shortDescription ||
+                          "No description available."}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-gray-900">
+                          ${product.price.toFixed(2)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onAddToCart(product)}
+                          className="inline-block bg-secondary text-white px-4 py-2 rounded-full font-semibold hover:bg-secondary-dark transition-colors"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
