@@ -128,6 +128,7 @@ const useSquare = (options = {}) => {
 
       const payload = {
         items: items.map((item) => ({
+          itemId: item.id,
           variationId: item.variationId,
           quantity: item.quantity,
           title: item.title || item.name,

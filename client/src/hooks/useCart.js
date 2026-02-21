@@ -21,6 +21,17 @@ const useCart = create((set, get) => ({
     })),
   totalItems: () =>
     get().cartItems.reduce((total, item) => total + item.quantity, 0),
+  updateQuantity: (itemId, newQuantity) => {
+    if (newQuantity < 1) {
+      get().removeItem(itemId);
+    } else {
+      set((state) => ({
+        cartItems: state.cartItems.map((item) =>
+          item.id === itemId ? { ...item, quantity: newQuantity } : item,
+        ),
+      }));
+    }
+  },
 }));
 
 export default useCart;
