@@ -3,7 +3,7 @@ import useCart from "../hooks/useCart";
 import useSquare from "../hooks/useSquare";
 
 const StorePage = () => {
-  const { addItem } = useCart();
+  const { cartItems, addItem, updateQuantity } = useCart();
   const { getProducts } = useSquare();
   const [products, setProducts] = useState([]);
   const [activeImageByProduct, setActiveImageByProduct] = useState({});
@@ -52,6 +52,11 @@ const StorePage = () => {
     });
   };
 
+  const getCartQuantity = (productId) => {
+    const cartItem = cartItems.find((item) => item.id === productId);
+    return cartItem?.quantity || 0;
+  };
+
   const getProductImages = (product) => {
     const allImages = [product.featureImage, ...(product.images || [])].filter(
       Boolean,
@@ -95,7 +100,7 @@ const StorePage = () => {
     <>
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <div className="mt-24 relative py-32 bg-white">
+        <div className="mt-24 relative py-8 bg-white">
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-22 left-13 w-24 h-24 bg-secondary/10 rounded-full"></div>
             <div className="absolute top-41 right-22 w-32 h-32 bg-secondary/5 rounded-full"></div>
@@ -204,25 +209,63 @@ const StorePage = () => {
                           </>
                         )}
                       </div>
-                      <div className="p-6">
+                      <div className="p-6 text-left">
                         <h2 className="text-xl font-semibold text-gray-900 mb-2">
                           {product.title}
                         </h2>
-                        <p className="text-gray-600 text-sm mb-4 min-h-10">
-                          {product.shortDescription ||
-                            "No description available."}
-                        </p>
+                        <p
+                          className="text-gray-600 text-sm mb-4 min-h-10"
+                          dangerouslySetInnerHTML={{
+                            __html: product.description
+                              ? product.description
+                              : "<em>No description available.</em>",
+                          }}
+                        />
                         <div className="flex items-center justify-between">
                           <span className="text-lg font-bold text-gray-900">
                             ${product.price.toFixed(2)}
                           </span>
-                          <button
-                            type="button"
-                            onClick={() => onAddToCart(product)}
-                            className="inline-block bg-secondary text-white px-4 py-2 rounded-full font-semibold hover:bg-secondary-dark transition-colors"
-                          >
-                            Add to Cart
-                          </button>
+                          {getCartQuantity(product.id) > 0 ? (
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateQuantity(
+                                    product.id,
+                                    getCartQuantity(product.id) - 1,
+                                  )
+                                }
+                                className="w-8 h-8 rounded-full bg-white text-secondary border border-secondary/25 hover:border-secondary/50 font-bold transition-colors"
+                                aria-label={`Decrease quantity of ${product.title}`}
+                              >
+                                −
+                              </button>
+                              <span className="w-6 text-center font-semibold text-secondary-dark">
+                                {getCartQuantity(product.id)}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateQuantity(
+                                    product.id,
+                                    getCartQuantity(product.id) + 1,
+                                  )
+                                }
+                                className="w-8 h-8 rounded-full bg-secondary text-white hover:bg-secondary-dark font-bold transition-colors"
+                                aria-label={`Increase quantity of ${product.title}`}
+                              >
+                                +
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => onAddToCart(product)}
+                              className="inline-block bg-secondary text-white px-4 py-2 rounded-full font-semibold hover:bg-secondary-dark transition-colors"
+                            >
+                              Add to Cart
+                            </button>
+                          )}
                         </div>
                       </div>
                     </article>

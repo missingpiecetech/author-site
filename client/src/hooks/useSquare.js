@@ -46,7 +46,6 @@ const mapCatalogProducts = (catalog = []) => {
       return {
         id: item.id,
         title: itemData.name || "Unnamed Product",
-        shortDescription: itemData.description?.slice(0, 150) || "",
         description: itemData.descriptionHtml || "",
         featureImage: featureImage || null,
         images,

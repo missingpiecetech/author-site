@@ -81,28 +81,26 @@ const ShoppingCart = () => {
 
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
                       <div className="flex items-center gap-2">
-                        {item.quantity === 1 ? (
-                          <button
-                            onClick={() => removeItem(item.id)}
-                            className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
-                            aria-label={`Remove ${item.name} from cart`}
-                          >
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="text-gray-600"
-                            />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
-                            className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
-                            aria-label={`Decrease quantity of ${item.name}`}
-                          >
-                            −
-                          </button>
-                        )}
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors h-6 w-6"
+                          aria-label={`Remove ${item.name} from cart`}
+                        >
+                          {item.quantity === 1 ? (
+                            <span className="flex items-center justify-center w-full h-full">
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="text-gray-600"
+                                size="xs"
+                              />
+                            </span>
+                          ) : (
+                            "−"
+                          )}
+                        </button>
+
                         <span className="w-6 text-center font-semibold text-gray-900">
                           {item.quantity}
                         </span>
@@ -110,7 +108,7 @@ const ShoppingCart = () => {
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)
                           }
-                          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                          className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors h-6 w-6 font-bold"
                           aria-label={`Increase quantity of ${item.name}`}
                         >
                           +
@@ -121,9 +119,13 @@ const ShoppingCart = () => {
                 </div>
               ))}
             </div>
-            <div className="flex justify-between items-center font-semibold mb-4 text-gray-900">
-              <span>Total:</span>
+            <div className="flex justify-between items-center font-semibold text-gray-900">
+              <span>Subtotal:</span>
               <span>${total.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center text-gray-600 text-sm">
+              <span>Tax/Shipping:</span>
+              <span>Calculated at checkout</span>
             </div>
             {checkoutError && (
               <p className="text-sm text-red-600 mb-3">{checkoutError}</p>
@@ -131,7 +133,7 @@ const ShoppingCart = () => {
             <button
               onClick={onCheckout}
               disabled={isCheckingOut}
-              className="w-full bg-secondary text-white py-2.5 rounded-full hover:bg-secondary-dark transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
+              className="w-full mt-4  bg-secondary text-white py-2.5 rounded-full hover:bg-secondary-dark transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
             >
               {isCheckingOut ? "Redirecting..." : "Checkout"}
             </button>
