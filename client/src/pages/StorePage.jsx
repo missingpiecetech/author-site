@@ -154,9 +154,17 @@ const StorePage = () => {
                   return (
                     <article
                       key={product.id}
-                      className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden"
+                      className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 group relative flex flex-col"
                     >
-                      <div className="aspect-[4/3] bg-gray-100 relative group">
+                      {/* PreOrder Badge */}
+                      <div className="absolute -top-6 -right-6 z-20">
+                        <span
+                          className={`inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full text-lg font-bold shadow-xl`}
+                        >
+                          Preorder
+                        </span>
+                      </div>
+                      <div className="aspect-[4/3] bg-gray-100 relative group overflow-hidden ">
                         {activeImage ? (
                           <img
                             src={activeImage}
@@ -228,24 +236,29 @@ const StorePage = () => {
                           />
                         </button>
                       </div>
-                      <div className="p-6 text-left">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                          {product.title}
-                        </h2>
-                        <p
-                          className="text-gray-600 text-sm mb-4 min-h-10"
-                          dangerouslySetInnerHTML={{
-                            __html: product.description
-                              ? product.description
-                              : "<em>No description available.</em>",
-                          }}
-                        />
-                        <div className="flex items-center justify-between">
+                      <div className="p-6 text-left flex flex-col flex-1">
+                        <div className="flex-1">
+                          <div>
+                            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                              {product.title}
+                            </h2>
+                            <p
+                              className="text-gray-600 text-sm mb-4 min-h-10"
+                              dangerouslySetInnerHTML={{
+                                __html: product.description
+                                  ? product.description
+                                  : "<em>No description available.</em>",
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-auto">
                           <span className="text-lg font-bold text-gray-900">
                             ${product.price.toFixed(2)}
                           </span>
                           {getCartQuantity(product.id) > 0 ? (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 py-1">
                               <button
                                 type="button"
                                 onClick={() =>
