@@ -18,18 +18,18 @@ const SOCIAL_LINKS = [
     handle: "@AuthorAdjacent",
   },
   {
-    platform: "X",
-    url: "https://x.com/Michael_Vadney",
-    icon: <FontAwesomeIcon icon={faXTwitter} />,
-    color: "hover:bg-gray-500",
-    handle: "@Michael_Vadney",
-  },
-  {
     platform: "Instagram",
     url: "https://www.instagram.com/michael_vadney/",
     icon: <FontAwesomeIcon icon={faInstagram} />,
     color: "hover:bg-purple-500",
     handle: "@michael_vadney",
+  },
+  {
+    platform: "X",
+    url: "https://x.com/Michael_Vadney",
+    icon: <FontAwesomeIcon icon={faXTwitter} />,
+    color: "hover:bg-gray-500",
+    handle: "@Michael_Vadney",
   },
   // Add these back later if desired
   // {
