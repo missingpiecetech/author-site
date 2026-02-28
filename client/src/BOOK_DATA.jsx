@@ -63,7 +63,7 @@ export const BOOKS = [
     ],
     release: "April 2026",
     status: BOOK_STATUS.PRE_ORDER,
-    genres: ["Nobledark Fantasy", "Political Intrigue", "New Adult"],
+    genres: ["Nobledark Fantasy", "Action & Adventure", "Political Intrigue"],
     icon: <GiCrystalGrowth />,
     cover: "/src/assets/crownfall_cover.jpg",
     link: "/books#crownfall", // Should link to the book page in the store
