@@ -26,8 +26,9 @@ export async function onRequestGet(context) {
   });
 
   try {
+    const page = await client.catalog.list({ types: "ITEM,IMAGE" });
     const objects = [];
-    for await (const obj of client.catalog.list({ types: "ITEM,IMAGE" })) {
+    for await (const obj of page) {
       objects.push(obj);
     }
 

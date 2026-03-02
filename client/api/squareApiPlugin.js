@@ -73,10 +73,11 @@ export const createSquareApiPlugin = (env) => {
           const path = (req.url || "").split("?")[0];
 
           if (req.method === "GET" && path === "/catalog") {
-            const objects = [];
-            for await (const obj of squareClient.catalog.list({
+            const page = await squareClient.catalog.list({
               types: "ITEM,IMAGE",
-            })) {
+            });
+            const objects = [];
+            for await (const obj of page) {
               objects.push(obj);
             }
             sendJson(res, 200, { objects });
