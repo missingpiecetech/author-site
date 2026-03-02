@@ -5,6 +5,8 @@ const useCart = create(
   persist(
     (set, get) => ({
       cartItems: [],
+      isCartOpen: false,
+      setCartOpen: (open) => set({ isCartOpen: open }),
       addItem: (item) =>
         set((state) => {
           const existingItem = state.cartItems.find((i) => i.id === item.id);

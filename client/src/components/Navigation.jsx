@@ -1,11 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { GiCrystalGrowth } from "react-icons/gi";
+import { FaShoppingCart } from "react-icons/fa";
 import ShoppingCart from "./ShoppingCart";
+import useCart from "../hooks/useCart";
 
 const Navigation = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { totalItems, setCartOpen } = useCart();
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -82,15 +85,15 @@ const Navigation = () => {
             >
               Press Kit
             </Link>
-
-            <ShoppingCart />
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="flex items-center gap-2">
+            <ShoppingCart />
+
+            {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-secondary focus:outline-none transition-colors p-2 rounded-lg hover:bg-gray-100"
+              className="md:hidden text-gray-700 hover:text-secondary focus:outline-none transition-colors p-2 rounded-lg hover:bg-gray-100"
               aria-label="Toggle menu"
             >
               <svg
@@ -137,6 +140,17 @@ const Navigation = () => {
                   {item.label}
                 </Link>
               ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setCartOpen(true);
+                }}
+                className="text-secondary hover:bg-secondary/5 transition-all duration-200 flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg text-base font-semibold"
+              >
+                <FaShoppingCart className="text-lg" />
+                Cart ({totalItems()})
+              </button>
             </div>
           </div>
         )}

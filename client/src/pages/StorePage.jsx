@@ -6,10 +6,11 @@ import {
   faSearchPlus,
   faChevronRight,
   faChevronLeft,
+  faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 
 const StorePage = () => {
-  const { cartItems, addItem, updateQuantity } = useCart();
+  const { cartItems, addItem, updateQuantity, setCartOpen } = useCart();
   const { getProducts } = useSquare();
   const [products, setProducts] = useState([]);
   const [activeImageByProduct, setActiveImageByProduct] = useState({});
@@ -287,6 +288,15 @@ const StorePage = () => {
                                 aria-label={`Increase quantity of ${product.title}`}
                               >
                                 +
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setCartOpen(true)}
+                                className="ml-1 w-8 h-8 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors flex items-center justify-center"
+                                aria-label="Go to cart"
+                                title="Go to Cart"
+                              >
+                                <FontAwesomeIcon icon={faShoppingCart} className="text-sm" />
                               </button>
                             </div>
                           ) : (
