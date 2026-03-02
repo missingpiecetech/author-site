@@ -1,10 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faStar,
-  faMapMarkerAlt,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+import { faStar, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Socials from "../components/Socials";
+import authorPic from "../assets/author-pic.jpeg";
 
 const AboutPage = () => {
   return (
@@ -104,26 +101,11 @@ const AboutPage = () => {
           {/* Profile Image */}
           <div className="lg:col-span-2">
             <div className="relative group">
-              <div className="aspect-square bg-secondary rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
-                <div className="text-center z-10">
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    className="text-gray-900 text-8xl mb-4"
-                  />
-                  <p className="text-gray-900 font-bold text-xl">
-                    Michael Vadney
-                  </p>
-                  <p className="text-gray-900/80 text-sm mt-2">
-                    Author Photo Coming Soon
-                  </p>
-                </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-4 right-4 w-12 h-12 border border-white/20 rounded-full flex items-center justify-center">
-                  <div className="w-6 h-6 bg-white/20 rounded-full"></div>
-                </div>
-                <div className="absolute bottom-4 left-4 w-8 h-8 border border-white/20 rounded-lg rotate-45"></div>
-              </div>
+              <img
+                src={authorPic}
+                alt="Michael Vadney"
+                className="w-full h-full object-cover p-3 rounded-3xl"
+              />
             </div>
           </div>
         </div>

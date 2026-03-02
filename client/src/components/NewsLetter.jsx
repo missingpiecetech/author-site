@@ -38,9 +38,11 @@ const NewsLetter = () => {
             <button
               id={`subscribe-button`}
               className="subscribe-button w-full cursor-pointer bg-secondary hover:bg-secondary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              onClick={() => ml("show", "oQiRIg", true)}
             >
               Subscribe for Updates
             </button>
+
             <p className="text-xs text-gray-500">
               No spam, unsubscribe at any time. Updates only when there's real
               news to share.

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { GiCrystalGrowth } from "react-icons/gi";
-// import ShoppingCart from "./ShoppingCart";
+import ShoppingCart from "./ShoppingCart";
 
 const Navigation = () => {
   const location = useLocation();
@@ -12,7 +12,7 @@ const Navigation = () => {
     { path: "/books", label: "Books" },
     { path: "/podcast", label: "Podcast" },
     { path: "/about", label: "About" },
-    // { path: "/store", label: "Store", },
+    { path: "/store", label: "Store" },
     { path: "/contact", label: "Contact" },
   ];
 
@@ -73,7 +73,17 @@ const Navigation = () => {
                 )}
               </Link>
             ))}
-            {/* <ShoppingCart /> */}
+            <Link
+              to={
+                "https://drive.google.com/drive/folders/14IFIoZJv-jHsS2bXliF1bx5kUXnI9_bC?usp=sharing"
+              }
+              target="_blank"
+              className={`text-gray-700 hover:text-secondary hover:bg-secondary/5 transition-all duration-200 px-6 py-3 rounded-full text-sm font-semibold tracking-wide relative group `}
+            >
+              Press Kit
+            </Link>
+
+            <ShoppingCart />
           </div>
 
           {/* Mobile menu button */}

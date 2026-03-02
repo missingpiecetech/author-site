@@ -1,5 +1,7 @@
 import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
 
+import crownfallCover from "/src/assets/crownfall_cover.jpg"
+
 export const BOOK_STATUS = {
   IN_DEVELOPMENT: "Worldbuilding",
   OUTLINE_STAGE: "Outlining",
@@ -17,28 +19,26 @@ export const BOOKS = [
     subtitle: "Trust is the hardest Lesson",
     blurb: (
       <>
-        Nearly a decade under the empire’s grip has left Burunt a troubled land,
-        its unrest simmering beneath a fragile surface.
+        Nearly a decade under the empire’s grip has left Burunt a troubled land.
         <br />
         <br />
         Kyndel Heim knows the truth behind the Viceroy’s rise to power. After
-        years of torture and experimentation, his only goal is vengeance. But to
-        master his powers he needs a mentor, one that won’t kill him first.
+        years of torture, his only goal is vengeance, but to master his powers
+        he needs a mentor, one that won’t kill him first.
         <br />
         <br />
-        Major Jelert Egarro travelled to Burunt to build a better world. But in
-        the wrong hands, his skills become a tool of destruction, and those
-        hands are everywhere. Jelert must decide whether to stay true to his
-        ideals or let others dictate his path.
+        Major Jelert Egarro came to Burunt to build something better. Instead,
+        his talents have become weapons in the wrong hands—and those hands are
+        everywhere. He must choose between his ideals or survival.
         <br />
         <br />
-        Lady Amara Khar rose fast when her once-powerful family fell. Sharp and
-        ruthless, she’s kept her house alive through illicit trade, but clawing
-        back power in Burunt means making enemies and unsavory friends.
+        Lady Amara Khar must renew her family’s legacy. Sharp and ruthless,
+        she’s kept her house alive through smuggling and shadow deals, but
+        reclaiming power means making allies as dangerous as her enemies.
         <br />
         <br />
-        In the fight for power, justice, and survival, everyone must decide: who
-        they will become?
+        In the struggle for power, justice, and survival, each of them must
+        decide who they’re willing to become.
       </>
     ),
     shortBlurb:
@@ -64,10 +64,10 @@ export const BOOKS = [
       </>,
     ],
     release: "April 2026",
-    status: BOOK_STATUS.EDITING_STAGE,
-    genres: ["Nobledark Fantasy", "Political Intrigue", "New Adult"],
+    status: BOOK_STATUS.PRE_ORDER,
+    genres: ["Nobledark Fantasy", "Action & Adventure", "Political Intrigue"],
     icon: <GiCrystalGrowth />,
-    // cover: "/src/assets/crownfall_cover.jpg",
+    cover: crownfallCover,
     link: "/books#crownfall", // Should link to the book page in the store
   },
   {

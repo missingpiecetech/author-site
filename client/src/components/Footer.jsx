@@ -29,6 +29,14 @@ const Footer = () => (
         <a href="/contact" className="hover:text-secondary">
           Contact
         </a>
+        <a
+          href="https://drive.google.com/drive/folders/14IFIoZJv-jHsS2bXliF1bx5kUXnI9_bC?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-secondary"
+        >
+          Press Kit
+        </a>
       </nav>
       <div className="flex gap-4">
         {SOCIAL_LINKS.map((social) => (

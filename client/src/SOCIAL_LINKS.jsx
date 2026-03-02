@@ -3,8 +3,8 @@ import {
   faInstagram,
   // Add these back later if desired
   // faTiktok,
-  // faThreads,
-  // faBluesky,
+  faThreads,
+  faBluesky,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,18 +18,18 @@ const SOCIAL_LINKS = [
     handle: "@AuthorAdjacent",
   },
   {
-    platform: "X",
-    url: "https://x.com/Michael_Vadney",
-    icon: <FontAwesomeIcon icon={faXTwitter} />,
-    color: "hover:bg-gray-500",
-    handle: "@Michael_Vadney",
-  },
-  {
     platform: "Instagram",
     url: "https://www.instagram.com/michael_vadney/",
     icon: <FontAwesomeIcon icon={faInstagram} />,
     color: "hover:bg-purple-500",
     handle: "@michael_vadney",
+  },
+  {
+    platform: "X",
+    url: "https://x.com/Michael_Vadney",
+    icon: <FontAwesomeIcon icon={faXTwitter} />,
+    color: "hover:bg-gray-500",
+    handle: "@Michael_Vadney",
   },
   // Add these back later if desired
   // {
@@ -39,20 +39,20 @@ const SOCIAL_LINKS = [
   //   color: "hover:bg-pink-500",
   //   handle: "@michael_vadney",
   // },
-  // {
-  //   platform: "Bluesky",
-  //   url: "https://bsky.app/profile/michaelvadney.bsky.social",
-  //   icon: <FontAwesomeIcon icon={faBluesky} />,
-  //   color: "hover:bg-sky-500",
-  //   handle: "@michaelvadney.bsky.social",
-  // },
-  // {
-  //   platform: "Threads",
-  //   url: "https://www.threads.com/@michael_vadney",
-  //   icon: <FontAwesomeIcon icon={faThreads} />,
-  //   color: "hover:bg-yellow-500",
-  //   handle: "@michael_vadney",
-  // },
+  {
+    platform: "Bluesky",
+    url: "https://bsky.app/profile/michaelvadney.bsky.social",
+    icon: <FontAwesomeIcon icon={faBluesky} />,
+    color: "hover:bg-sky-500",
+    handle: "@michaelvadney.bsky.social",
+  },
+  {
+    platform: "Threads",
+    url: "https://www.threads.com/@michael_vadney",
+    icon: <FontAwesomeIcon icon={faThreads} />,
+    color: "hover:bg-yellow-500",
+    handle: "@michael_vadney",
+  },
 ];
 
 export default SOCIAL_LINKS;

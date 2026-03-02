@@ -142,16 +142,16 @@ const BooksPage = () => {
                       </div>
                     )}
                     {/* Action Buttons */}
-                    {book.status === BOOK_STATUS.RELEASED && (
+                    {(book.status === BOOK_STATUS.RELEASED ||
+                      book.status === BOOK_STATUS.PRE_ORDER) && (
                       <div className="flex flex-col sm:flex-row gap-6">
                         <button
-                          disabled
-                          className="bg-gray-200 text-gray-500 px-8 py-4 rounded-full cursor-not-allowed font-semibold transition-all duration-200 shadow-sm flex-1 sm:flex-none text-lg"
+                          className="inline-block bg-secondary text-white px-6 py-3 rounded-full font-semibold hover:bg-secondary-dark transition-colors cursor-pointer"
+                          onClick={() => (window.location.href = "/store")}
                         >
-                          Pre-order Coming Soon
-                        </button>
-                        <button className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-white px-8 py-4 rounded-full font-semibold transition-all duration-200 flex-1 sm:flex-none text-lg transform hover:scale-105 shadow-lg hover:shadow-xl">
-                          Add to Wishlist
+                          {book.status === BOOK_STATUS.PRE_ORDER
+                            ? "Pre-order Now"
+                            : "Buy Now"}
                         </button>
                       </div>
                     )}
