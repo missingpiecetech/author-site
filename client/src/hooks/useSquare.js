@@ -71,6 +71,7 @@ const useSquare = (options = {}) => {
         },
         ...init,
       });
+      console.log(response)
 
       if (!response.ok) {
         throw await toError(response);
@@ -83,7 +84,7 @@ const useSquare = (options = {}) => {
       const responseContentType = response.headers.get("content-type") || "";
       if (!responseContentType.includes("application/json")) {
         throw new Error(
-          "Square API returned a non-JSON response. Verify your local Square API route is running.",
+          `Square API returned a non-JSON response: ${response.status} ${response.statusText}`,
         );
       }
 

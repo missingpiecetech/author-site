@@ -1,5 +1,7 @@
 import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
 
+import crownfallCover from "/src/assets/crownfall_cover.jpg"
+
 export const BOOK_STATUS = {
   IN_DEVELOPMENT: "Worldbuilding",
   OUTLINE_STAGE: "Outlining",
@@ -65,7 +67,7 @@ export const BOOKS = [
     status: BOOK_STATUS.PRE_ORDER,
     genres: ["Nobledark Fantasy", "Action & Adventure", "Political Intrigue"],
     icon: <GiCrystalGrowth />,
-    cover: "/src/assets/crownfall_cover.jpg",
+    cover: crownfallCover,
     link: "/books#crownfall", // Should link to the book page in the store
   },
   {

@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Socials from "../components/Socials";
+import authorPic from "../assets/author-pic.jpeg";
 
 const AboutPage = () => {
   return (
@@ -101,7 +102,7 @@ const AboutPage = () => {
           <div className="lg:col-span-2">
             <div className="relative group">
               <img
-                src="/src/assets/author-pic.jpeg"
+                src={authorPic}
                 alt="Michael Vadney"
                 className="w-full h-full object-cover p-3 rounded-3xl"
               />
