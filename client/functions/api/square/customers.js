@@ -5,17 +5,23 @@ const resolveEnvironment = (value) =>
     ? SquareEnvironment.Production
     : SquareEnvironment.Sandbox;
 
+const jsonResponse = (data, status = 200) =>
+  new Response(
+    JSON.stringify(data, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
+    { status, headers: { "Content-Type": "application/json" } },
+  );
+
 export async function onRequestPost(context) {
   const { env, request } = context;
   const token = env.SQUARE_ACCESS_TOKEN || "";
 
   if (!token) {
-    return Response.json(
+    return jsonResponse(
       {
         error:
           "Square is not configured. Set SQUARE_ACCESS_TOKEN and SQUARE_ENVIRONMENT.",
       },
-      { status: 500 },
+      500,
     );
   }
 
@@ -37,12 +43,12 @@ export async function onRequestPost(context) {
       customerResponse?.result?.customer ||
       null;
 
-    return Response.json({ customer });
+    return jsonResponse({ customer });
   } catch (error) {
     console.error("Square customer error:", error);
-    return Response.json(
+    return jsonResponse(
       { error: error?.message || "Square API error" },
-      { status: 500 },
+      500,
     );
   }
 }

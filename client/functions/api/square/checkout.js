@@ -8,18 +8,24 @@ const resolveEnvironment = (value) =>
 const bigIntReplacer = (_, value) =>
   typeof value === "bigint" ? value.toString() : value;
 
+const jsonResponse = (data, status = 200) =>
+  new Response(JSON.stringify(data, bigIntReplacer), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+
 export async function onRequestPost(context) {
   const { env, request } = context;
   const token = env.SQUARE_ACCESS_TOKEN || "";
   const locationId = env.SQUARE_LOCATION_ID || "";
 
   if (!token || !locationId) {
-    return Response.json(
+    return jsonResponse(
       {
         error:
           "Square is not configured. Set SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, and SQUARE_ENVIRONMENT.",
       },
-      { status: 500 },
+      500,
     );
   }
 
@@ -57,18 +63,12 @@ export async function onRequestPost(context) {
       paymentLinkResponse?.result?.paymentLink ||
       null;
 
-    return new Response(
-      JSON.stringify(
-        { paymentLink, url: paymentLink?.url || null },
-        bigIntReplacer,
-      ),
-      { headers: { "Content-Type": "application/json" } },
-    );
+    return jsonResponse({ paymentLink, url: paymentLink?.url || null });
   } catch (error) {
     console.error("Square checkout error:", error);
-    return Response.json(
+    return jsonResponse(
       { error: error?.message || "Square API error" },
-      { status: 500 },
+      500,
     );
   }
 }
