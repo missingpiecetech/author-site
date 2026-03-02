@@ -53,6 +53,31 @@ The built files will be in the `dist` directory, ready for deployment.
 npm run preview
 ```
 
+## Square Store API
+
+The site integrates with the [Square API](https://developer.squareup.com/) to display store products, handle checkout, and create customers.
+
+### How it works
+
+There are **two implementations** of the `/api/square/*` endpoints:
+
+| Environment | Implementation | Location |
+|---|---|---|
+| Local development (`vite dev`) | Vite plugin middleware | `api/squareApiPlugin.js` |
+| Staging / Production (Cloudflare Pages) | Pages Functions | `functions/api/square/` |
+
+Both implementations share the same route structure and response shapes. The Vite plugin uses `configureServer`, which only runs during `vite dev`. Cloudflare Pages Functions handle requests in deployed environments.
+
+### Required environment variables
+
+Copy `.env.example` to `.env` and fill in your Square credentials:
+
+```bash
+cp .env.example .env
+```
+
+For Cloudflare Pages, set these same variables in the dashboard under **Settings → Environment variables**.
+
 ## Deployment
 
 This site is configured for deployment to **Cloudflare Pages**.
@@ -66,6 +91,7 @@ The site is built as a static single-page application and can be deployed to Clo
 - **Build command**: `cd client && npm install && npm run build`
 - **Build output directory**: `client/dist`
 - **Node version**: 20
+- **Compatibility flags**: `nodejs_compat` (required for Square SDK)
 
 The site can also be deployed to other static hosting services such as Vercel, Netlify, GitHub Pages, AWS S3 + CloudFront, or Azure Static Web Apps.
 

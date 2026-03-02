@@ -70,19 +70,20 @@ export const createSquareApiPlugin = (env) => {
         }
 
         try {
-          if (req.method === "GET" && req.url === "/catalog") {
-            const catalogResponse = await squareClient.catalog.list({
+          const path = (req.url || "").split("?")[0];
+
+          if (req.method === "GET" && path === "/catalog") {
+            const objects = [];
+            for await (const obj of squareClient.catalog.list({
               types: "ITEM,IMAGE",
-            });
-            const objects =
-              catalogResponse?.response?.objects ||
-              catalogResponse?.objects ||
-              [];
+            })) {
+              objects.push(obj);
+            }
             sendJson(res, 200, { objects });
             return;
           }
 
-          if (req.method === "POST" && req.url === "/checkout") {
+          if (req.method === "POST" && path === "/checkout") {
             const body = await readJsonBody(req);
             const items = Array.isArray(body.items) ? body.items : [];
 
@@ -126,7 +127,7 @@ export const createSquareApiPlugin = (env) => {
             return;
           }
 
-          if (req.method === "POST" && req.url === "/customers") {
+          if (req.method === "POST" && path === "/customers") {
             const body = await readJsonBody(req);
             const customerResponse = await squareClient.customers.create({
               givenName: body.givenName,
