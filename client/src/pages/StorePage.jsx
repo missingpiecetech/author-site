@@ -125,6 +125,16 @@ const StorePage = () => {
           </div>
         </div>
 
+        {/* USA Only Banner */}
+        <div className="bg-yellow-50 border-y border-yellow-200 py-4 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-center text-yellow-800 text-sm md:text-base">
+              <strong>Note:</strong> Products are currently only available for shipping within the USA. 
+              International availability coming soon via Amazon.
+            </p>
+          </div>
+        </div>
+
         <div className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {isLoading && (
