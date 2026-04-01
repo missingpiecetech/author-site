@@ -109,8 +109,11 @@ export const createSquareApiPlugin = (env) => {
                 },
                 checkoutOptions: {
                   redirectUrl: body.redirectUrl,
-                  askForShippingAddress:
-                    body.checkoutOptions?.askForShippingAddress !== false,
+                  askForShippingAddress: true,
+                  shippingFee: {
+                    name: "Shipping",
+                    charge: { amount: BigInt(599), currency: "USD" },
+                  },
                   squareMarketingOptIn: true,
                 },
               });

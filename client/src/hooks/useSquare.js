@@ -120,11 +120,8 @@ const useSquare = (options = {}) => {
   );
 
   const createCheckoutLink = useCallback(
-    async (items, checkoutOptions = {}) => {
-      const pickup = Boolean(checkoutOptions.pickup);
-      const redirectUrl =
-        checkoutOptions.redirectUrl ||
-        `${window.location.origin}${successPath}`;
+    async (items) => {
+      const redirectUrl = `${window.location.origin}${successPath}`;
 
       const payload = {
         items: items.map((item) => ({
@@ -135,9 +132,6 @@ const useSquare = (options = {}) => {
           price: item.price,
         })),
         redirectUrl,
-        checkoutOptions: {
-          askForShippingAddress: !pickup,
-        },
       };
 
       const data = await request("/checkout", {
@@ -154,11 +148,6 @@ const useSquare = (options = {}) => {
       return checkoutUrl;
     },
     [request, successPath],
-  );
-
-  const createPickupOrder = useCallback(
-    async (items) => createCheckoutLink(items, { pickup: true }),
-    [createCheckoutLink],
   );
 
   const createCustomer = useCallback(
@@ -185,7 +174,6 @@ const useSquare = (options = {}) => {
     getProducts,
     getProductById,
     createCheckoutLink,
-    createPickupOrder,
     createCustomer,
   };
 };

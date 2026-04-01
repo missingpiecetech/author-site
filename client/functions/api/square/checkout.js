@@ -50,11 +50,17 @@ export async function onRequestPost(context) {
 
     const paymentLinkResponse = await client.checkout.paymentLinks.create({
       idempotencyKey: `checkout-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      order: { locationId, lineItems },
+      order: {
+        locationId,
+        lineItems,
+      },
       checkoutOptions: {
         redirectUrl: body.redirectUrl,
-        askForShippingAddress:
-          body.checkoutOptions?.askForShippingAddress !== false,
+        askForShippingAddress: true,
+        shippingFee: {
+          name: "Shipping",
+          charge: { amount: BigInt(599), currency: "USD" },
+        },
       },
     });
 
