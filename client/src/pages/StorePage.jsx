@@ -108,8 +108,8 @@ const StorePage = () => {
     <>
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <div className="pt-24 relative py-8 bg-white">
-          <div className="absolute inset-0 overflow-hidden">
+        <div className="pt-24 relative py-8 bg-white overflow-visible">
+          <div className="absolute inset-0 overflow-visible">
             <div className="absolute top-32 left-13 w-24 h-24 bg-secondary/10 rounded-full"></div>
             <div className="absolute top-41 right-22 w-32 h-32 bg-secondary/5 rounded-full"></div>
             <div className="absolute top-5 left-1/4 w-28 h-28 bg-secondary/8 rounded-full"></div>
@@ -157,14 +157,6 @@ const StorePage = () => {
                       key={product.id}
                       className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 group relative flex flex-col"
                     >
-                      {/* PreOrder Badge */}
-                      <div className="absolute -top-6 -right-6 z-20">
-                        <span
-                          className={`inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full text-lg font-bold shadow-xl`}
-                        >
-                          Preorder
-                        </span>
-                      </div>
                       <div className="aspect-[4/3] bg-gray-100 relative group overflow-hidden ">
                         {activeImage ? (
                           <img
@@ -240,6 +232,9 @@ const StorePage = () => {
                       <div className="p-6 text-left flex flex-col flex-1">
                         <div className="flex-1">
                           <div>
+                            <span className="inline-block bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-md text-xs font-medium tracking-wide uppercase mb-2">
+                              Preorder
+                            </span>
                             <h2 className="text-xl font-semibold text-gray-900 mb-2">
                               {product.title}
                             </h2>

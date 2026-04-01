@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { BOOKS } from "../BOOK_DATA";
+import { BOOKS, BOOK_STATUS } from "../BOOK_DATA";
 import authorPic from "../assets/author-pic-square-close.jpeg";
 import authorAdjacentLogo from "../assets/logo_no_text.png";
 import crownfallBookTour from "../assets/crownfall-book-tour.jpeg";
@@ -31,7 +31,7 @@ const HomePage = () => {
         {/* Hero Content Side-by-Side */}
         <div className="relative flex flex-row flex-wrap items-center justify-around md:text-left">
           {/* Author Image */}
-          <div className="flex relative m-8 mt-40 mb-4 md:mt-8 md:m-24">
+          <div className="flex relative m-8 mt-40 mb-12 md:mt-8 md:m-24">
             <img
               src={authorPic}
               alt="Michael Vadney"
@@ -42,7 +42,7 @@ const HomePage = () => {
           </div>
           {/* Author Text */}
           <div
-            className="w-1/2 flex-1 space-y-1 text-center"
+            className="w-full md:w-1/2 flex-1 space-y-1 text-center px-6 md:px-0"
             data-aos="fade-left"
           >
             <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-gray-900 leading-tight">
@@ -70,8 +70,8 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        {/* Scroll Indicator - hidden on mobile */}
+        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
           <div className="w-6 h-10 border-2 border-secondary/30 rounded-full flex justify-center">
             <div className="w-1 h-3 bg-secondary/60 rounded-full mt-2"></div>
           </div>
@@ -79,7 +79,7 @@ const HomePage = () => {
       </div>
 
       <div className="flex flex-col gap-16 mb-32">
-        <section className="max-w-8xl mx-auto bg-gray-50">
+        <section className="max-w-8xl mx-auto bg-gray-50 mt-8 md:mt-0">
           <div className=" mx-auto px-8 lg:px-16">
             <div className=" gap-16 items-center">
               <div
@@ -133,7 +133,7 @@ const HomePage = () => {
                         </div>
                         <div className="lg:col-span-4 text-center lg:text-left space-y-6">
                           <div className="space-y-4">
-                            <span className="inline-block bg-gray-700 text-white px-6 py-2 rounded-full text-lg font-semibold">
+                            <span className={`inline-block px-3 py-1 rounded-md text-sm font-medium tracking-wide uppercase ${book.status === BOOK_STATUS.PRE_ORDER ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
                               {book.status}
                             </span>
                             <h3 className="text-4xl md:text-5xl font-bold text-gray-900">
@@ -175,7 +175,7 @@ const HomePage = () => {
         </section>
 
         {/* Author Adjacent Podcast Section */}
-        <section className=" bg-white">
+        <section className=" bg-white pt-8">
           <div className="max-w-full px-8 lg:px-16">
             <div className="max-w-7xl mx-auto">
               <div className="grid lg:grid-cols-2 gap-16 items-center">
