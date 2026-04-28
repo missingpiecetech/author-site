@@ -129,8 +129,9 @@ const StorePage = () => {
         <div className="bg-yellow-50 border-y border-yellow-200 py-4 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <p className="text-center text-yellow-800 text-sm md:text-base">
-              <strong>Note:</strong> Products are currently only available for shipping within the USA. 
-              International availability coming soon via Amazon.
+              <strong>Note:</strong> Products are currently only available for
+              shipping within the USA. International availability coming soon
+              via Amazon.
             </p>
           </div>
         </div>
@@ -242,9 +243,6 @@ const StorePage = () => {
                       <div className="p-6 text-left flex flex-col flex-1">
                         <div className="flex-1">
                           <div>
-                            <span className="inline-block bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-md text-xs font-medium tracking-wide uppercase mb-2">
-                              Preorder
-                            </span>
                             <h2 className="text-xl font-semibold text-gray-900 mb-2">
                               {product.title}
                             </h2>
@@ -301,7 +299,10 @@ const StorePage = () => {
                                 aria-label="Go to cart"
                                 title="Go to Cart"
                               >
-                                <FontAwesomeIcon icon={faShoppingCart} className="text-sm" />
+                                <FontAwesomeIcon
+                                  icon={faShoppingCart}
+                                  className="text-sm"
+                                />
                               </button>
                             </div>
                           ) : (
