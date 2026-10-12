@@ -450,11 +450,6 @@ describe("Crownfall edition toggles map to Square items by id", () => {
   });
 });
 
-// Issue #7: on the live site / and /contact scroll sideways at 390px. Those
-// routes are marked it.fails so the suite stays green while #7 is open, and
-// flips red (forcing the marker's removal) the moment #7 is fixed.
-const KNOWN_HORIZONTAL_SCROLL = new Set(["/", "/contact"]);
-
 const ROUTES = [
   "/",
   "/books",
@@ -465,10 +460,10 @@ const ROUTES = [
   "/checkout/success",
 ];
 
+// Issue #7: every route must fit a 390px phone, measured with animations live.
 describe("no horizontal scroll at 390px", () => {
   for (const route of ROUTES) {
-    const test = KNOWN_HORIZONTAL_SCROLL.has(route) ? it.fails : it;
-    test(route, async () => {
+    it(route, async () => {
       const { page } = await openPage(MOBILE);
       await page.goto(`${server.baseUrl}${route}`, { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
@@ -735,15 +730,10 @@ describe("design tokens", () => {
 });
 
 // The opacity check above proves nothing is left invisible; this one proves
-// nothing actually moves. "/" still runs AOS (HomePage.jsx AOS.init has no
-// `disable`) and an unprefixed animate-bounce, so it is it.fails until the
-// Home page conversion gates them.
-const KNOWN_MOTION_UNDER_REDUCE = new Set(["/"]);
-
+// nothing actually moves.
 describe("prefers-reduced-motion: nothing animates", () => {
   for (const route of ROUTES) {
-    const test = KNOWN_MOTION_UNDER_REDUCE.has(route) ? it.fails : it;
-    test(route, async () => {
+    it(route, async () => {
       const { page } = await openPage(DESKTOP);
       await page.emulateMediaFeatures([
         { name: "prefers-reduced-motion", value: "reduce" },
