@@ -8,7 +8,6 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import StorePage from "./pages/StorePage";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
-import "./App.css";
 
 const queryClient = new QueryClient();
 
