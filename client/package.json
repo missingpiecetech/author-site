@@ -8,8 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "npm run test:unit",
-    "test:unit": "vitest run --config vitest.config.js"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run --config vitest.config.js",
+    "test:e2e": "vitest run --config vitest.e2e.config.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",

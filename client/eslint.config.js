@@ -26,4 +26,9 @@ export default defineConfig([
       "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
     },
   },
+  {
+    // Test suites and their configs run in Node, not the browser.
+    files: ["tests/**/*.{js,mjs}", "vitest*.config.js"],
+    languageOptions: { globals: { ...globals.node } },
+  },
 ]);
