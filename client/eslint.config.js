@@ -27,8 +27,8 @@ export default defineConfig([
     },
   },
   {
-    // Test suites and their configs run in Node, not the browser.
-    files: ["tests/**/*.{js,mjs}", "vitest*.config.js"],
+    // Test suites and the Vite/Vitest configs run in Node, not the browser.
+    files: ["tests/**/*.{js,mjs}", "vitest*.config.js", "vite.config.js"],
     languageOptions: { globals: { ...globals.node } },
   },
 ]);
