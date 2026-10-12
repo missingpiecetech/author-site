@@ -73,23 +73,37 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Sections** alternate `ground` and `band`; 80px side padding on desktop, 24px on mobile,
   content in a `max-w-7xl` column. Bands keep plain 1px `rule` edges; a plain section that
   follows another (`<Section ruled>`) and the close of a `PageIntro` get the **filigree
-  divider** (`FiligreeDivider`: tapering hairlines either side of a centred flourish).
-- **Filigree, not plain gold boxes.** Gold framing is hand-drawn inline SVG in
-  `src/components/ui/Filigree.jsx` (`currentColor`, `aria-hidden`, 1px non-scaling strokes,
-  each ornament authored once and mirrored). Frames and panels keep a quiet 1px line and add
-  `FiligreeCorners` (parent `relative`; `size` lg for framed covers/photos, md for panels, sm
-  for tiles, xs for icon boxes). Applied to `FramedImage`, the store gallery frame, `ShippingNotice`, the
-  newsletter box, Podcast/About social tiles, Contact icon boxes, the About stats panel and
-  the checkout-success panel; `PullQuote` has the flourish between quote and attribution.
-  Not on list rows (`RuleList`), the lightbox, chips or the left-ruled `BookPraise`. Corners
-  reach 12px (18px from `lg`, 24px from `xl` at size lg) outside their box, so keep that much room at 390px. No image
-  files or icon fonts for ornament.
+  divider** (`FiligreeDivider`: solid rules fading in either side of a centred ornament).
+- **Filigree, not plain gold boxes.** The style is **#8 Thorned Bramble** (owner's choice,
+  Oct 2026): tapering briar stems crossing at each corner around a closed bud, with hooked
+  thorns; bold, solid `currentColor` fills. Inline SVG only, no image files or icon fonts.
+  - `src/components/ui/Filigree.jsx`: `FiligreeCorners` (parent `relative`; `size` lg for
+    framed covers/photos, md for panels, sm for tiles, xs for 48px icon boxes) and
+    `FiligreeDivider`. Both `aria-hidden`, `pointer-events-none`. No artwork lives here.
+  - `src/components/ui/filigree/bramble.jsx`: the artwork (ported verbatim from symbols
+    `c8`/`d8` of the samples) and its metrics: `FRAME_BORDER` (`border-2`), the inset (a
+    fifth of the corner box sits outside the frame line), the divider size and `Rule`.
+  - `src/components/ui/filigree/index.js` selects the active style in one line. Import it
+    as `filigree/index.js` (explicitly — on macOS `./filigree` can resolve to `Filigree.jsx`).
+  - Every box carrying corners uses `${FRAME_BORDER}` plus a colour (`border-accent`, or
+    `border-edge` on tiles and panels). Corner boxes: lg 76/112/152px (base/lg/xl), md
+    52/64, sm 40/48, xs 30; a fifth of that reaches outside the box (30px for a cover at
+    xl, 15px at 390), so keep that much room. A framed box must be at least 1.6 corner
+    sizes tall and wide or the arms on one edge meet (`ShippingNotice` has a min height for
+    this).
+  - Applied to `FramedImage`, the store gallery frame, `ShippingNotice`, the newsletter
+    box, Podcast connect tiles and About social tiles, Contact icon boxes, the About stats
+    panel and the checkout-success panel; the divider marks ruled sections, `PageIntro`
+    closes and `PullQuote` (between quote and attribution). Not on list rows (`RuleList`),
+    the lightbox, chips or the left-ruled `BookPraise`.
+  - **Other styles:** `design/filigree-samples/index.html` (repo root, never shipped) holds
+    all thirteen candidates; its README gives the steps to port one and switch to it.
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
   secondary = transparent with an `outline` border; toggle pills use `aria-pressed` and the
   gold fill when pressed. Labels in sentence case.
-- **Framed images:** covers and author photos sit in a 1px gold frame with filigree corners,
-  a 14px inset (8px on mobile) and `shadow-cover`.
-- **Pull quotes:** large italic Cormorant on a `band`, a filigree flourish, then the
+- **Framed images:** covers and author photos sit in a 2px gold frame with filigree corners,
+  an 18px inset (12px on mobile) and `shadow-cover`.
+- **Pull quotes:** large italic Cormorant on a `band`, a filigree divider, then the
   attribution in uppercase `subtle`.
 - **Home** follows the mockup: the Crownfall book hero (`BookHero`: framed cover, eyebrow
   the eyebrow from BOOK_DATA `heroEyebrow` (Crownfall is a standalone, never "Book One"), the title as
@@ -122,7 +136,7 @@ against the ground, so never show state with a border alone (the pressed pill us
 ### Building blocks
 
 - `src/components/ui/`: `Section` (`band`, `ruled`, `divider`, `clipX`, `spacing`),
-  `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`), `Eyebrow`, `Button`
+  `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`; artwork in `filigree/`), `Eyebrow`, `Button`
   (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
   `FramedImage` (`aspect`, `placeholder`), `PullQuote` (`quote`, `name`, `credit`),
   `RuleList`/`RuleRow` (`to`/`href`, `arrow`), `PageIntro` (`eyebrow`, `title`, `accent`,
@@ -138,8 +152,9 @@ against the ground, so never show state with a border alone (the pressed pill us
 
 ## Repo Layout
 
-Everything lives under `client/`. The repo root only has the README, DEPLOYMENT.md, `.nvmrc`
-and `.gitignore`.
+Everything lives under `client/`. The repo root only has the README, DEPLOYMENT.md, `.nvmrc`,
+`.gitignore`, `.prettierignore` and `design/` (reference material that never ships: the
+filigree samples).
 
 ```
 author-site/
@@ -194,7 +209,8 @@ Run from `client/`.
 | `npm run lint`      | ESLint                                                                                    |
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
-390 on the e2e harness: horizontal scroll, filigree overlapping text, reduced-motion opacity,
+390 on the e2e harness: horizontal scroll, filigree overlapping text, filigree corners meeting
+each other or their frame's content, reduced-motion opacity,
 progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`. Set a temporary `percent` in
 `WRITING_DESK.js` to exercise the bar.
