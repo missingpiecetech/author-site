@@ -28,8 +28,8 @@ Dark and bookish: antique gold on near-black, classic serif type. The source des
 Home board). The re-skin changed the look only — same pages, same sections, same copy. Mockup
 copy appears only in "Join the Circle", "Buy direct", "Buy on Amazon", "Add it on Goodreads",
 the store's ebook line and About's "Invite Michael" list. **Use the tokens below; never
-`primary`/`secondary`/`secondary-dark`, `bg-white` or `gray-*`.** (The old tokens remain in
-`theme.css` only until every page is converted.)
+`primary`/`secondary`/`secondary-dark`, `bg-white` or Tailwind's default palette
+(`gray-*`, `red-*`, …); errors use `text-error`.**
 
 ### Colors (`src/theme.css`)
 
@@ -76,7 +76,8 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Framed images:** covers and author photos sit in a 1px gold frame with a 14px inset
   (8px on mobile) and `shadow-cover`.
 - **Pull quotes:** large italic Cormorant on a `band`, attribution in uppercase `subtle`.
-- **Writing desk** (works in progress): title + status only — no progress percentages or bars.
+- **Writing desk** (works in progress): title, status and the book's `shortBlurb` — no
+  progress percentages or bars.
 - **Lists** (episodes, contact rows, links) are rows divided by `rule` lines, not cards.
 - **Retailer links:** the Home Crownfall block and `/books` show `RetailerLinks` (Buy direct →
   `/store`, Buy on Amazon, Add it on Goodreads); the Store shows `ShippingNotice` (US-only,
@@ -203,9 +204,8 @@ navigation or Square code.
   Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
   each of the four Crownfall editions and a grid product at desktop and 390px (cart line,
   checkout body and Square line item carry the right item/variation ID and price, plus the
-  $5.99 shipping fee), and checks every route for horizontal scroll (`/` and `/contact` are
-  `it.fails` until #7 is fixed) and, with `prefers-reduced-motion: reduce`, for content left
-  at opacity 0.
+  $5.99 shipping fee), and checks every route for horizontal scroll at 390px and, with
+  `prefers-reduced-motion: reduce`, for content left at opacity 0 or still animating.
 - **Crownfall editions are mapped by Square item ID, never by name.** Square holds four
   separate items (signed/unsigned × hardcover/paperback); `src/data/crownfallEditions.js`
   maps each combination to its production and sandbox item IDs and exports
