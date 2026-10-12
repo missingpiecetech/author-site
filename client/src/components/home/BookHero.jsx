@@ -4,17 +4,12 @@ import RetailerLinks from "../RetailerLinks";
 
 /**
  * The Home hero, laid out like the mockup's book hero: framed cover beside
- * the eyebrow ("Book One of <series> · Available now"), the title as the
+ * the eyebrow (BOOK_DATA `heroEyebrow`), the title as the
  * page's h1, the subtitle as the hook, the short blurb (from `sm`; the phone
  * mockup leaves it out) and the buy row.
  */
 const BookHero = ({ book, className = "", ...rest }) => {
-  const eyebrow = [
-    [book.seriesBook, book.series].filter(Boolean).join(" of "),
-    "Available now",
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const eyebrow = book.heroEyebrow;
 
   return (
     <article

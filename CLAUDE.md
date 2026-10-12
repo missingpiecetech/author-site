@@ -28,7 +28,7 @@ Dark and bookish: antique gold on near-black, classic serif type. The source des
 Home board). The re-skin changed the look only — same pages, same sections, same copy. Mockup
 copy appears only in "Join the Circle", "Buy direct", "Buy on Amazon", "Add it on Goodreads",
 the store's ebook line, About's "Invite Michael" list and Home's mockup sections (the hero
-eyebrow "Book One · Available now", "Read an Excerpt", "From the Writing Desk" / "What’s
+eyebrow "A standalone dark epic fantasy · Available now", "Read an Excerpt", "From the Writing Desk" / "What’s
 coming next" / "Progress on the books in the works."). **Use the tokens below; never
 `primary`/`secondary`/`secondary-dark`, `bg-white` or Tailwind's default palette
 (`gray-*`, `red-*`, …); errors use `text-error`.**
@@ -92,7 +92,7 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Pull quotes:** large italic Cormorant on a `band`, a filigree flourish, then the
   attribution in uppercase `subtle`.
 - **Home** follows the mockup: the Crownfall book hero (`BookHero`: framed cover, eyebrow
-  "Book One[ of <series>] · Available now" from BOOK_DATA `seriesBook`/`series`, the title as
+  the eyebrow from BOOK_DATA `heroEyebrow` (Crownfall is a standalone, never "Book One"), the title as
   the page's h1, subtitle as hook, `shortBlurb` from `sm`, `RetailerLinks`) with the scroll
   cue at its foot; the praise band (every Crownfall quote, big-quote style); "Read an
   Excerpt" (`Excerpt`, from BOOK_DATA crownfall `excerpt` — hidden while `paragraphs` is

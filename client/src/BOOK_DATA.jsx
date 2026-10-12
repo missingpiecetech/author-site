@@ -65,10 +65,8 @@ export const BOOKS = [
       amazon: "https://www.amazon.com/dp/1972175009",
       goodreads: "https://www.goodreads.com/book/show/249506475-crownfall",
     },
-    // Home hero eyebrow: "Book One of <series> · Available now". Leave
-    // `series` empty for "Book One · Available now".
-    seriesBook: "Book One",
-    series: "",
+    // Home hero eyebrow. Crownfall is a standalone, not part of a series.
+    heroEyebrow: "A standalone dark epic fantasy · Available now",
     // Opening of the book for Home's "Read an Excerpt" section, which stays
     // hidden while `paragraphs` is empty. One string per paragraph (the first
     // 150 to 200 words, ending on a small cliffhanger). `note` is an optional
