@@ -21,11 +21,16 @@ const SHIPPING_FEE = {
 };
 
 const product = (key) => STUB_PRODUCTS.find((p) => p.key === key);
-const HARDCOVER = product("hardcover");
-const CROWNFALL = product("crownfall");
-if (!/Crownfall/.test(CROWNFALL.name)) {
-  throw new Error("stub catalog must include a Crownfall product");
+const PRINT = product("print");
+const CROWNFALL_EDITIONS = STUB_PRODUCTS.filter((p) => p.edition);
+const CROWNFALL = product("crownfall-hardcover-signed");
+if (CROWNFALL_EDITIONS.length !== 4) {
+  throw new Error("stub catalog must include all four Crownfall editions");
 }
+const edition = (format, signing) =>
+  CROWNFALL_EDITIONS.find(
+    (p) => p.edition.format === format && p.edition.signing === signing,
+  );
 
 const SQUARE_HOST = /(^|\.)(squareup\.com|squareupsandbox\.com|square\.link)$/i;
 const STUB_CHECKOUT_HOST = "checkout.square.test";
@@ -51,7 +56,11 @@ afterEach(async () => {
 
 // A fresh incognito context per test: empty localStorage, so no cart carries
 // over between tests.
-const openPage = async (viewport) => {
+//
+// `dropItemIds` serves the stub catalog with those Square items removed, to
+// exercise a catalog that lacks some Crownfall editions without a second
+// server.
+const openPage = async (viewport, { dropItemIds } = {}) => {
   context = await browser.createBrowserContext();
   const page = await context.newPage();
   await page.setViewport(viewport);
@@ -59,8 +68,26 @@ const openPage = async (viewport) => {
   const blockedSquareRequests = [];
   const checkoutBodies = [];
   await page.setRequestInterception(true);
-  page.on("request", (request) => {
+  page.on("request", async (request) => {
     const url = new URL(request.url());
+    if (
+      dropItemIds &&
+      url.pathname === "/api/square/catalog" &&
+      request.method() === "GET"
+    ) {
+      const full = await (
+        await fetch(`${server.baseUrl}/api/square/catalog`)
+      ).json();
+      request.respond({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ...full,
+          objects: full.objects.filter((o) => !dropItemIds.includes(o.id)),
+        }),
+      });
+      return;
+    }
     if (url.hostname === STUB_CHECKOUT_HOST) {
       request.respond({
         status: 200,
@@ -89,6 +116,30 @@ const openPage = async (viewport) => {
 const byTestId = (id) => `[data-testid="${id}"]`;
 const storeProduct = (itemId) =>
   `${byTestId("store-product")}[data-product-id="${itemId}"]`;
+const FORMAT_TOGGLE = (format) => byTestId(`edition-format-${format}`);
+const SIGNING_TOGGLE = (signing) => byTestId(`edition-${signing}`);
+const ALL_TOGGLES = [
+  FORMAT_TOGGLE("hardcover"),
+  FORMAT_TOGGLE("paperback"),
+  SIGNING_TOGGLE("signed"),
+  SIGNING_TOGGLE("unsigned"),
+];
+
+const pressed = (page, selector) =>
+  page.$eval(selector, (el) => el.getAttribute("aria-pressed"));
+
+// Picks a Crownfall edition with the two toggle groups and waits for the
+// listing to switch to that Square item.
+const selectEdition = async (page, { format, signing }) => {
+  await page.waitForSelector(FORMAT_TOGGLE(format));
+  await page.click(FORMAT_TOGGLE(format));
+  await page.click(SIGNING_TOGGLE(signing));
+  const itemId = edition(format, signing).itemId;
+  await page.waitForSelector(storeProduct(itemId));
+  expect(await pressed(page, FORMAT_TOGGLE(format))).toBe("true");
+  expect(await pressed(page, SIGNING_TOGGLE(signing))).toBe("true");
+};
+
 const cartItem = (itemId) =>
   `${byTestId("cart-panel")} ${byTestId("cart-item")}[data-product-id="${itemId}"]`;
 
@@ -137,6 +188,9 @@ const checkoutFlow = async (kind, lines) => {
   await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
 
   for (const { product } of lines) {
+    // Crownfall editions share one listing: pick the edition with its toggles
+    // first. The listing then carries the selected item's id.
+    if (product.edition) await selectEdition(page, product.edition);
     // The stub catalog renders: proves the page talks to our server + stub.
     const card = await page.waitForSelector(storeProduct(product.itemId));
     // Catalog data (not UI copy): the card shows the product's Square name.
@@ -178,6 +232,10 @@ const checkoutFlow = async (kind, lines) => {
       `${cartItem(product.itemId)} ${byTestId("qty-value")}`,
       String(quantity),
     );
+    // The cart line is the selected catalog item at its own price.
+    const lineText = await textOf(page, cartItem(product.itemId));
+    expect(lineText).toContain(product.name);
+    expect(lineText).toContain(dollars(product.cents * BigInt(quantity)));
   }
 
   const subtotalCents = lines.reduce(
@@ -209,6 +267,7 @@ const checkoutFlow = async (kind, lines) => {
       itemId: product.itemId,
       variationId: product.variationId,
       quantity,
+      price: Number(product.cents) / 100,
     });
   });
 
@@ -227,6 +286,7 @@ const checkoutFlow = async (kind, lines) => {
     expect(request.order.lineItems[i]).toMatchObject({
       catalogObjectId: product.variationId,
       quantity: String(quantity),
+      basePriceMoney: { amount: product.cents, currency: "USD" },
     });
   });
   expect(request.idempotencyKey).toEqual(expect.any(String));
@@ -237,23 +297,28 @@ const checkoutFlow = async (kind, lines) => {
 };
 
 describe("store checkout: Square is asked for $5.99 shipping and the browser follows the payment link", () => {
-  it("desktop: Crownfall product", () =>
-    checkoutFlow("desktop", [{ product: CROWNFALL, quantity: 1 }]));
+  for (const cf of CROWNFALL_EDITIONS) {
+    it(`desktop: Crownfall ${cf.edition.format}, ${cf.edition.signing}`, () =>
+      checkoutFlow("desktop", [{ product: cf, quantity: 1 }]));
+  }
 
-  it("desktop: other product, quantity 2", () =>
-    checkoutFlow("desktop", [{ product: HARDCOVER, quantity: 2 }]));
+  it("desktop: grid product, quantity 2", () =>
+    checkoutFlow("desktop", [{ product: PRINT, quantity: 2 }]));
 
-  it("desktop: both products in one cart", () =>
+  it("desktop: two Crownfall editions and a grid product in one cart", () =>
     checkoutFlow("desktop", [
-      { product: CROWNFALL, quantity: 2 },
-      { product: HARDCOVER, quantity: 1 },
+      { product: edition("paperback", "unsigned"), quantity: 2 },
+      { product: CROWNFALL, quantity: 1 },
+      { product: PRINT, quantity: 1 },
     ]));
 
-  it("mobile 390px: Crownfall product via the mobile menu cart", () =>
-    checkoutFlow("mobile", [{ product: CROWNFALL, quantity: 1 }]));
+  for (const cf of CROWNFALL_EDITIONS) {
+    it(`mobile 390px: Crownfall ${cf.edition.format}, ${cf.edition.signing} via the mobile menu cart`, () =>
+      checkoutFlow("mobile", [{ product: cf, quantity: 1 }]));
+  }
 
-  it("mobile 390px: other product via the mobile menu cart", () =>
-    checkoutFlow("mobile", [{ product: HARDCOVER, quantity: 1 }]));
+  it("mobile 390px: grid product via the mobile menu cart", () =>
+    checkoutFlow("mobile", [{ product: PRINT, quantity: 1 }]));
 
   it("the server built its Square client from the dummy sandbox env, never real credentials", () => {
     const clients = server.calls().filter((c) => c.type === "client");
@@ -262,6 +327,126 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
       expect(client.environment).toBe("https://connect.squareupsandbox.com");
       expect(client.pid).toBe(server.pid);
     }
+  });
+});
+
+// Which Crownfall item the listing shows, given whatever the catalog holds.
+const listingId = (page) =>
+  page.$eval(
+    `${byTestId("store-product")}:has(${FORMAT_TOGGLE("hardcover")})`,
+    (el) => el.dataset.productId,
+  );
+
+const disabledToggles = (page) =>
+  page.$$eval(ALL_TOGGLES.join(","), (els) =>
+    els.filter((el) => el.disabled).map((el) => el.dataset.testid),
+  );
+
+describe("Crownfall edition toggles map to Square items by id", () => {
+  it("full catalog: one listing defaulting to signed hardcover, the other item in the grid", async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await page.waitForSelector(FORMAT_TOGGLE("hardcover"));
+
+    expect(await listingId(page)).toBe(CROWNFALL.itemId);
+    const ids = await page.$$eval(byTestId("store-product"), (els) =>
+      els.map((el) => el.dataset.productId),
+    );
+    expect(ids).toEqual([CROWNFALL.itemId, PRINT.itemId]);
+    expect(await disabledToggles(page)).toEqual([]);
+
+    // Toggles are labelled groups of pressed/unpressed pills.
+    const groups = await page.$$eval('[role="group"]', (els) =>
+      els.map((el) => ({
+        label: document.getElementById(el.getAttribute("aria-labelledby"))
+          ?.textContent,
+        pills: [...el.querySelectorAll("[aria-pressed]")].length,
+      })),
+    );
+    expect(groups).toEqual([
+      { label: "Format", pills: 2 },
+      { label: "Edition", pills: 2 },
+    ]);
+
+    // The ebook line links Amazon in a new tab.
+    const ebook = await page.$eval(
+      `${storeProduct(CROWNFALL.itemId)} a[href*="amazon.com"]`,
+      (a) => ({ target: a.target, rel: a.rel, text: a.textContent }),
+    );
+    expect(ebook).toEqual({
+      target: "_blank",
+      rel: "noopener noreferrer",
+      text: "Amazon",
+    });
+
+    // Title and price follow the selection.
+    for (const cf of CROWNFALL_EDITIONS) {
+      await selectEdition(page, cf.edition);
+      const text = await textOf(page, storeProduct(cf.itemId));
+      expect(text).toContain(cf.name);
+      expect(text).toContain(dollars(cf.cents));
+    }
+  });
+
+  it("an edition missing from both pairings has its toggle disabled", async () => {
+    const { page } = await openPage(DESKTOP, {
+      dropItemIds: [
+        edition("hardcover", "unsigned").itemId,
+        edition("paperback", "unsigned").itemId,
+      ],
+    });
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await page.waitForSelector(FORMAT_TOGGLE("hardcover"));
+
+    expect(await disabledToggles(page)).toEqual(["edition-unsigned"]);
+    expect(await pressed(page, SIGNING_TOGGLE("unsigned"))).toBe("false");
+    await page.click(SIGNING_TOGGLE("unsigned"));
+    expect(await listingId(page)).toBe(CROWNFALL.itemId);
+  });
+
+  it("a single missing combination is never selected: the other toggle flips", async () => {
+    const missing = edition("paperback", "unsigned");
+    const { page } = await openPage(DESKTOP, { dropItemIds: [missing.itemId] });
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await page.waitForSelector(FORMAT_TOGGLE("hardcover"));
+    expect(await disabledToggles(page)).toEqual([]);
+
+    // Hardcover unsigned -> Paperback: paperback unsigned is missing, so the
+    // edition flips to signed.
+    await selectEdition(page, { format: "hardcover", signing: "unsigned" });
+    await page.click(FORMAT_TOGGLE("paperback"));
+    const paperbackSigned = edition("paperback", "signed");
+    await page.waitForSelector(storeProduct(paperbackSigned.itemId));
+    expect(await pressed(page, SIGNING_TOGGLE("signed"))).toBe("true");
+
+    // Paperback signed -> Unsigned: the format flips to hardcover.
+    await page.click(SIGNING_TOGGLE("unsigned"));
+    await page.waitForSelector(
+      storeProduct(edition("hardcover", "unsigned").itemId),
+    );
+    expect(await pressed(page, FORMAT_TOGGLE("hardcover"))).toBe("true");
+    expect(await page.$(storeProduct(missing.itemId))).toBeNull();
+  });
+
+  it("without signed hardcover, the listing defaults to the first available edition", async () => {
+    const { page } = await openPage(DESKTOP, {
+      dropItemIds: [CROWNFALL.itemId],
+    });
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await page.waitForSelector(FORMAT_TOGGLE("hardcover"));
+    expect(await listingId(page)).toBe(edition("paperback", "signed").itemId);
+  });
+
+  it("with no mapped Crownfall item there is no listing and everything is in the grid", async () => {
+    const { page } = await openPage(DESKTOP, {
+      dropItemIds: CROWNFALL_EDITIONS.map((cf) => cf.itemId),
+    });
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await page.waitForSelector(storeProduct(PRINT.itemId));
+    expect(await page.$$(ALL_TOGGLES.join(","))).toEqual([]);
+    expect(
+      await page.$$eval(byTestId("store-product"), (els) => els.length),
+    ).toBe(1);
   });
 });
 
