@@ -27,7 +27,9 @@ Dark and bookish: antique gold on near-black, classic serif type. The source des
 "Fantasy Author Website Concepts" canvas (Home, Store, Podcast, About boards plus a mobile
 Home board). The re-skin changed the look only — same pages, same sections, same copy. Mockup
 copy appears only in "Join the Circle", "Buy direct", "Buy on Amazon", "Add it on Goodreads",
-the store's ebook line and About's "Invite Michael" list. **Use the tokens below; never
+the store's ebook line, About's "Invite Michael" list and Home's mockup sections (the hero
+eyebrow "Book One · Available now", "Read an Excerpt", "From the Writing Desk" / "What’s
+coming next" / "Progress on the books in the works."). **Use the tokens below; never
 `primary`/`secondary`/`secondary-dark`, `bg-white` or Tailwind's default palette
 (`gray-*`, `red-*`, …); errors use `text-error`.**
 
@@ -75,12 +77,12 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Filigree, not plain gold boxes.** Gold framing is hand-drawn inline SVG in
   `src/components/ui/Filigree.jsx` (`currentColor`, `aria-hidden`, 1px non-scaling strokes,
   each ornament authored once and mirrored). Frames and panels keep a quiet 1px line and add
-  `FiligreeCorners` (parent `relative`; `size` md for frames/panels, sm for tiles, xs for icon
-  boxes). Applied to `FramedImage`, the store gallery frame, `ShippingNotice`, the
+  `FiligreeCorners` (parent `relative`; `size` lg for framed covers/photos, md for panels, sm
+  for tiles, xs for icon boxes). Applied to `FramedImage`, the store gallery frame, `ShippingNotice`, the
   newsletter box, Podcast/About social tiles, Contact icon boxes, the About stats panel and
   the checkout-success panel; `PullQuote` has the flourish between quote and attribution.
   Not on list rows (`RuleList`), the lightbox, chips or the left-ruled `BookPraise`. Corners
-  reach 12px (18px from `lg`) outside their box, so keep that much room at 390px. No image
+  reach 12px (18px from `lg`, 24px from `xl` at size lg) outside their box, so keep that much room at 390px. No image
   files or icon fonts for ornament.
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
   secondary = transparent with an `outline` border; toggle pills use `aria-pressed` and the
@@ -89,10 +91,20 @@ against the ground, so never show state with a border alone (the pressed pill us
   a 14px inset (8px on mobile) and `shadow-cover`.
 - **Pull quotes:** large italic Cormorant on a `band`, a filigree flourish, then the
   attribution in uppercase `subtle`.
-- **Writing desk** (works in progress): title, status and the book's `shortBlurb` — no
-  progress percentages or bars.
+- **Home** follows the mockup: the Crownfall book hero (`BookHero`: framed cover, eyebrow
+  "Book One[ of <series>] · Available now" from BOOK_DATA `seriesBook`/`series`, the title as
+  the page's h1, subtitle as hook, `shortBlurb` from `sm`, `RetailerLinks`) with the scroll
+  cue at its foot; the praise band (every Crownfall quote, big-quote style); "Read an
+  Excerpt" (`Excerpt`, from BOOK_DATA crownfall `excerpt` — hidden while `paragraphs` is
+  empty); the writing desk; then the book-tour image and Author Adjacent. No author-photo
+  hero.
+- **Writing desk** ("From the Writing Desk", `WritingDesk`): one `WorkProgress` row per entry
+  in `src/WRITING_DESK.js` (`{ title, status, percent }`, edited by hand) — title, "status ·
+  N%" and a gold bar on a `rule` track (`role="progressbar"`, aria-valuenow/min/max).
+  `percent` is clamped to 0–100; `null` hides the number and bar so only the status shows.
+  A `band` when it follows the excerpt, plain when it would sit against the praise band.
 - **Lists** (episodes, contact rows, links) are rows divided by `rule` lines, not cards.
-- **Retailer links:** the Home Crownfall block and `/books` show `RetailerLinks` (Buy direct →
+- **Retailer links:** the Home hero and `/books` show `RetailerLinks` (Buy direct →
   `/store`, Buy on Amazon, Add it on Goodreads); the Store shows `ShippingNotice` (US-only
   shipping, then "Available globally on Amazon." with "Amazon" linked, new tab) above all
   products; the footer links Goodreads. Retailer URLs live in `BOOK_DATA` (`retailers`).
@@ -116,7 +128,8 @@ against the ground, so never show state with a border alone (the pressed pill us
   `RuleList`/`RuleRow` (`to`/`href`, `arrow`), `PageIntro` (`eyebrow`, `title`, `accent`,
   `lede`).
 - `src/components/`: `RetailerLinks` (`compact`), `ShippingNotice`, `JoinCircleButton`
-  (opens the MailerLite popup), plus the restyled `Navigation`, `Footer`, `NewsLetter`,
+  (opens the MailerLite popup), `WritingDesk` / `WorkProgress`, `home/BookHero`,
+  `home/Excerpt`, plus the restyled `Navigation`, `Footer`, `NewsLetter`,
   `Socials`, `ShoppingCart`.
 - `src/hooks/useHashScroll.js`: call it on pages with `#section` links (`/#crownfall`,
   `/books#<slug>`); the header skips scroll-to-top when the URL has a hash.
@@ -151,7 +164,8 @@ author-site/
         ├── main.jsx
         ├── App.jsx               # Router + QueryClientProvider + Layout
         ├── index.css, theme.css
-        ├── BOOK_DATA.jsx         # Static book metadata (slug, praise, retailers)
+        ├── BOOK_DATA.jsx         # Static book metadata (slug, praise, retailers, excerpt)
+        ├── WRITING_DESK.js       # Home "From the Writing Desk" rows, edited by hand
         ├── SOCIAL_LINKS.jsx      # Static social link data
         ├── SITE_INFO.js          # Site constants (emails, press kit, shipping switch)
         ├── assets/               # Author photos, book covers, podcast logos
@@ -181,7 +195,9 @@ Run from `client/`.
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness: horizontal scroll, filigree overlapping text, reduced-motion opacity,
-the Home scroll cue's geometry, and (with `--shots`) element screenshots of the filigree.
+progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
+`--shots`) the element screenshots listed in its `SHOTS`. Set a temporary `percent` in
+`WRITING_DESK.js` to exercise the bar.
 
 ## Square API — Two Implementations, Same Routes
 

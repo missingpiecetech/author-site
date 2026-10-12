@@ -4,8 +4,9 @@
 //   - horizontal scroll after 2.5s of live animation;
 //   - filigree ornaments whose painted parts overlap text in the same section;
 //   - content left at opacity 0 with prefers-reduced-motion;
+//   - progress bars whose fill does not match aria-valuenow;
 // plus the Home scroll cue's geometry at 1440/1280/1024/768/390, and, with
-// `--shots <dir>`, small element screenshots of the filigree for review.
+// `--shots <dir>`, element screenshots for review (see SHOTS).
 //
 //   node scripts/design-check.mjs [--shots <dir>]
 //
@@ -27,6 +28,39 @@ const ROUTES = [
 ];
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844, isMobile: true, hasTouch: true };
+
+// Element screenshots for review (`--shots <dir>`): the top of each element,
+// full viewport width, at most `maxHeight` CSS px tall.
+const SHOTS = [
+  { name: "home-hero-1440", route: "/", selector: "#crownfall" },
+  { name: "home-hero-390", route: "/", selector: "#crownfall", mobile: true },
+  {
+    name: "home-big-quote-1440",
+    route: "/",
+    selector: "#crownfall + section",
+    pad: 40,
+  },
+  {
+    name: "home-writing-desk-1440",
+    route: "/",
+    selector: "#writing-desk",
+    pad: 24,
+  },
+  {
+    name: "store-notice-1440",
+    route: "/store",
+    selector: '[role="note"]',
+    pad: 40,
+    maxHeight: 260,
+    scale: 2,
+  },
+  {
+    name: "books-arcanist-1440",
+    route: "/books",
+    selector: "#project-arcanist",
+    maxHeight: 760,
+  },
+];
 
 const shotsArg = process.argv.indexOf("--shots");
 const shotsDir = shotsArg > -1 ? process.argv[shotsArg + 1] : null;
@@ -115,6 +149,22 @@ const invisibleUnderReducedMotion = (page) =>
       .map((el) => `${el.tagName} ${el.textContent.trim().slice(0, 40)}`),
   );
 
+// Every progress bar's fill matches its aria-valuenow (within 1px).
+const progressBarMismatches = (page) =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('[role="progressbar"]')].flatMap((bar) => {
+      const now = Number(bar.getAttribute("aria-valuenow"));
+      const fill = bar.firstElementChild;
+      const expected = (bar.clientWidth * now) / 100;
+      const actual = fill ? fill.getBoundingClientRect().width : 0;
+      return Math.abs(actual - expected) > 1 ||
+        bar.getAttribute("aria-valuemin") !== "0" ||
+        bar.getAttribute("aria-valuemax") !== "100"
+        ? [`progressbar ${now}%: fill ${actual}px, expected ${expected}px`]
+        : [];
+    }),
+  );
+
 const scrollCueGeometry = (page) =>
   page.evaluate(() => {
     const cue = document.querySelector('[data-testid="scroll-cue"]');
@@ -188,6 +238,8 @@ const main = async () => {
         for (const hit of overlaps.hits) fail(`${label}: ${hit}`);
         const invisible = await invisibleUnderReducedMotion(still.page);
         for (const item of invisible) fail(`${label}: opacity 0 → ${item}`);
+        const bars = await progressBarMismatches(still.page);
+        for (const bar of bars) fail(`${label}: ${bar}`);
         await still.context.close();
       }
     }
@@ -231,82 +283,46 @@ const main = async () => {
 
     if (shotsDir) {
       mkdirSync(shotsDir, { recursive: true });
-      const shoot = async (viewport, route, name, locate, pad = 24) => {
+      console.log("screenshots");
+      for (const shot of SHOTS) {
+        const viewport = shot.mobile ? MOBILE : DESKTOP;
+        const scale = shot.scale ?? (shot.mobile ? 2 : 1);
         const { context, page } = await open(
-          { ...viewport, deviceScaleFactor: 2 },
+          { ...viewport, deviceScaleFactor: scale },
           true,
         );
-        await page.goto(`${server.baseUrl}${route}`, { waitUntil: "load" });
+        await page.goto(`${server.baseUrl}${shot.route}`, {
+          waitUntil: "load",
+        });
         await page.evaluate(() => document.fonts.ready);
         await scrollThrough(page);
-        const handle = await page.evaluateHandle(locate);
-        // Top of the element well below the sticky header.
-        await handle.evaluate((el) => {
-          el.scrollIntoView({ block: "start" });
-          window.scrollBy(0, -200);
+        const handle = await page.$(shot.selector);
+        if (!handle) {
+          fail(`shot ${shot.name}: nothing matches ${shot.selector}`);
+          await context.close();
+          continue;
+        }
+        // Clip in document coordinates: the top of the element, full width.
+        const top = await handle.evaluate(
+          (el) => el.getBoundingClientRect().top + window.scrollY,
+        );
+        const height = await handle.evaluate(
+          (el) => el.getBoundingClientRect().height,
+        );
+        const pad = shot.pad ?? 0;
+        await page.screenshot({
+          path: join(shotsDir, `${shot.name}.png`),
+          clip: {
+            x: 0,
+            y: Math.max(0, top - pad),
+            width: viewport.width,
+            height: Math.min(height + pad * 2, shot.maxHeight ?? 900),
+          },
+          captureBeyondViewport: true,
         });
-        await new Promise((r) => setTimeout(r, 400));
-        // Clip is in document coordinates; the element box is in viewport ones.
-        const box = await handle.evaluate((el) => {
-          const r = el.getBoundingClientRect();
-          return {
-            x: r.left + window.scrollX,
-            y: r.top + window.scrollY,
-            width: r.width,
-            height: r.height,
-          };
-        });
-        const clip = {
-          x: Math.max(0, box.x - pad),
-          y: Math.max(0, box.y - pad),
-          width: Math.min(viewport.width, box.width + pad * 2),
-          height: Math.min(box.height + pad * 2, 420),
-        };
-        await page.screenshot({ path: join(shotsDir, `${name}.png`), clip });
-        console.log(`  shot ${name}.png`);
+        console.log(`  shot ${shot.name}.png`);
         await context.close();
-      };
-      console.log("screenshots");
-      await shoot(
-        DESKTOP,
-        "/",
-        "home-book-cover-frame-1440",
-        () =>
-          document.querySelector("#crownfall [data-filigree]").parentElement,
-      );
-      await shoot(
-        DESKTOP,
-        "/store",
-        "store-listing-and-notice-1440",
-        () => document.querySelector('[role="note"]').closest("section"),
-        0,
-      );
-      await shoot(
-        DESKTOP,
-        "/about",
-        "about-pull-quote-1440",
-        () => document.querySelector("figure blockquote").closest("section"),
-        0,
-      );
-      await shoot(
-        DESKTOP,
-        "/",
-        "section-divider-1440",
-        () =>
-          [...document.querySelectorAll("section")].find((s) =>
-            s.querySelector(':scope > div > [data-filigree="divider"]'),
-          ).firstElementChild,
-        48,
-      );
-      const { context, page } = await open(
-        { ...MOBILE, deviceScaleFactor: 2 },
-        true,
-      );
-      await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
-      await page.evaluate(() => document.fonts.ready);
-      await page.screenshot({ path: join(shotsDir, "home-390.png") });
-      console.log("  shot home-390.png");
-      await context.close();
+      }
     }
   } finally {
     await browser.close();

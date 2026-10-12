@@ -1,78 +1,43 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { BOOKS } from "../BOOK_DATA";
-import authorPic from "../assets/author-pic-square-close.jpeg";
 import authorAdjacentLogo from "../assets/logo_no_text.png";
 import crownfallBookTour from "../assets/crownfall-book-tour.jpeg";
 import Section from "../components/ui/Section";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
 import PullQuote from "../components/ui/PullQuote";
-import { RuleList, RuleRow } from "../components/ui/RuleList";
 import BookHero from "../components/home/BookHero";
+import Excerpt from "../components/home/Excerpt";
+import WritingDesk from "../components/WritingDesk";
 import useHashScroll from "../hooks/useHashScroll";
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const FEATURED = BOOKS.find((book) => book.slug === "crownfall");
-const IN_PROGRESS = BOOKS.filter((book) => book !== FEATURED);
+const HAS_EXCERPT = FEATURED?.excerpt?.paragraphs?.some((p) => p?.trim());
 
 const HomePage = () => {
-  const [scrollY, setScrollY] = useState(0);
   useHashScroll();
 
   useEffect(() => {
     AOS.init({ once: true, duration: 800, disable: prefersReducedMotion });
-    // The "Latest Works" parallax is motion; skip it entirely when reduced.
-    if (prefersReducedMotion()) return undefined;
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <div className="bg-ground">
-      {/* Author hero */}
+      {/* Book hero: Crownfall, as in the mockup */}
       <Section
+        id={FEATURED?.slug}
         clipX
         spacing="none"
-        className="flex min-h-[calc(100svh-var(--header-h))] flex-col pt-12 pb-6 lg:pt-26 lg:pb-8"
+        className="flex min-h-[calc(100svh-var(--header-h))] flex-col pt-10 pb-6 lg:pt-16 lg:pb-8"
         innerClassName="flex w-full flex-1 flex-col"
       >
-        <div className="flex flex-1 flex-col items-center justify-center gap-12 md:flex-row md:justify-around md:gap-16">
-          {/* Author image */}
-          <div className="relative shrink-0">
-            <FramedImage
-              src={authorPic}
-              alt="Michael Vadney"
-              aspect="square"
-              loading="eager"
-              className="relative w-64 bg-ground sm:w-80"
-            />
-          </div>
-          {/* Author text */}
-          <div
-            className="flex flex-1 flex-col items-center gap-3 text-center"
-            data-aos="fade-left"
-          >
-            <h1 className="text-title text-cream">
-              <span className="block animate-slide-in-left">
-                Michael Vadney
-              </span>
-            </h1>
-            <p className="animate-fade-in-up font-display text-hook font-medium text-muted italic delay-300">
-              Author & Podcaster
-            </p>
-            {/* CTA buttons */}
-            <div className="mt-6 flex w-full animate-fade-in-up flex-col justify-center gap-3.5 delay-700 sm:w-auto sm:flex-row">
-              <Button to="/books">Explore my books</Button>
-              <Button to="/podcast" variant="secondary">
-                Watch the podcast
-              </Button>
-            </div>
-          </div>
+        <div className="flex flex-1 flex-col justify-center">
+          {FEATURED && <BookHero book={FEATURED} />}
         </div>
         {/* Scroll indicator: in flow at the foot of the hero, so it can never sit on the buttons */}
         <div
@@ -86,6 +51,34 @@ const HomePage = () => {
         </div>
       </Section>
 
+      {/* Praise: the existing quote band, in the mockup's big-quote style */}
+      {FEATURED?.praise?.length > 0 && (
+        <Section
+          band
+          spacing="none"
+          className="py-9 lg:py-16"
+          innerClassName="flex flex-col gap-12 lg:gap-16"
+        >
+          {FEATURED.praise.map((praise) => (
+            <div key={praise.name} data-aos="fade-up">
+              <PullQuote
+                quote={praise.text}
+                name={praise.name}
+                credit={praise.credit}
+                className="max-w-5xl"
+              />
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {/* Read an excerpt: hidden until BOOK_DATA has the opening text */}
+      {FEATURED && <Excerpt excerpt={FEATURED.excerpt} />}
+
+      {/* From the writing desk: WRITING_DESK.js. A band after the excerpt, as
+          in the mockup; plain when it would sit against the quote band. */}
+      <WritingDesk band={HAS_EXCERPT} />
+
       {/* Book tour */}
       <Section clipX ruled>
         <FramedImage
@@ -95,71 +88,6 @@ const HomePage = () => {
           className="mx-auto max-w-2xl animate-slide-in-right"
         />
       </Section>
-
-      {/* Latest works: the released book in the book-hero layout */}
-      <Section clipX ruled>
-        <div
-          className="mb-12 animate-fade-in-up text-center lg:mb-20"
-          style={{ transform: `translateY(${scrollY * 0.1}px)` }}
-        >
-          <h2 className="mb-5 text-heading text-cream">
-            Latest <span className="text-accent">Works</span>
-          </h2>
-          <p className="mx-auto max-w-3xl text-lede text-muted">
-            Worlds where hope and heroism endure amid darkness, sacrifice, and
-            moral complexity.
-          </p>
-        </div>
-        {FEATURED && (
-          <BookHero
-            id={FEATURED.slug}
-            book={FEATURED}
-            className="animate-slide-in-left"
-          />
-        )}
-      </Section>
-
-      {/* Praise */}
-      {FEATURED?.praise?.length > 0 && (
-        <Section band innerClassName="flex flex-col gap-12 lg:gap-16">
-          {FEATURED.praise.map((praise) => (
-            <div key={praise.name} data-aos="fade-up">
-              <PullQuote
-                quote={praise.text}
-                name={praise.name}
-                credit={praise.credit}
-              />
-            </div>
-          ))}
-        </Section>
-      )}
-
-      {/* Writing desk: books in progress — title, status and short blurb; no progress percentage */}
-      {IN_PROGRESS.length > 0 && (
-        <Section spacing="compact">
-          <RuleList data-aos="fade-up">
-            {IN_PROGRESS.map((book) => (
-              <RuleRow key={book.slug} id={book.slug} to={book.link} arrow>
-                <span className="flex flex-1 flex-col gap-2">
-                  <span className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                    <span className="font-display text-[1.625rem] leading-tight font-semibold lg:text-[1.875rem]">
-                      {book.title}
-                    </span>
-                    <span className="text-base text-muted lg:text-[1.0625rem]">
-                      {book.status}
-                    </span>
-                  </span>
-                  {book.shortBlurb && (
-                    <span className="max-w-[60ch] text-base leading-relaxed text-muted lg:text-[1.0625rem]">
-                      {book.shortBlurb}
-                    </span>
-                  )}
-                </span>
-              </RuleRow>
-            ))}
-          </RuleList>
-        </Section>
-      )}
 
       {/* Author Adjacent podcast */}
       <Section ruled>

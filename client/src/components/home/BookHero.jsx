@@ -1,59 +1,53 @@
-import { Link } from "react-router-dom";
 import Eyebrow from "../ui/Eyebrow";
 import FramedImage from "../ui/FramedImage";
 import RetailerLinks from "../RetailerLinks";
 
 /**
- * A released book in the mockup's book-hero layout: framed cover beside the
- * status eyebrow, title, subtitle as the hook, short blurb, genres, the buy
- * row and a "Learn more" link to the book's section on /books.
+ * The Home hero, laid out like the mockup's book hero: framed cover beside
+ * the eyebrow ("Book One of <series> · Available now"), the title as the
+ * page's h1, the subtitle as the hook, the short blurb (from `sm`; the phone
+ * mockup leaves it out) and the buy row.
  */
-const BookHero = ({ book, className = "", ...rest }) => (
-  <article
-    className={`grid items-center gap-8 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:gap-24 ${className}`}
-    {...rest}
-  >
-    <FramedImage
-      src={book.cover}
-      alt={`${book.title} cover`}
-      placeholder={book.title}
-      className="mx-auto w-55 lg:w-full"
-    />
-    <div className="flex flex-col items-center gap-5 text-center lg:items-start lg:gap-7 lg:text-left">
-      <Eyebrow>{book.status}</Eyebrow>
-      <h3 className="text-display text-cream">{book.title}</h3>
-      {book.subtitle && (
-        <p className="font-display text-hook font-medium text-cream italic">
-          {book.subtitle}
-        </p>
-      )}
-      {book.shortBlurb && (
-        <p className="max-w-3xl text-lede text-muted">{book.shortBlurb}</p>
-      )}
-      {book.genres && (
-        <ul className="flex flex-wrap justify-center gap-2.5 lg:justify-start">
-          {book.genres.map((genre) => (
-            <li
-              key={genre}
-              className="border border-edge px-3 py-1 text-[0.9375rem] text-muted"
-            >
-              {genre}
-            </li>
-          ))}
-        </ul>
-      )}
-      <RetailerLinks
-        retailers={book.retailers}
-        className="w-full pt-2 lg:w-auto"
+const BookHero = ({ book, className = "", ...rest }) => {
+  const eyebrow = [
+    [book.seriesBook, book.series].filter(Boolean).join(" of "),
+    "Available now",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  return (
+    <article
+      className={`flex flex-col items-center gap-5.5 lg:flex-row lg:gap-16 xl:gap-24 ${className}`}
+      {...rest}
+    >
+      <FramedImage
+        src={book.cover}
+        alt={`${book.title} cover`}
+        placeholder={book.title}
+        loading="eager"
+        className="w-55 shrink-0 bg-ground animate-scale-in lg:w-80 xl:w-100"
       />
-      <Link
-        to={book.link}
-        className="text-accent transition-colors hover:text-accent-hover"
-      >
-        Learn more →
-      </Link>
-    </div>
-  </article>
-);
+      <div className="flex max-w-180 min-w-0 flex-col items-center gap-5.5 text-center lg:items-start lg:gap-7 lg:text-left">
+        <Eyebrow className="max-lg:tracking-[0.2em]">{eyebrow}</Eyebrow>
+        <h1 className="text-display text-cream">{book.title}</h1>
+        {book.subtitle && (
+          <p className="font-display text-hook font-medium text-cream italic">
+            {book.subtitle}
+          </p>
+        )}
+        {book.shortBlurb && (
+          <p className="hidden text-lede text-muted sm:block">
+            {book.shortBlurb}
+          </p>
+        )}
+        <RetailerLinks
+          retailers={book.retailers}
+          className="w-full pt-1.5 lg:w-auto lg:pt-2"
+        />
+      </div>
+    </article>
+  );
+};
 
 export default BookHero;
