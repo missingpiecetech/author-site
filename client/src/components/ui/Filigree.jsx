@@ -23,6 +23,7 @@ const STROKE = {
  * - an outer echo line 6 units outside the frame, ending in a volute that
  *   curls back on itself to a filled bead;
  * - a tendril leading out of the volute to a small leaf;
+ * - a counter-scroll above the tendril, curling the other way, and a bead;
  * - a little hook hanging between the echo line and the frame;
  * - on the diagonal: a teardrop pointing out, a bead, and a leaf pointing in
  *   (kept inside the frame's inset so it never touches the picture).
@@ -43,6 +44,11 @@ const CORNER_ARM = (
       d="M21 10C21 13.6 24.6 14.6 26.4 12.9C27.4 11.9 26.6 10.9 25.6 11.4"
     />
     <circle cx="33.2" cy="4.6" r="1.15" fill="currentColor" />
+    <path
+      {...STROKE}
+      d="M37.4 5.2C40 1.6 45.6 1 47.6 3.8C49 5.8 47.6 8.2 45.4 7.6C43.9 7.2 43.8 5.5 45 5.1"
+    />
+    <circle cx="51" cy="5.6" r=".8" fill="currentColor" />
   </>
 );
 
@@ -66,11 +72,13 @@ const CornerArt = () => (
  * Corner sizes. The frame corner sits a quarter of the way into the box, so
  * the offset is a quarter of the size: the ornament reaches that far outside
  * the frame and about an eighth inside it.
+ *   lg (large frames):   as md, 96px from xl  → 24px outside
  *   md (frames, panels): 48px, 72px from lg  → 12px / 18px outside
  *   sm (tiles):          32px                 →  8px outside
  *   xs (icon boxes):     24px                 →  6px outside
  */
 const SIZES = {
+  lg: "size-12 -m-3 lg:size-18 lg:-m-4.5 xl:size-24 xl:-m-6",
   md: "size-12 -m-3 lg:size-18 lg:-m-4.5",
   sm: "size-8 -m-2",
   xs: "size-6 -m-1.5",
@@ -88,7 +96,8 @@ const POSITIONS = [
  * `relative` and should keep its thin 1px frame line: the ornament sits on
  * the corners and the plain line runs between them.
  *
- * - `size`: "md" (framed images, panels) | "sm" (tiles) | "xs" (icon boxes).
+ * - `size`: "lg" (framed covers and photos) | "md" (panels) | "sm" (tiles) |
+ *   "xs" (icon boxes).
  */
 export const FiligreeCorners = ({ size = "md", className = "text-accent" }) => (
   <span aria-hidden="true" className="contents" data-filigree="corners">

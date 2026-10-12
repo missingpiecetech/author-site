@@ -50,7 +50,7 @@ const FramedImage = ({
         </div>
       )}
     </div>
-    <FiligreeCorners />
+    <FiligreeCorners size="lg" />
   </div>
 );
 

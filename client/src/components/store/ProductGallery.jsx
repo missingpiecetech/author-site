@@ -118,7 +118,7 @@ const ProductGallery = ({
           </button>
         )}
       </div>
-      {framed && <FiligreeCorners />}
+      {framed && <FiligreeCorners size="lg" />}
     </div>
   );
 };

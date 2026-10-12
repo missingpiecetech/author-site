@@ -21,7 +21,7 @@ const BookCover = ({ book }) =>
       >
         {book.icon}
       </div>
-      <FiligreeCorners />
+      <FiligreeCorners size="lg" />
     </div>
   );
 
