@@ -1,6 +1,7 @@
 /*
- * "From the Writing Desk" on the Home page: one row per work in progress,
- * shown in this order.
+ * "From the Writing Desk" on the Home page: one row per work in progress.
+ * The page lists them by percent, most complete first, so order here
+ * doesn't matter.
  *
  * To add a work, copy an entry and change it. To update one, edit its fields:
  *   title:   the working title, e.g. "Book Two: The Iron Crown"
@@ -12,16 +13,12 @@
  * "Short Story · Awaiting publishing · 100%". Any of the three can be left
  * out (delete the line, or use "" / null) and the rest close up around it.
  * Remove an entry to drop it from the page; with no entries the section hides.
- *
- * `updated` is an optional month for the intro ("Updated October 2026");
- * leave it "" to leave the date out.
  */
-export const updated = "";
 
 const WRITING_DESK = [
   {
     title: "Project: Arcanist",
-    type: "Novel",
+    type: "Series",
     status: "Worldbuilding & outlining",
     percent: 5,
   },
@@ -34,6 +31,7 @@ const WRITING_DESK = [
   {
     title: "Tempest (working title)",
     type: "Short Story",
+    status: "First draft",
     percent: 40,
   },
 ];

@@ -28,8 +28,8 @@ Dark and bookish: antique gold on near-black, classic serif type. The source des
 Home board). The re-skin changed the look only — same pages, same sections, same copy. Mockup
 copy appears only in "Join the Circle", "Buy direct", "Buy on Amazon", "Add it on Goodreads",
 the store's ebook line, About's "Invite Michael" list and Home's mockup sections (the hero
-eyebrow "A standalone dark epic fantasy · Available now", "Read an Excerpt", "From the Writing Desk" / "What’s
-coming next" / "Progress on the books in the works."). **Use the tokens below; never
+eyebrow "A standalone dark epic fantasy · Available now", "Read an Excerpt", "From the Writing Desk" / "Stories in
+the Works"). **Use the tokens below; never
 `primary`/`secondary`/`secondary-dark`, `bg-white` or Tailwind's default palette
 (`gray-*`, `red-*`, …); errors use `text-error`.**
 

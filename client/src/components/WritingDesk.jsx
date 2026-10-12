@@ -1,7 +1,7 @@
 import { useId } from "react";
 import Section from "./ui/Section";
 import Eyebrow from "./ui/Eyebrow";
-import WRITING_DESK, { updated } from "../WRITING_DESK";
+import WRITING_DESK from "../WRITING_DESK";
 
 /** A finite percent clamped to 0–100, or null when there is none to show. */
 const clampPercent = (percent) => {
@@ -58,12 +58,16 @@ export const WorkProgress = ({ title, type, status, percent }) => {
 };
 
 /**
- * "From the Writing Desk": the works in progress listed in WRITING_DESK.js.
- * Renders nothing when the list is empty. Section props (`band`, `ruled`, …)
+ * "From the Writing Desk": the works in progress listed in WRITING_DESK.js,
+ * most complete first (works with no percent last). Renders nothing when the
+ * list is empty. Section props (`band`, `ruled`, …)
  * pass through.
  */
 const WritingDesk = ({ works = WRITING_DESK, ...rest }) => {
   if (!works.length) return null;
+  const ordered = [...works].sort(
+    (a, b) => (b.percent ?? -1) - (a.percent ?? -1),
+  );
 
   return (
     <Section
@@ -75,18 +79,14 @@ const WritingDesk = ({ works = WRITING_DESK, ...rest }) => {
       <div className="flex shrink-0 flex-col gap-4 lg:w-110 lg:gap-6">
         <Eyebrow>From the Writing Desk</Eyebrow>
         <h2 id="writing-desk-heading" className="text-heading text-cream">
-          What’s coming next
+          Stories in the Works
         </h2>
-        <p className="hidden text-lede text-muted lg:block">
-          Progress on the books in the works.
-          {updated && ` Updated ${updated}.`}
-        </p>
       </div>
       <ul
         className="flex flex-1 flex-col justify-center gap-7 lg:gap-11"
         data-aos="fade-up"
       >
-        {works.map((work) => (
+        {ordered.map((work) => (
           <WorkProgress key={work.title} {...work} />
         ))}
       </ul>
