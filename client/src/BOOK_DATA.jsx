@@ -67,16 +67,6 @@ export const BOOKS = [
     },
     // Home hero eyebrow. Crownfall is a standalone, not part of a series.
     heroEyebrow: "A standalone dark epic fantasy · Available now",
-    // Opening of the book for Home's "Read an Excerpt" section, which stays
-    // hidden while `paragraphs` is empty. One string per paragraph (the first
-    // 150 to 200 words, ending on a small cliffhanger). `note` is an optional
-    // line under the heading; `link` is an optional "Keep reading" URL.
-    excerpt: {
-      chapter: "Chapter One",
-      paragraphs: [],
-      note: "",
-      link: "",
-    },
     release: "April 2026",
     status: BOOK_STATUS.RELEASED,
     genres: ["Nobledark Fantasy", "Action & Adventure", "Political Intrigue"],

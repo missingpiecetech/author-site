@@ -6,6 +6,7 @@
 //   - filigree corners that run into each other or onto their frame's content;
 //   - content left at opacity 0 with prefers-reduced-motion;
 //   - progress bars whose fill does not match aria-valuenow;
+//   - an excerpt reading column wider than 72ch of its own font;
 // plus the Home scroll cue's geometry at 1440/1280/1024/768/390, and, with
 // `--shots <dir>`, element screenshots for review (see SHOTS).
 //
@@ -26,7 +27,10 @@ const ROUTES = [
   "/store",
   "/contact",
   "/checkout/success",
+  "/books/crownfall/excerpt",
 ];
+// The longest line the excerpt's reading column may hold, in ch of its font.
+const MAX_MEASURE_CH = 72;
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844, isMobile: true, hasTouch: true };
 
@@ -74,6 +78,24 @@ const SHOTS = [
     route: "/about",
     selector: "figure",
     pad: 30,
+  },
+  // `optional`: skipped (not failed) when the selector matches nothing, for
+  // content that only exists once its data is filled in (the excerpt text).
+  {
+    name: "excerpt-chapter-heading-1440",
+    route: "/books/crownfall/excerpt",
+    selector: "#chapter-1",
+    pad: 40,
+    maxHeight: 520,
+    optional: true,
+  },
+  {
+    name: "excerpt-reading-390",
+    route: "/books/crownfall/excerpt",
+    selector: '[data-testid="excerpt-text"]',
+    mobile: true,
+    maxHeight: 760,
+    optional: true,
   },
   {
     name: "books-arcanist-1440",
@@ -228,6 +250,22 @@ const progressBarMismatches = (page) =>
     }),
   );
 
+// The excerpt column's width in ch of its own font (the width of "0").
+const readingMeasure = (page) =>
+  page.evaluate(() => {
+    const column = document.querySelector('[data-testid="excerpt-text"]');
+    if (!column) return null;
+    const probe = document.createElement("span");
+    probe.textContent = "0".repeat(100);
+    probe.style.cssText =
+      "position:absolute;visibility:hidden;white-space:nowrap";
+    column.append(probe);
+    const ch = probe.getBoundingClientRect().width / 100;
+    probe.remove();
+    const width = column.getBoundingClientRect().width;
+    return { width: Math.round(width), ch: Math.round((width / ch) * 10) / 10 };
+  });
+
 const scrollCueGeometry = (page) =>
   page.evaluate(() => {
     const cue = document.querySelector('[data-testid="scroll-cue"]');
@@ -305,6 +343,15 @@ const main = async () => {
         for (const item of invisible) fail(`${label}: opacity 0 → ${item}`);
         const bars = await progressBarMismatches(still.page);
         for (const bar of bars) fail(`${label}: ${bar}`);
+        const measure = await readingMeasure(still.page);
+        if (measure) {
+          console.log(`  reading column: ${measure.width}px, ${measure.ch}ch`);
+          if (measure.ch > MAX_MEASURE_CH) {
+            fail(
+              `${label}: reading column ${measure.ch}ch > ${MAX_MEASURE_CH}ch`,
+            );
+          }
+        }
         await still.context.close();
       }
     }
@@ -362,6 +409,11 @@ const main = async () => {
         await page.evaluate(() => document.fonts.ready);
         await scrollThrough(page);
         const handle = await page.$(shot.selector);
+        if (!handle && shot.optional) {
+          console.log(`  shot ${shot.name}: skipped, nothing matches`);
+          await context.close();
+          continue;
+        }
         if (!handle) {
           fail(`shot ${shot.name}: nothing matches ${shot.selector}`);
           await context.close();

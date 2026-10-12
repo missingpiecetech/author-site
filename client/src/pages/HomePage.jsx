@@ -11,13 +11,15 @@ import PullQuote from "../components/ui/PullQuote";
 import BookHero from "../components/home/BookHero";
 import Excerpt from "../components/home/Excerpt";
 import WritingDesk from "../components/WritingDesk";
+import { EXCERPTS, hasExcerptText } from "../excerpts/index.js";
 import useHashScroll from "../hooks/useHashScroll";
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const FEATURED = BOOKS.find((book) => book.slug === "crownfall");
-const HAS_EXCERPT = FEATURED?.excerpt?.paragraphs?.some((p) => p?.trim());
+const EXCERPT = EXCERPTS[FEATURED?.slug];
+const HAS_EXCERPT = hasExcerptText(EXCERPT?.excerpt);
 
 const HomePage = () => {
   useHashScroll();
@@ -72,8 +74,9 @@ const HomePage = () => {
         </Section>
       )}
 
-      {/* Read an excerpt: hidden until BOOK_DATA has the opening text */}
-      {FEATURED && <Excerpt excerpt={FEATURED.excerpt} />}
+      {/* Read an excerpt: the opening of src/excerpts/crownfall.js, hidden
+          until it has text */}
+      {EXCERPT && <Excerpt excerpt={EXCERPT.excerpt} to={EXCERPT.path} />}
 
       {/* From the writing desk: WRITING_DESK.js. A band after the excerpt, as
           in the mockup; plain when it would sit against the quote band. */}

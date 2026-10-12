@@ -8,6 +8,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import StorePage from "./pages/StorePage";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
+import ExcerptPage from "./pages/ExcerptPage";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,10 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/podcast" element={<PodcastPage />} />
             <Route path="/books" element={<BooksPage />} />
+            <Route
+              path="/books/crownfall/excerpt"
+              element={<ExcerptPage slug="crownfall" />}
+            />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/store" element={<StorePage />} />
             <Route path="/checkout/success" element={<CheckoutSuccessPage />} />

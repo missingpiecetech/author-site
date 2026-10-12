@@ -14,6 +14,12 @@ import puppeteer from "puppeteer";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { startServer } from "./support/server.js";
 import { STUB_PRODUCTS } from "./support/square-stub-products.js";
+import {
+  EXCERPTS,
+  chapterId,
+  chapterTitle,
+  readableChapters,
+} from "../../src/excerpts/index.js";
 
 const SHIPPING_FEE = {
   name: "Shipping",
@@ -458,6 +464,7 @@ const ROUTES = [
   "/store",
   "/contact",
   "/checkout/success",
+  EXCERPTS.crownfall.path,
 ];
 
 // Issue #7: every route must fit a 390px phone, measured with animations live.
@@ -833,4 +840,82 @@ describe("home scroll cue clears the hero buttons", () => {
       }
     });
   }
+});
+
+// The excerpt text is pasted into src/excerpts/crownfall.js later, so these
+// follow the data: with text, three chapter openers and Home's opening; while
+// it is empty, the route's coming-soon state and no Home section.
+describe("Crownfall excerpt", () => {
+  const { path, excerpt } = EXCERPTS.crownfall;
+  const chapters = readableChapters(excerpt);
+
+  it(`${path} renders ${chapters.length ? "its chapters" : "the coming-soon state"}`, async () => {
+    const { page } = await openPage(MOBILE);
+    await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
+    await page.waitForSelector("h1");
+    expect(await page.$eval("h1", (el) => el.textContent)).toBe("Crownfall");
+
+    if (chapters.length) {
+      const rendered = await page.$$eval(byTestId("excerpt-chapter"), (els) =>
+        els.map((el) => ({
+          id: el.id,
+          heading: el.querySelector("h2").textContent,
+        })),
+      );
+      expect(rendered).toEqual(
+        chapters.map((c) => ({ id: chapterId(c), heading: chapterTitle(c) })),
+      );
+      expect(await page.$(byTestId("excerpt-coming-soon"))).toBeNull();
+    } else {
+      await page.waitForSelector(byTestId("excerpt-coming-soon"));
+      const back = await page.$eval(
+        byTestId("excerpt-coming-soon"),
+        (el) => el.closest("section").querySelector("a")?.pathname,
+      );
+      expect(back).toBe("/books");
+      expect(await page.$(byTestId("excerpt-chapter"))).toBeNull();
+    }
+  });
+
+  it.runIf(chapters.length > 1)(
+    "a chapter link lands below the sticky header",
+    async () => {
+      const { page } = await openPage(MOBILE);
+      await page.emulateMediaFeatures([
+        { name: "prefers-reduced-motion", value: "reduce" },
+      ]);
+      const target = chapterId(chapters[1]);
+      await page.goto(`${server.baseUrl}${path}#${target}`, {
+        waitUntil: "load",
+      });
+      await page.evaluate(() => document.fonts.ready);
+      await new Promise((r) => setTimeout(r, 300));
+      const { top, headerBottom } = await page.evaluate((id) => {
+        const heading = document.getElementById(id).querySelector("h2");
+        return {
+          top: heading.getBoundingClientRect().top,
+          headerBottom: document.querySelector("header").getBoundingClientRect()
+            .bottom,
+        };
+      }, target);
+      expect(top).toBeGreaterThanOrEqual(headerBottom);
+      expect(top).toBeLessThan(headerBottom + 120);
+    },
+  );
+
+  it(`Home ${chapters.length ? "shows the opening and links to the excerpt" : "hides Read an Excerpt"}`, async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
+    await page.waitForSelector("h1");
+    const link = await page.$(byTestId("excerpt-keep-reading"));
+    if (chapters.length) {
+      expect(await link.evaluate((a) => new URL(a.href).pathname)).toBe(path);
+      expect(await page.$eval("#excerpt-heading", (el) => el.textContent)).toBe(
+        chapterTitle(chapters[0]),
+      );
+    } else {
+      expect(link).toBeNull();
+      expect(await page.$("#excerpt")).toBeNull();
+    }
+  });
 });
