@@ -37,10 +37,11 @@ const HomePage = () => {
       {/* Author hero */}
       <Section
         clipX
-        className="relative flex min-h-[calc(100svh-var(--header-h))] items-center"
-        innerClassName="relative w-full"
+        spacing="none"
+        className="flex min-h-[calc(100svh-var(--header-h))] flex-col pt-12 pb-6 lg:pt-26 lg:pb-8"
+        innerClassName="flex w-full flex-1 flex-col"
       >
-        <div className="relative flex flex-col items-center gap-12 md:flex-row md:justify-around md:gap-16">
+        <div className="flex flex-1 flex-col items-center justify-center gap-12 md:flex-row md:justify-around md:gap-16">
           {/* Author image */}
           <div className="relative shrink-0">
             <FramedImage
@@ -73,10 +74,11 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        {/* Scroll indicator, hidden on mobile */}
+        {/* Scroll indicator: in flow at the foot of the hero, so it can never sit on the buttons */}
         <div
           aria-hidden="true"
-          className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 motion-safe:animate-bounce md:block"
+          data-testid="scroll-cue"
+          className="mx-auto mt-12 shrink-0 motion-safe:animate-bounce lg:mt-16"
         >
           <div className="flex h-10 w-6 justify-center rounded-full border-2 border-accent/30">
             <div className="mt-2 h-3 w-1 rounded-full bg-accent/60" />

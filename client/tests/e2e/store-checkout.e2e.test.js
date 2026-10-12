@@ -776,3 +776,61 @@ describe("motion allowed: entrance animations still run", () => {
     expect(keyframes).toBeGreaterThan(0);
   });
 });
+
+// The Home hero's scroll cue sits at the foot of the hero, centred, clear of
+// the CTA buttons and inside the section. Measured with reduced motion so the
+// bounce is still; the 16px margin covers the bounce's 10px lift.
+describe("home scroll cue clears the hero buttons", () => {
+  const SIZES = [
+    { width: 1440, height: 900 },
+    { width: 1280, height: 800 },
+    { width: 1024, height: 768 },
+    { width: 768, height: 1024 },
+    MOBILE,
+  ];
+  for (const viewport of SIZES) {
+    it(`${viewport.width}px`, async () => {
+      const { page } = await openPage(viewport);
+      await page.emulateMediaFeatures([
+        { name: "prefers-reduced-motion", value: "reduce" },
+      ]);
+      await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
+      await page.evaluate(() => document.fonts.ready);
+      const geometry = await page.evaluate(() => {
+        const cue = document.querySelector('[data-testid="scroll-cue"]');
+        const section = cue.closest("section");
+        const box = (el) => {
+          const r = el.getBoundingClientRect();
+          return {
+            top: r.top + window.scrollY,
+            bottom: r.bottom + window.scrollY,
+            left: r.left,
+            right: r.right,
+          };
+        };
+        return {
+          cue: box(cue),
+          section: box(section),
+          next: box(section.nextElementSibling),
+          buttons: [...section.querySelectorAll("a, button")].map(box),
+          width: document.documentElement.clientWidth,
+        };
+      });
+      const { cue, section, next, buttons, width } = geometry;
+      expect(cue.bottom - cue.top).toBeGreaterThan(0);
+      expect(Math.abs((cue.left + cue.right) / 2 - width / 2)).toBeLessThan(1);
+      expect(cue.top).toBeGreaterThanOrEqual(section.top);
+      expect(cue.bottom).toBeLessThanOrEqual(section.bottom);
+      expect(cue.bottom).toBeLessThanOrEqual(next.top);
+      expect(buttons.length).toBeGreaterThan(0);
+      for (const button of buttons) {
+        const clear =
+          cue.top >= button.bottom + 16 ||
+          cue.bottom <= button.top - 16 ||
+          cue.left >= button.right ||
+          cue.right <= button.left;
+        expect(clear, JSON.stringify({ cue, button })).toBe(true);
+      }
+    });
+  }
+});
