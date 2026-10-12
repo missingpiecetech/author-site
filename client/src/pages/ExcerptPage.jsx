@@ -39,27 +39,17 @@ const SceneBreak = () => (
 );
 
 /**
- * A chapter opener: small gold "Chapter 1", the POV name large in Cormorant,
- * then a bramble divider. Reads "Chapter 1: Kyndel" to screen readers and
- * when copied (the colon is visually hidden).
+ * A chapter opener: "Chapter 1: Kyndel" centred in Cormorant, with a small
+ * bramble accent underneath.
  */
 const ChapterHeading = ({ chapter }) => {
   const id = chapterId(chapter);
   return (
-    <header className="mb-10 flex flex-col items-center text-center lg:mb-14">
-      <h2
-        id={`${id}-heading`}
-        className="flex flex-col items-center gap-3 lg:gap-4"
-      >
-        <span className="font-body text-eyebrow font-normal uppercase tracking-eyebrow text-accent">
-          Chapter {chapter.number}
-          {chapter.pov && <span className="sr-only">: </span>}
-        </span>
-        {chapter.pov && (
-          <span className="text-heading text-cream">{chapter.pov}</span>
-        )}
+    <header className="mb-10 flex flex-col items-center gap-4 text-center lg:mb-14 lg:gap-5">
+      <h2 id={`${id}-heading`} className="text-hook text-cream">
+        {chapterTitle(chapter)}
       </h2>
-      <FiligreeDivider className="mt-4 w-full max-w-xs text-accent lg:mt-6 lg:max-w-sm" />
+      <FiligreeDivider className="w-full max-w-40 text-accent lg:max-w-48" />
     </header>
   );
 };
