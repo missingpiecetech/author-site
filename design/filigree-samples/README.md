@@ -6,8 +6,9 @@ candidates (`1`–`12`). Each card shows the style on a framed Crownfall cover, 
 divider and the store's shipping notice, at the site's colours and fonts. Open it directly in
 a browser; it is not part of the app build and never ships with the site.
 
-**The owner chose #8, Thorned Bramble (October 2026).** The site uses it everywhere filigree
-appears.
+**The owner chose #8, Thorned Bramble (October 2026)** for the site: it is used everywhere
+filigree appears, except on frames that belong only to **Project: Arcanist**, which use
+**#10, Art Deco Sunburst** (the book's cover frame on `/books`).
 
 ## How the file is built
 
@@ -21,14 +22,29 @@ appears.
   line. Dividers pick one rule style: `.rule-solid`, `.rule-double`, `.rule-book` or
   `.rule-taper`. A few styles add a per-card tweak (`.s6` outline, `.s11` double border).
 
-## Switching the site to another style
+## Where the site's filigree lives
 
-The site's filigree lives in `client/src/components/ui/`:
+In `client/src/components/ui/`:
 
 - `Filigree.jsx` — `FiligreeCorners` and `FiligreeDivider`, the components every page uses.
   They contain no artwork.
-- `filigree/index.js` — one line, `export * from "./bramble";`, choosing the active style.
-- `filigree/bramble.jsx` — the Thorned Bramble artwork and metrics.
+- `filigree/index.js` — names the site style (two marked lines: `export * from "./bramble"`
+  and `SITE_FILIGREE = "bramble"`) and registers every ported style by name in
+  `FILIGREE_STYLES`, with `getFiligree(name)` to look one up.
+- `filigree/bramble.jsx` — the Thorned Bramble artwork and metrics (site style).
+- `filigree/artDeco.jsx` — the Art Deco Sunburst artwork and metrics (#10, Project: Arcanist).
+
+## Giving one item its own style
+
+`FramedImage`, `FiligreeCorners` and `FiligreeDivider` take a `filigree` prop, a name from
+`FILIGREE_STYLES` (for example `filigree="artDeco"`); without it they use the site style. A
+hand-built frame must also take its frame line from the same style:
+`` `${getFiligree(name).FRAME_BORDER} border-accent` ``. For a book, set `filigree:
+"artDeco"` on its `BOOK_DATA` entry and the Books page frames its cover in that style. To
+offer a style that is not ported yet, port it (steps 1–2 below), then import it in
+`filigree/index.js` and add it to `FILIGREE_STYLES`, leaving the site-style lines alone.
+
+## Switching the site to another style
 
 To switch to style _N_:
 
@@ -49,7 +65,8 @@ To switch to style _N_:
      smallest framed box, in corner sizes, before arms on one edge meet.
    - If a style uses `#gilt` or a mask, define it inside the art with an id unique to the
      style; ids are document-global and every corner renders the art again.
-3. Point `filigree/index.js` at the new module.
+3. Import the new module in `filigree/index.js`, add it to `FILIGREE_STYLES`, and change both
+   marked site-style lines to it.
 4. Check the sizes in `Filigree.jsx` (`SIZES`, the corner box per size) still suit the new
    corner: bigger or more inward-reaching corners may need smaller boxes or more padding in
    `FramedImage` and the panels.

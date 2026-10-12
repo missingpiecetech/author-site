@@ -74,17 +74,29 @@ against the ground, so never show state with a border alone (the pressed pill us
   content in a `max-w-7xl` column. Bands keep plain 1px `rule` edges; a plain section that
   follows another (`<Section ruled>`) and the close of a `PageIntro` get the **filigree
   divider** (`FiligreeDivider`: solid rules fading in either side of a centred ornament).
-- **Filigree, not plain gold boxes.** The style is **#8 Thorned Bramble** (owner's choice,
-  Oct 2026): tapering briar stems crossing at each corner around a closed bud, with hooked
-  thorns; bold, solid `currentColor` fills. Inline SVG only, no image files or icon fonts.
+- **Filigree, not plain gold boxes.** The site style is **#8 Thorned Bramble** (owner's
+  choice, Oct 2026): tapering briar stems crossing at each corner around a closed bud, with
+  hooked thorns; bold, solid `currentColor` fills. **Project: Arcanist's own frames use #10
+  Art Deco Sunburst** (stepped bars, lozenges, a sunburst fan; 3px frame line) — today that
+  is its cover frame on `/books`. Inline SVG only, no image files or icon fonts.
   - `src/components/ui/Filigree.jsx`: `FiligreeCorners` (parent `relative`; `size` lg for
     framed covers/photos, md for panels, sm for tiles, xs for 48px icon boxes) and
-    `FiligreeDivider`. Both `aria-hidden`, `pointer-events-none`. No artwork lives here.
+    `FiligreeDivider`. Both `aria-hidden`, `pointer-events-none`, and take `filigree` (a
+    style name; default the site style). No artwork lives here.
   - `src/components/ui/filigree/bramble.jsx`: the artwork (ported verbatim from symbols
     `c8`/`d8` of the samples) and its metrics: `FRAME_BORDER` (`border-2`), the inset (a
     fifth of the corner box sits outside the frame line), the divider size and `Rule`.
-  - `src/components/ui/filigree/index.js` selects the active style in one line. Import it
-    as `filigree/index.js` (explicitly — on macOS `./filigree` can resolve to `Filigree.jsx`).
+  - `src/components/ui/filigree/artDeco.jsx`: Art Deco Sunburst (symbols `c10`/`d10`,
+    `border-3`, solid 3px rule), same exports.
+  - `src/components/ui/filigree/index.js` names the site style (two marked lines) and
+    registers styles by name in `FILIGREE_STYLES` (`bramble`, `artDeco`); `getFiligree(name)`
+    returns one, falling back to the site style. Import it as `filigree/index.js`
+    (explicitly — on macOS `./filigree` can resolve to `Filigree.jsx`).
+  - **One item, its own style:** pass `filigree="artDeco"` to `FramedImage` /
+    `FiligreeCorners` / `FiligreeDivider`, and give a hand-built frame
+    `getFiligree(name).FRAME_BORDER` so line and corners match. A book takes it from
+    `BOOK_DATA` (`filigree: "artDeco"` on Project: Arcanist), which `BooksPage`'s
+    `BookCover` passes through. Never change the site style to style one item.
   - Every box carrying corners uses `${FRAME_BORDER}` plus a colour (`border-accent`, or
     `border-edge` on tiles and panels). Corner boxes: lg 76/112/152px (base/lg/xl), md
     52/64, sm 40/48, xs 30; a fifth of that reaches outside the box (30px for a cover at
@@ -101,7 +113,8 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
   secondary = transparent with an `outline` border; toggle pills use `aria-pressed` and the
   gold fill when pressed. Labels in sentence case.
-- **Framed images:** covers and author photos sit in a 2px gold frame with filigree corners,
+- **Framed images:** covers and author photos sit in a 2px gold frame (3px for Arcanist's
+  art deco) with filigree corners,
   an 18px inset (12px on mobile) and `shadow-cover`.
 - **Pull quotes:** large italic Cormorant on a `band`, a filigree divider, then the
   attribution in uppercase `subtle`.
@@ -113,9 +126,10 @@ against the ground, so never show state with a border alone (the pressed pill us
   empty); the writing desk; then the book-tour image and Author Adjacent. No author-photo
   hero.
 - **Writing desk** ("From the Writing Desk", `WritingDesk`): one `WorkProgress` row per entry
-  in `src/WRITING_DESK.js` (`{ title, status, percent }`, edited by hand) — title, "status ·
-  N%" and a gold bar on a `rule` track (`role="progressbar"`, aria-valuenow/min/max).
-  `percent` is clamped to 0–100; `null` hides the number and bar so only the status shows.
+  in `src/WRITING_DESK.js` (`{ title, type, status, percent }`, edited by hand) — title, then
+  "type · status · N%" (any missing part skipped, no stray separator; under the title below
+  `lg`, beside it from `lg`) and a gold bar on a `rule` track (`role="progressbar"`,
+  aria-valuenow/min/max). `percent` is clamped to 0–100; `null` hides the number and bar.
   A `band` when it follows the excerpt, plain when it would sit against the praise band.
 - **Lists** (episodes, contact rows, links) are rows divided by `rule` lines, not cards.
 - **Retailer links:** the Home hero and `/books` show `RetailerLinks` (Buy direct →
@@ -138,7 +152,7 @@ against the ground, so never show state with a border alone (the pressed pill us
 - `src/components/ui/`: `Section` (`band`, `ruled`, `divider`, `clipX`, `spacing`),
   `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`; artwork in `filigree/`), `Eyebrow`, `Button`
   (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
-  `FramedImage` (`aspect`, `placeholder`), `PullQuote` (`quote`, `name`, `credit`),
+  `FramedImage` (`aspect`, `placeholder`, `filigree`), `PullQuote` (`quote`, `name`, `credit`),
   `RuleList`/`RuleRow` (`to`/`href`, `arrow`), `PageIntro` (`eyebrow`, `title`, `accent`,
   `lede`).
 - `src/components/`: `RetailerLinks` (`compact`), `ShippingNotice`, `JoinCircleButton`
@@ -212,8 +226,7 @@ Run from `client/`.
 390 on the e2e harness: horizontal scroll, filigree overlapping text, filigree corners meeting
 each other or their frame's content, reduced-motion opacity,
 progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
-`--shots`) the element screenshots listed in its `SHOTS`. Set a temporary `percent` in
-`WRITING_DESK.js` to exercise the bar.
+`--shots`) the element screenshots listed in its `SHOTS`.
 
 ## Square API — Two Implementations, Same Routes
 
