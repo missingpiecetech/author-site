@@ -299,3 +299,49 @@ describe("no horizontal scroll at 390px", () => {
     });
   }
 });
+
+// Entrance animations start at opacity: 0. For visitors who ask for reduced
+// motion they must not run at all, so nothing may be left invisible after
+// scrolling the whole page (catches AOS and keyframe classes alike).
+describe("prefers-reduced-motion leaves no content invisible", () => {
+  for (const route of ROUTES) {
+    it(route, async () => {
+      for (const viewport of [DESKTOP, MOBILE]) {
+        const { page } = await openPage(viewport);
+        await page.emulateMediaFeatures([
+          { name: "prefers-reduced-motion", value: "reduce" },
+        ]);
+        await page.goto(`${server.baseUrl}${route}`, { waitUntil: "load" });
+        await page.evaluate(async () => {
+          const step = window.innerHeight / 2;
+          for (let y = 0; y < document.body.scrollHeight; y += step) {
+            window.scrollTo(0, y);
+            await new Promise((r) => setTimeout(r, 30));
+          }
+        });
+        await new Promise((r) => setTimeout(r, 300));
+
+        const invisible = await page.evaluate(() =>
+          [...document.querySelectorAll("body *")]
+            .filter((el) => !el.closest('[data-testid="cart-panel"]'))
+            .filter((el) => {
+              const style = getComputedStyle(el);
+              if (style.opacity !== "0" || style.display === "none") {
+                return false;
+              }
+              const box = el.getBoundingClientRect();
+              const hasContent =
+                el.textContent.trim() ||
+                el.tagName === "IMG" ||
+                el.querySelector("img");
+              return box.width > 1 && box.height > 1 && hasContent;
+            })
+            .map((el) => `${el.tagName} ${el.textContent.trim().slice(0, 40)}`),
+        );
+        expect(invisible, `${viewport.width}px`).toEqual([]);
+        await context.close();
+        context = undefined;
+      }
+    });
+  }
+});
