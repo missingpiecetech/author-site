@@ -7,7 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const ShoppingCart = () => {
-  const { cartItems, totalItems, removeItem, updateQuantity, isCartOpen: open, setCartOpen: setOpen } = useCart();
+  const {
+    cartItems,
+    totalItems,
+    removeItem,
+    updateQuantity,
+    isCartOpen: open,
+    setCartOpen: setOpen,
+  } = useCart();
   const { createCheckoutLink } = useSquare();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -48,18 +55,21 @@ const ShoppingCart = () => {
 
           {/* Cart panel — full-screen on mobile, dropdown on desktop */}
           <div
+            data-testid="cart-panel"
+            data-state={open ? "open" : "closed"}
             className={`fixed z-50 bg-white transition-all duration-150 ease-out
               inset-0 flex flex-col
               md:inset-auto md:top-25 md:right-4 md:w-96 md:max-w-[calc(100vw-2rem)] md:rounded-2xl md:shadow-2xl md:border md:border-gray-200 md:origin-top-right ${
-              open
-                ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
-                : "opacity-0 translate-y-full md:-translate-y-1 md:scale-[0.985] pointer-events-none"
-            }`}
+                open
+                  ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+                  : "opacity-0 translate-y-full md:-translate-y-1 md:scale-[0.985] pointer-events-none"
+              }`}
           >
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-xl font-bold text-gray-900">Shopping Cart</h2>
               <button
                 type="button"
+                data-testid="cart-close"
                 onClick={() => setOpen(false)}
                 className="md:hidden w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                 aria-label="Close cart"
@@ -76,6 +86,8 @@ const ShoppingCart = () => {
                     {cartItems.map((item) => (
                       <div
                         key={item.id}
+                        data-testid="cart-item"
+                        data-product-id={item.id}
                         className="flex items-start gap-3 rounded-xl"
                       >
                         <div className="w-14 h-14 rounded-lg overflow-hidden bg-white flex-shrink-0">
@@ -106,6 +118,7 @@ const ShoppingCart = () => {
                           <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
                             <div className="flex items-center gap-2">
                               <button
+                                data-testid="qty-decrease"
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity - 1)
                                 }
@@ -125,10 +138,14 @@ const ShoppingCart = () => {
                                 )}
                               </button>
 
-                              <span className="w-6 text-center font-semibold text-gray-900">
+                              <span
+                                data-testid="qty-value"
+                                className="w-6 text-center font-semibold text-gray-900"
+                              >
                                 {item.quantity}
                               </span>
                               <button
+                                data-testid="qty-increase"
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity + 1)
                                 }
@@ -145,16 +162,22 @@ const ShoppingCart = () => {
                   </div>
                   <div className="flex justify-between items-center font-semibold text-gray-900">
                     <span>Subtotal:</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span data-testid="cart-subtotal">${total.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center text-gray-600 text-sm">
                     <span>Tax/Shipping:</span>
                     <span>Calculated at checkout</span>
                   </div>
                   {checkoutError && (
-                    <p className="text-sm text-red-600 mb-3">{checkoutError}</p>
+                    <p
+                      data-testid="checkout-error"
+                      className="text-sm text-red-600 mb-3"
+                    >
+                      {checkoutError}
+                    </p>
                   )}
                   <button
+                    data-testid="checkout-button"
                     onClick={onCheckout}
                     disabled={isCheckingOut}
                     className="w-full mt-4 bg-secondary text-white py-2.5 rounded-full hover:bg-secondary-dark transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
@@ -169,6 +192,7 @@ const ShoppingCart = () => {
         document.body,
       )}
       <button
+        data-testid="cart-toggle"
         onClick={() => setOpen(!open)}
         className={`hidden md:flex relative rounded-full p-3.5 border transition-all duration-150 cursor-pointer items-center justify-center shadow-lg ${
           open
@@ -179,7 +203,10 @@ const ShoppingCart = () => {
       >
         <FaShoppingCart className="text-2xl" />
         {cartItems.length > 0 && (
-          <span className="absolute -top-2 -right-2 bg-secondary-dark text-white text-xs font-bold rounded-full px-2 py-0.5 border border-white">
+          <span
+            data-testid="cart-count"
+            className="absolute -top-2 -right-2 bg-secondary-dark text-white text-xs font-bold rounded-full px-2 py-0.5 border border-white"
+          >
             {totalItems()}
           </span>
         )}

@@ -92,6 +92,7 @@ const Navigation = () => {
 
             {/* Mobile menu button */}
             <button
+              data-testid="mobile-menu-toggle"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden text-gray-700 hover:text-secondary focus:outline-none transition-colors p-2 rounded-lg hover:bg-gray-100"
               aria-label="Toggle menu"
@@ -142,6 +143,7 @@ const Navigation = () => {
               ))}
               <button
                 type="button"
+                data-testid="mobile-cart-button"
                 onClick={() => {
                   setIsMenuOpen(false);
                   setCartOpen(true);
