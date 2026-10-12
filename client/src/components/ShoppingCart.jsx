@@ -7,7 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const ShoppingCart = () => {
-  const { cartItems, totalItems, removeItem, updateQuantity, isCartOpen: open, setCartOpen: setOpen } = useCart();
+  const {
+    cartItems,
+    totalItems,
+    removeItem,
+    updateQuantity,
+    isCartOpen: open,
+    setCartOpen: setOpen,
+  } = useCart();
   const { createCheckoutLink } = useSquare();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -51,10 +58,10 @@ const ShoppingCart = () => {
             className={`fixed z-50 bg-white transition-all duration-150 ease-out
               inset-0 flex flex-col
               md:inset-auto md:top-25 md:right-4 md:w-96 md:max-w-[calc(100vw-2rem)] md:rounded-2xl md:shadow-2xl md:border md:border-gray-200 md:origin-top-right ${
-              open
-                ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
-                : "opacity-0 translate-y-full md:-translate-y-1 md:scale-[0.985] pointer-events-none"
-            }`}
+                open
+                  ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+                  : "opacity-0 translate-y-full md:-translate-y-1 md:scale-[0.985] pointer-events-none"
+              }`}
           >
             <div className="flex items-center justify-between p-6 pb-0">
               <h2 className="text-xl font-bold text-gray-900">Shopping Cart</h2>
