@@ -23,57 +23,90 @@ React app deployed to Cloudflare Pages.
 
 ## Design System
 
-The site is moving from the old white/teal look to a dark, bookish design (gold on near-black,
-classic serif type). The source design is the "Fantasy Author Website Concepts" canvas
-(Home, Store, Podcast, About boards, plus a mobile Home board). Pages are being converted one
-at a time on the `redesign/dark` integration branch; until that merges, `main` still renders
-the old look. **All new UI work uses the tokens below — never the old ones.**
+Dark and bookish: antique gold on near-black, classic serif type. The source design is the
+"Fantasy Author Website Concepts" canvas (Home, Store, Podcast, About boards plus a mobile
+Home board). The re-skin changed the look only — same pages, same sections, same copy. Mockup
+copy appears only in "Join the Circle", "Buy direct", "Buy on Amazon", "Add it on Goodreads",
+the store's ebook line and About's "Invite Michael" list. **Use the tokens below; never
+`primary`/`secondary`/`secondary-dark`, `bg-white` or `gray-*`.** (The old tokens remain in
+`theme.css` only until every page is converted.)
 
 ### Colors (`src/theme.css`)
 
-| Token          | Value     | Use                                                                   |
-| -------------- | --------- | --------------------------------------------------------------------- |
-| `ground`       | `#121017` | Page background                                                       |
-| `band`         | `#17141d` | Alternate section bands (quotes, writing desk)                        |
-| `well`         | `#1c1922` | Inset panels, inputs, audio player                                    |
-| `surface`      | `#25202c` | Image placeholders                                                    |
-| `rule`         | `#2c2733` | 1px section dividers and borders                                      |
-| `edge`         | `#3a3342` | Card / placeholder borders                                            |
-| `outline`      | `#4a4353` | Secondary (outlined) button border                                    |
-| `cream`        | `#ece4d4` | Primary text and headings                                             |
-| `muted`        | `#c9c0ae` | Body copy, ledes                                                      |
-| `subtle`       | `#b3a996` | Captions, attributions, footer text                                   |
-| `accent`       | `#cfae6b` | Antique gold: eyebrows, primary buttons, links, frames, progress bars |
-| `accent-hover` | `#e6c98c` | Link/button hover                                                     |
+| Token          | Value     | Use                                                    |
+| -------------- | --------- | ------------------------------------------------------ |
+| `ground`       | `#121017` | Page background; text on gold                          |
+| `band`         | `#17141d` | Alternate section bands (quotes, writing desk)         |
+| `well`         | `#1c1922` | Inset panels, inputs, cart drawer, shipping notice     |
+| `surface`      | `#25202c` | Image placeholders                                     |
+| `rule`         | `#2c2733` | 1px section dividers and row separators                |
+| `edge`         | `#3a3342` | Card / placeholder borders                             |
+| `outline`      | `#4a4353` | Secondary (outlined) button border                     |
+| `cream`        | `#ece4d4` | Primary text and headings                              |
+| `muted`        | `#c9c0ae` | Body copy, ledes                                       |
+| `subtle`       | `#b3a996` | Captions, attributions, footer text                    |
+| `accent`       | `#cfae6b` | Antique gold: eyebrows, primary buttons, links, frames |
+| `accent-hover` | `#e6c98c` | Link/button hover                                      |
+| `error`        | `#f87171` | Error text (checkout, store); 6.3:1 on the dark panels |
 
-Primary buttons are gold fill with `ground`-colored text. Text on gold is always dark.
+Primary buttons are gold fill with `ground` text. `outline`/`edge` borders are only ~2:1
+against the ground, so never show state with a border alone (the pressed pill uses the fill).
 
 ### Typography
 
-- **Display:** Cormorant Garamond (500/600/700, italic 500) — headings, the site name, hooks
-  and pull quotes (italic).
-- **Body:** Spectral (400/500, italic 400) — everything else.
+- **Display:** Cormorant Garamond (500/600/700, italic 500) — `font-display`; h1–h3 get it
+  by default. Headings, the site name, hooks and pull quotes (italic).
+- **Body:** Spectral (400/500, italic 400) — `font-body`, the default.
 - Self-hosted via `@fontsource/*` imports in `main.jsx` (no Google Fonts link).
-- Fluid type tokens (`text-display`, `text-title`, `text-heading`, `text-hook`, `text-quote`,
-  `text-reading`, `text-lede`, `text-eyebrow`) scale between the 390px and 1440px mockup sizes.
+- Fluid sizes scale between the 390px and 1440px mockups: `text-display` (book title),
+  `text-title` (page h1), `text-heading` (section h2), `text-hook`, `text-quote`,
+  `text-lede` (19px), `text-eyebrow` with `tracking-eyebrow`.
+- `--header-h` (68px, 96px from `lg`) sizes the header, the cart drawer offset and
+  `scroll-padding-top`.
 
 ### Patterns
 
-- **Eyebrow:** small uppercase gold label with `0.22em` tracking above every section heading.
-- **Sections** are separated by 1px `rule` lines, alternating `ground` and `band` backgrounds;
-  80px side padding on desktop, 24px on mobile.
-- **Buttons:** near-square (`2px` radius). Primary = gold fill; secondary = transparent with an
-  `outline` border; toggle pills use `aria-pressed`.
-- **Framed images:** book covers and the author photo sit in a 1px gold frame with a 14px
-  inset and a deep drop shadow.
-- **Pull quotes:** large italic Cormorant on a `band`, attribution in uppercase `subtle` text.
-- **Progress rows** ("From the Writing Desk"): title + stage/percent, 10px rounded gold bar on
-  a `rule` track.
-- **Lists** (episodes, appearances, contact rows) are rows divided by `rule` lines, not cards.
-- No scroll animations, floating shapes or parallax — the old AOS/keyframe effects are retired.
-- Shared building blocks live in `src/components/ui/` (`Section`, `Eyebrow`, `Button`,
-  `FramedImage`, `PullQuote`, `RuleList`, `PageIntro`).
+- **Eyebrow:** small uppercase gold label above section headings, using the page's existing
+  labels.
+- **Sections** are separated by 1px `rule` lines, alternating `ground` and `band`; 80px side
+  padding on desktop, 24px on mobile, content in a `max-w-7xl` column.
+- **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
+  secondary = transparent with an `outline` border; toggle pills use `aria-pressed` and the
+  gold fill when pressed. Labels in sentence case.
+- **Framed images:** covers and author photos sit in a 1px gold frame with a 14px inset
+  (8px on mobile) and `shadow-cover`.
+- **Pull quotes:** large italic Cormorant on a `band`, attribution in uppercase `subtle`.
+- **Writing desk** (works in progress): title + status only — no progress percentages or bars.
+- **Lists** (episodes, contact rows, links) are rows divided by `rule` lines, not cards.
+- **Retailer links:** the Home Crownfall block and `/books` show `RetailerLinks` (Buy direct →
+  `/store`, Buy on Amazon, Add it on Goodreads); the Store shows `ShippingNotice` (US-only,
+  "via Amazon" linked) above all products; the footer links Goodreads. Retailer URLs live in
+  `BOOK_DATA` (`retailers`).
+- **Motion is kept, behind `prefers-reduced-motion`.** AOS, the keyframe classes in
+  `index.css` (`animate-fade-in-up`, `animate-slide-in-*`, `animate-float*`, `delay-*`, …) and
+  the floating circles (gold, 6–10% opacity) stay. Every keyframe and `opacity: 0` start state
+  lives inside `@media (prefers-reduced-motion: no-preference)`; AOS is initialised with
+  `disable: () => matchMedia("(prefers-reduced-motion: reduce)").matches`; Tailwind animations
+  use `motion-safe:`; no parallax under reduced motion. The e2e fails if any content is left
+  at opacity 0 with reduced motion on.
+- Sections with horizontal entrance animations use `<Section clipX>` (`overflow-x-clip`).
 - Every layout must work at 390px with no horizontal scroll.
+- About will get an Instagram feed (separate work); there is no appearances list.
+
+### Building blocks
+
+- `src/components/ui/`: `Section` (`band`, `ruled`, `clipX`, `spacing`), `Eyebrow`, `Button`
+  (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
+  `FramedImage` (`aspect`, `placeholder`), `PullQuote` (`quote`, `name`, `credit`),
+  `RuleList`/`RuleRow` (`to`/`href`, `arrow`), `PageIntro` (`eyebrow`, `title`, `accent`,
+  `lede`).
+- `src/components/`: `RetailerLinks` (`compact`), `ShippingNotice`, `JoinCircleButton`
+  (opens the MailerLite popup), plus the restyled `Navigation`, `Footer`, `NewsLetter`,
+  `Socials`, `ShoppingCart`.
+- `src/hooks/useHashScroll.js`: call it on pages with `#section` links (`/#crownfall`,
+  `/books#<slug>`); the header skips scroll-to-top when the URL has a hash.
+- `src/SITE_INFO.js`: name, tagline, location, emails, press kit, newsletter form id and
+  `shipping.usOnly` (the switch that shows `ShippingNotice`).
 
 ## Repo Layout
 
@@ -103,14 +136,17 @@ author-site/
         ├── main.jsx
         ├── App.jsx               # Router + QueryClientProvider + Layout
         ├── index.css, theme.css
-        ├── BOOK_DATA.jsx         # Static book metadata
+        ├── BOOK_DATA.jsx         # Static book metadata (slug, praise, retailers)
         ├── SOCIAL_LINKS.jsx      # Static social link data
+        ├── SITE_INFO.js          # Site constants (emails, press kit, shipping switch)
         ├── assets/               # Author photos, book covers, podcast logos
         ├── components/           # Layout, Navigation, Footer, ShoppingCart, ...
+        │   └── ui/               # Section, Eyebrow, Button, FramedImage, PullQuote, ...
         ├── pages/                # One file per route: / /books /podcast /about /store
         │                         #   /contact /checkout/success
         └── hooks/
             ├── useCart.js         # Zustand cart store (persisted)
+            ├── useHashScroll.js   # Scroll to location.hash after render
             └── useSquare.js       # Fetches /api/square/* + maps catalog → products
 ```
 
@@ -166,7 +202,8 @@ navigation or Square code.
   swapped for an in-process stub (`support/register-square-stub.mjs`) — nothing reaches
   Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
   a featured "Crownfall" product and a grid product at desktop and 390px, and checks every
-  route for horizontal scroll (`/` and `/contact` are `it.fails` until #7 is fixed).
+  route for horizontal scroll (`/` and `/contact` are `it.fails` until #7 is fixed) and, with
+  `prefers-reduced-motion: reduce`, for content left at opacity 0.
 - **The e2e selects only by `data-testid`.** Restyle freely, but keep these hooks:
   `store-product` (+ `data-product-id`), `add-to-cart`, `qty-increase`, `qty-decrease`,
   `qty-value`, `cart-toggle`, `cart-count`, `cart-panel` (+ `data-state`), `cart-close`,
@@ -191,7 +228,14 @@ navigation or Square code.
 - **Env vars:** local dev reads `client/.env` / `.env.local`; production reads Cloudflare
   Pages env vars. Both accept `SQUARE_*` or `VITE_SQUARE_*`. The local `.env.local` may hold
   **production** credentials — never point tests or experiments at it.
+- **Branch previews use Square sandbox keys** (Preview env vars in Cloudflare Pages), so
+  checkout on a preview never creates real payment links. `client/scripts/sync-sandbox-catalog.mjs`
+  mirrors the production catalog into sandbox (production is only read) and records the
+  production → sandbox ID map in `client/scripts/sandbox-catalog-map.json`, so re-runs update
+  rather than duplicate.
 - **SPA routing on Cloudflare** relies on `client/public/_redirects`.
+- **Cover image:** pages use `crownfall_cover_web.jpg` (776×1200); `crownfall_cover.jpg` is
+  the 10MB original — don't import it.
 - **Cart persistence:** localStorage key `author-site-cart`.
 - **`useSquare.getProducts()` caches the catalog in a `useRef`** for the hook's lifetime.
 - **`console.log(response)` in `useSquare.js`** is leftover debug output.
