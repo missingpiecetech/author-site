@@ -3,7 +3,7 @@ import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
 import crownfallCover from "/src/assets/crownfall_cover_web.jpg";
 
 export const BOOK_STATUS = {
-  IN_DEVELOPMENT: "Worldbuilding",
+  IN_DEVELOPMENT: "Worldbuilding & outlining",
   OUTLINE_STAGE: "Outlining",
   WRITING_STAGE: "Writing",
   EDITING_STAGE: "Editing",

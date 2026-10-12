@@ -12,13 +12,14 @@ const clampPercent = (percent) => {
 };
 
 /**
- * One work in progress: title, then "status · percent%" and a gold bar on a
- * `rule` track. With no percent, only the status shows (no number, no bar).
+ * One work in progress: title, then "type · status · percent%" and a gold bar
+ * on a `rule` track. Missing parts are skipped; with no percent there is no
+ * number and no bar.
  */
-export const WorkProgress = ({ title, status, percent }) => {
+export const WorkProgress = ({ title, type, status, percent }) => {
   const titleId = useId();
   const value = clampPercent(percent);
-  const detail = [status, value !== null && `${value}%`]
+  const detail = [type, status, value !== null && `${value}%`]
     .filter(Boolean)
     .join(" · ");
 
