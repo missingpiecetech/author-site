@@ -1,16 +1,30 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { FaShoppingCart } from "react-icons/fa";
 import useCart from "../hooks/useCart";
 import useSquare from "../hooks/useSquare";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import Button from "./ui/Button";
+
+// Shopping-bag outline from the mockup header.
+export const CartIcon = ({ className = "" }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    aria-hidden="true"
+    className={className}
+  >
+    <path d="M5 7h14l-1.5 12h-11z" />
+    <path d="M9 7a3 3 0 0 1 6 0" />
+  </svg>
+);
 
 const ShoppingCart = () => {
   const {
     cartItems,
     totalItems,
-    removeItem,
     updateQuantity,
     isCartOpen: open,
     setCartOpen: setOpen,
@@ -48,7 +62,7 @@ const ShoppingCart = () => {
           {/* Backdrop overlay — closes cart on tap */}
           {open && (
             <div
-              className="fixed inset-0 z-40 bg-black/20 md:bg-transparent"
+              className="fixed inset-0 z-40 bg-black/60 md:bg-transparent"
               onClick={() => setOpen(false)}
             />
           )}
@@ -57,21 +71,21 @@ const ShoppingCart = () => {
           <div
             data-testid="cart-panel"
             data-state={open ? "open" : "closed"}
-            className={`fixed z-50 bg-white transition-all duration-150 ease-out
+            className={`fixed z-50 bg-well text-cream transition-all duration-150 ease-out motion-reduce:transition-none
               inset-0 flex flex-col
-              md:inset-auto md:top-25 md:right-4 md:w-96 md:max-w-[calc(100vw-2rem)] md:rounded-2xl md:shadow-2xl md:border md:border-gray-200 md:origin-top-right ${
+              md:inset-auto md:top-[var(--header-h)] md:right-0 md:w-96 md:max-w-full md:max-h-[calc(100dvh-var(--header-h))] md:border-l md:border-b md:border-rule md:shadow-cover md:origin-top-right ${
                 open
                   ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
                   : "opacity-0 translate-y-full md:-translate-y-1 md:scale-[0.985] pointer-events-none"
               }`}
           >
             <div className="flex items-center justify-between p-6 pb-0">
-              <h2 className="text-xl font-bold text-gray-900">Shopping Cart</h2>
+              <h2 className="text-3xl text-cream">Shopping cart</h2>
               <button
                 type="button"
                 data-testid="cart-close"
                 onClick={() => setOpen(false)}
-                className="md:hidden w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                className="md:hidden w-11 h-11 flex items-center justify-center rounded-btn border border-outline text-cream hover:border-accent transition-colors cursor-pointer"
                 aria-label="Close cart"
               >
                 <FontAwesomeIcon icon={faXmark} className="text-lg" />
@@ -79,18 +93,18 @@ const ShoppingCart = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               {cartItems.length === 0 ? (
-                <p className="text-gray-500">Your cart is empty.</p>
+                <p className="text-muted">Your cart is empty.</p>
               ) : (
                 <>
-                  <div className="space-y-3 mb-4">
+                  <ul className="mb-5 border-t border-rule">
                     {cartItems.map((item) => (
-                      <div
+                      <li
                         key={item.id}
                         data-testid="cart-item"
                         data-product-id={item.id}
-                        className="flex items-start gap-3 rounded-xl"
+                        className="flex items-start gap-4 border-b border-rule py-4"
                       >
-                        <div className="w-14 h-14 rounded-lg overflow-hidden bg-white flex-shrink-0">
+                        <div className="w-14 h-14 overflow-hidden border border-edge bg-surface flex-shrink-0">
                           {item.image ? (
                             <img
                               src={item.image}
@@ -99,7 +113,7 @@ const ShoppingCart = () => {
                               loading="lazy"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                            <div className="w-full h-full flex items-center justify-center text-[10px] text-subtle">
                               No image
                             </div>
                           )}
@@ -107,29 +121,29 @@ const ShoppingCart = () => {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3">
-                            <p className="text-gray-900 text-sm font-semibold leading-5 truncate">
+                            <p className="font-display text-lg font-semibold leading-6 text-cream truncate">
                               {item.name}
                             </p>
-                            <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">
+                            <span className="text-base text-muted whitespace-nowrap">
                               ${(item.price * item.quantity).toFixed(2)}
                             </span>
                           </div>
 
-                          <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                          <div className="mt-2 flex items-center gap-3 text-sm text-muted">
                             <div className="flex items-center gap-2">
                               <button
                                 data-testid="qty-decrease"
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity - 1)
                                 }
-                                className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors h-6 w-6"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-btn border border-outline text-cream transition-colors hover:border-accent"
                                 aria-label={`Remove ${item.name} from cart`}
                               >
                                 {item.quantity === 1 ? (
                                   <span className="flex items-center justify-center w-full h-full">
                                     <FontAwesomeIcon
                                       icon={faTrash}
-                                      className="text-gray-600"
+                                      className="text-subtle"
                                       size="xs"
                                     />
                                   </span>
@@ -140,7 +154,7 @@ const ShoppingCart = () => {
 
                               <span
                                 data-testid="qty-value"
-                                className="w-6 text-center font-semibold text-gray-900"
+                                className="w-6 text-center text-cream"
                               >
                                 {item.quantity}
                               </span>
@@ -149,7 +163,7 @@ const ShoppingCart = () => {
                                 onClick={() =>
                                   updateQuantity(item.id, item.quantity + 1)
                                 }
-                                className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors h-6 w-6 font-bold"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-btn border border-outline text-cream transition-colors hover:border-accent"
                                 aria-label={`Increase quantity of ${item.name}`}
                               >
                                 +
@@ -157,33 +171,34 @@ const ShoppingCart = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </li>
                     ))}
-                  </div>
-                  <div className="flex justify-between items-center font-semibold text-gray-900">
+                  </ul>
+                  <div className="flex justify-between items-center text-lg text-cream">
                     <span>Subtotal:</span>
                     <span data-testid="cart-subtotal">${total.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-gray-600 text-sm">
+                  <div className="mt-1 flex justify-between items-center text-subtle text-sm">
                     <span>Tax/Shipping:</span>
                     <span>Calculated at checkout</span>
                   </div>
                   {checkoutError && (
                     <p
                       data-testid="checkout-error"
-                      className="text-sm text-red-600 mb-3"
+                      className="mt-3 text-sm text-error"
                     >
                       {checkoutError}
                     </p>
                   )}
-                  <button
+                  <Button
                     data-testid="checkout-button"
                     onClick={onCheckout}
                     disabled={isCheckingOut}
-                    className="w-full mt-4 bg-secondary text-white py-2.5 rounded-full hover:bg-secondary-dark transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
+                    block
+                    className="mt-6"
                   >
                     {isCheckingOut ? "Redirecting..." : "Checkout"}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -194,18 +209,18 @@ const ShoppingCart = () => {
       <button
         data-testid="cart-toggle"
         onClick={() => setOpen(!open)}
-        className={`hidden md:flex relative rounded-full p-3.5 border transition-all duration-150 cursor-pointer items-center justify-center shadow-lg ${
+        className={`hidden md:inline-flex relative h-11 w-11 rounded-btn border transition-colors duration-150 cursor-pointer items-center justify-center ${
           open
-            ? "bg-secondary text-white border-secondary"
-            : "bg-white text-secondary border-secondary/30 hover:border-secondary/60"
+            ? "bg-accent text-ground border-accent"
+            : "bg-transparent text-cream border-outline hover:border-accent"
         }`}
         aria-label="Open shopping cart"
       >
-        <FaShoppingCart className="text-2xl" />
+        <CartIcon className="h-5 w-5" />
         {cartItems.length > 0 && (
           <span
             data-testid="cart-count"
-            className="absolute -top-2 -right-2 bg-secondary-dark text-white text-xs font-bold rounded-full px-2 py-0.5 border border-white"
+            className="absolute -top-2 -right-2 min-w-5 rounded-full border border-ground bg-accent px-1.5 py-0.5 text-center text-xs leading-none font-medium text-ground"
           >
             {totalItems()}
           </span>

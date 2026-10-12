@@ -4,7 +4,7 @@ import NewsLetter from "./NewsLetter";
 
 const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-white text-gray-900 flex flex-col">
+    <div className="flex min-h-screen flex-col bg-ground text-cream">
       <Navigation />
       <main className="flex-1">
         {children}

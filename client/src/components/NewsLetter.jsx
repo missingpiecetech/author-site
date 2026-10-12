@@ -1,15 +1,15 @@
-import React from "react";
+import JoinCircleButton from "./JoinCircleButton";
 
 const NewsLetter = () => {
   const titles = [
     <>
-      Join the <span className="text-secondary">Journey</span>
+      Join the <span className="text-accent">Journey</span>
     </>,
     <>
-      Never Miss a <span className="text-secondary">Release</span>
+      Never Miss a <span className="text-accent">Release</span>
     </>,
     <>
-      Receive <span className="text-secondary">Updates</span>
+      Receive <span className="text-accent">Updates</span>
     </>,
   ];
   const descriptions = [
@@ -23,34 +23,31 @@ const NewsLetter = () => {
     descriptions[Math.floor(Math.random() * descriptions.length)];
 
   return (
-    <div
-      className={`bg-white p-12 lg:p-16  relative overflow-hidden border border-gray-200`}
+    <section
+      aria-labelledby="newsletter-heading"
+      className="border-t border-rule px-6 py-12 lg:px-20 lg:py-26"
     >
-      <div className="relative text-center max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 border border-accent px-6 py-8 text-center lg:gap-6 lg:px-16 lg:py-14">
+        <h2 id="newsletter-heading" className="text-heading text-cream">
           {title}
         </h2>
-        <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-          {description}
-        </p>
-        <div className={`bg-white max-w-md mx-auto items-center rounded-2xl`}>
-          <div className="space-y-4">
-            <button
-              id={`subscribe-button`}
-              className="subscribe-button w-full cursor-pointer bg-secondary hover:bg-secondary-dark text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              onClick={() => ml("show", "oQiRIg", true)}
-            >
-              Subscribe for Updates
-            </button>
-
-            <p className="text-xs text-gray-500">
-              No spam, unsubscribe at any time. Updates only when there's real
-              news to share.
-            </p>
-          </div>
+        <p className="max-w-2xl text-lede text-muted">{description}</p>
+        <div className="mt-2 flex w-full max-w-md flex-col items-center gap-4">
+          <JoinCircleButton
+            id="subscribe-button"
+            size="lg"
+            block
+            className="subscribe-button"
+          >
+            Subscribe for updates
+          </JoinCircleButton>
+          <p className="text-sm text-subtle">
+            No spam, unsubscribe at any time. Updates only when there's real
+            news to share.
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
