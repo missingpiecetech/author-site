@@ -3,6 +3,7 @@ import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import SITE_INFO from "../SITE_INFO";
 import { BOOKS } from "../BOOK_DATA";
 import { FiligreeCorners } from "./ui/Filigree";
+import { FRAME_BORDER } from "./ui/filigree/index.js";
 
 const AMAZON = BOOKS.find((book) => book.slug === "crownfall")?.retailers
   ?.amazon;
@@ -18,11 +19,11 @@ const ShippingNotice = ({ className = "" }) => {
   return (
     <div
       role="note"
-      className={`relative flex items-start gap-4 border border-accent bg-well p-5 text-lede text-cream lg:p-6 ${className}`}
+      className={`relative flex min-h-24 items-center gap-4 ${FRAME_BORDER} border-accent bg-well p-5 text-lede text-cream lg:min-h-28 lg:p-6 ${className}`}
     >
       <FontAwesomeIcon
         icon={faTriangleExclamation}
-        className="mt-1.5 shrink-0 text-accent"
+        className="shrink-0 text-accent"
         aria-hidden="true"
       />
       <p>

@@ -1,5 +1,6 @@
 import JoinCircleButton from "./JoinCircleButton";
 import { FiligreeCorners } from "./ui/Filigree";
+import { FRAME_BORDER } from "./ui/filigree/index.js";
 
 const NewsLetter = () => {
   const titles = [
@@ -28,7 +29,9 @@ const NewsLetter = () => {
       aria-labelledby="newsletter-heading"
       className="border-t border-rule px-6 py-12 lg:px-20 lg:py-26"
     >
-      <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-4 border border-accent px-6 py-8 text-center lg:gap-6 lg:px-16 lg:py-14">
+      <div
+        className={`relative mx-auto flex max-w-3xl flex-col items-center gap-4 ${FRAME_BORDER} border-accent px-6 py-8 text-center lg:gap-6 lg:px-16 lg:py-14`}
+      >
         <h2 id="newsletter-heading" className="text-heading text-cream">
           {title}
         </h2>

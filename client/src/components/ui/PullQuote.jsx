@@ -6,7 +6,7 @@ import { FiligreeDivider } from "./Filigree";
  *
  * - `quote`: the quote text, without quotation marks (they are added).
  * - `name`, `credit`: attribution, rendered "Name · Credit", under a filigree
- *   flourish.
+ *   divider.
  */
 const PullQuote = ({ quote, name, credit, className = "" }) => (
   <figure
@@ -15,7 +15,7 @@ const PullQuote = ({ quote, name, credit, className = "" }) => (
     <blockquote className="font-display text-quote italic font-medium text-cream">
       <p>&ldquo;{quote}&rdquo;</p>
     </blockquote>
-    <FiligreeDivider className="max-w-xs text-accent" />
+    <FiligreeDivider className="max-w-lg text-accent" />
     {(name || credit) && (
       <figcaption className="text-eyebrow uppercase tracking-[0.18em] text-subtle">
         {[name, credit].filter(Boolean).join(" · ")}

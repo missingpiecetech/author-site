@@ -7,9 +7,9 @@ import PageIntro from "../components/ui/PageIntro";
 import Section from "../components/ui/Section";
 import FramedImage from "../components/ui/FramedImage";
 import { FiligreeCorners } from "../components/ui/Filigree";
+import { FRAME_BORDER } from "../components/ui/filigree/index.js";
 
-const TILE =
-  "group relative flex h-full flex-col items-center gap-2 border border-edge bg-well p-6 text-center no-underline transition-colors hover:border-accent";
+const TILE = `group relative flex h-full flex-col items-center gap-2 ${FRAME_BORDER} border-edge bg-well p-6 text-center no-underline transition-colors hover:border-accent`;
 
 const TileBody = ({ icon, title, detail }) => (
   <>
