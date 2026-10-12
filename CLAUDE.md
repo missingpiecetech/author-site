@@ -72,7 +72,7 @@ Primary buttons are gold fill with `ground`-colored text. Text on gold is always
 - **Lists** (episodes, appearances, contact rows) are rows divided by `rule` lines, not cards.
 - No scroll animations, floating shapes or parallax — the old AOS/keyframe effects are retired.
 - Shared building blocks live in `src/components/ui/` (`Section`, `Eyebrow`, `Button`,
-  `FramedImage`, `PullQuote`, `RuleList`, `ProgressRow`, `PageIntro`).
+  `FramedImage`, `PullQuote`, `RuleList`, `PageIntro`).
 - Every layout must work at 390px with no horizontal scroll.
 
 ## Repo Layout
