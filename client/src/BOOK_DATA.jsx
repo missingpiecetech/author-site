@@ -116,6 +116,8 @@ export const BOOKS = [
     //     dangerous secrets at the highest levels of government.
     //   </>
     // ),
+    blurb:
+      "Two brothers defy time itself to save their mother, only to uncover a conspiracy that threatens everything. Fullmetal Alchemist Brotherhood meets The Licanius Trilogy. More details coming as development progresses.",
     shortBlurb:
       "Two brothers defy time itself to save their mother, only to uncover a conspiracy that threatens everything. Fullmetal Alchemist Brotherhood meets The Licanius Trilogy. More details coming as development progresses.",
     // "Two half brothers travel back in time to save their mother from a fatal accident only to discover that she never died. Snapped back to their present, the adventure begins to find their mother and to ask her where has she been this whole time.",
