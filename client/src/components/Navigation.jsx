@@ -64,7 +64,9 @@ const Navigation = () => {
 
         <div className="flex items-center gap-3 lg:gap-4">
           <ShoppingCart />
-          <JoinCircleButton className="hidden sm:inline-flex" />
+          <div className="hidden sm:block">
+            <JoinCircleButton />
+          </div>
 
           {/* Mobile menu button */}
           <button
@@ -134,12 +136,13 @@ const Navigation = () => {
               </button>
             </li>
           </ul>
-          <JoinCircleButton
-            size="lg"
-            block
-            className="mt-6 sm:hidden"
-            onClick={() => setIsMenuOpen(false)}
-          />
+          <div className="mt-6 sm:hidden">
+            <JoinCircleButton
+              size="lg"
+              block
+              onClick={() => setIsMenuOpen(false)}
+            />
+          </div>
         </div>
       )}
     </header>
