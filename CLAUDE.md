@@ -118,12 +118,15 @@ author-site/
 
 Run from `client/`.
 
-| Command           | Purpose                                         |
-| ----------------- | ----------------------------------------------- |
-| `npm run dev`     | Vite dev server (default http://localhost:5173) |
-| `npm run build`   | Production build to `client/dist/`              |
-| `npm run preview` | Serve the production build locally              |
-| `npm run lint`    | ESLint                                          |
+| Command             | Purpose                                                                                   |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| `npm run dev`       | Vite dev server (default http://localhost:5173)                                           |
+| `npm run build`     | Production build to `client/dist/`                                                        |
+| `npm test`          | Unit, then e2e                                                                            |
+| `npm run test:unit` | Vitest: both checkout implementations, Square SDK mocked                                  |
+| `npm run test:e2e`  | Puppeteer: /store → cart → checkout, desktop + 390px, no horizontal scroll on every route |
+| `npm run preview`   | Serve the production build locally                                                        |
+| `npm run lint`      | ESLint                                                                                    |
 
 ## Square API — Two Implementations, Same Routes
 
@@ -149,6 +152,26 @@ Checkout always asks for a shipping address and adds a flat **$5.99 "Shipping"**
 (`checkoutOptions.shippingFee`, `599` cents USD) server-side in both implementations. The
 client's `askForShippingAddress`/pickup flag is ignored. Changing or dropping the fee is a
 business decision, not a refactor.
+
+## Tests
+
+`client/tests/` locks the money path. Run `npm test` before any change to the store, cart,
+navigation or Square code.
+
+- **Unit** (`tests/unit/`): asserts the exact `paymentLinks.create` call in both Square
+  implementations (shipping fee, address prompt, line items) and fails if their
+  `checkoutOptions` drift apart. The one known drift (`squareMarketingOptIn` in dev only) is
+  listed in the test.
+- **E2E** (`tests/e2e/`): starts the real `vite` CLI on a free port with the `square` package
+  swapped for an in-process stub (`support/register-square-stub.mjs`) — nothing reaches
+  Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
+  a featured "Crownfall" product and a grid product at desktop and 390px, and checks every
+  route for horizontal scroll (`/` and `/contact` are `it.fails` until #7 is fixed).
+- **The e2e selects only by `data-testid`.** Restyle freely, but keep these hooks:
+  `store-product` (+ `data-product-id`), `add-to-cart`, `qty-increase`, `qty-decrease`,
+  `qty-value`, `cart-toggle`, `cart-count`, `cart-panel` (+ `data-state`), `cart-close`,
+  `cart-item`, `cart-subtotal`, `checkout-button`, `checkout-error`, `mobile-menu-toggle`,
+  `mobile-cart-button`.
 
 ## Conventions
 
