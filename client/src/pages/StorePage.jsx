@@ -166,6 +166,8 @@ const StorePage = () => {
                   return (
                     <article
                       key={product.id}
+                      data-testid="store-product"
+                      data-product-id={product.id}
                       className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 group relative flex flex-col"
                     >
                       <div className="aspect-[4/3] bg-gray-100 relative group overflow-hidden ">
@@ -265,6 +267,7 @@ const StorePage = () => {
                             <div className="flex items-center gap-2 py-1">
                               <button
                                 type="button"
+                                data-testid="qty-decrease"
                                 onClick={() =>
                                   updateQuantity(
                                     product.id,
@@ -276,11 +279,15 @@ const StorePage = () => {
                               >
                                 −
                               </button>
-                              <span className="w-6 text-center font-semibold text-secondary-dark">
+                              <span
+                                data-testid="qty-value"
+                                className="w-6 text-center font-semibold text-secondary-dark"
+                              >
                                 {getCartQuantity(product.id)}
                               </span>
                               <button
                                 type="button"
+                                data-testid="qty-increase"
                                 onClick={() =>
                                   updateQuantity(
                                     product.id,
@@ -308,6 +315,7 @@ const StorePage = () => {
                           ) : (
                             <button
                               type="button"
+                              data-testid="add-to-cart"
                               onClick={() => onAddToCart(product)}
                               className="inline-block bg-secondary text-white px-4 py-2 rounded-full font-semibold hover:bg-secondary-dark transition-colors"
                             >
