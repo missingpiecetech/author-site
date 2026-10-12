@@ -4,6 +4,7 @@ import PageIntro from "../components/ui/PageIntro";
 import Eyebrow from "../components/ui/Eyebrow";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
+import { FiligreeCorners } from "../components/ui/Filigree";
 import RetailerLinks from "../components/RetailerLinks";
 import BookPraise from "../components/books/BookPraise";
 import useHashScroll from "../hooks/useHashScroll";
@@ -12,7 +13,7 @@ const BookCover = ({ book }) =>
   book.cover ? (
     <FramedImage src={book.cover} alt={book.title} loading="eager" />
   ) : (
-    <div className="border border-accent p-2 shadow-cover lg:p-3.5">
+    <div className="relative border border-accent p-2 shadow-cover lg:p-3.5">
       <div
         role="img"
         aria-label={book.title}
@@ -20,6 +21,7 @@ const BookCover = ({ book }) =>
       >
         {book.icon}
       </div>
+      <FiligreeCorners />
     </div>
   );
 

@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import SITE_INFO from "../SITE_INFO";
 import { BOOKS } from "../BOOK_DATA";
+import { FiligreeCorners } from "./ui/Filigree";
 
 const AMAZON = BOOKS.find((book) => book.slug === "crownfall")?.retailers
   ?.amazon;
@@ -17,7 +18,7 @@ const ShippingNotice = ({ className = "" }) => {
   return (
     <div
       role="note"
-      className={`flex items-start gap-4 border border-accent bg-well p-5 text-lede text-cream lg:p-6 ${className}`}
+      className={`relative flex items-start gap-4 border border-accent bg-well p-5 text-lede text-cream lg:p-6 ${className}`}
     >
       <FontAwesomeIcon
         icon={faTriangleExclamation}
@@ -42,6 +43,7 @@ const ShippingNotice = ({ className = "" }) => {
         )}
         .
       </p>
+      <FiligreeCorners />
     </div>
   );
 };

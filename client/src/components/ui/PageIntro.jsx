@@ -3,7 +3,7 @@ import Eyebrow from "./Eyebrow";
 
 /**
  * The opening block of a secondary page: eyebrow, h1 and lede, closed by a
- * 1px rule. Keeps the site's two-tone headings: `accent` is rendered after
+ * filigree divider. Keeps the site's two-tone headings: `accent` is rendered after
  * `title` in gold, e.g. title="About" accent="Michael".
  *
  * - `align`: "left" (default) | "center".
@@ -23,7 +23,8 @@ const PageIntro = ({
   return (
     <Section
       spacing="none"
-      className={`border-b border-rule pt-12 pb-10 lg:pt-22 lg:pb-18 ${className}`}
+      divider="bottom"
+      className={`pt-12 pb-10 lg:pt-22 lg:pb-18 ${className}`}
       innerClassName={`flex flex-col gap-4 lg:gap-5 ${centered ? "items-center text-center" : ""}`}
       {...rest}
     >

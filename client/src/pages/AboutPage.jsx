@@ -4,6 +4,7 @@ import Eyebrow from "../components/ui/Eyebrow";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
 import PullQuote from "../components/ui/PullQuote";
+import { FiligreeCorners } from "../components/ui/Filigree";
 import SITE_INFO from "../SITE_INFO";
 import authorPic from "../assets/author-pic.jpeg";
 
@@ -75,7 +76,7 @@ const AboutPage = () => {
 
       {/* Quick Stats */}
       <Section band spacing="compact">
-        <dl className="grid gap-8 sm:grid-cols-2 lg:gap-12">
+        <dl className="relative grid gap-8 border border-edge p-8 sm:grid-cols-2 lg:gap-12 lg:p-12">
           {STATS.map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-2.5">
               <Eyebrow as="dt">{label}</Eyebrow>
@@ -84,6 +85,7 @@ const AboutPage = () => {
               </dd>
             </div>
           ))}
+          <FiligreeCorners />
         </dl>
       </Section>
 

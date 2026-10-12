@@ -5,6 +5,7 @@ import {
   faChevronRight,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
+import { FiligreeCorners } from "../ui/Filigree";
 
 const ASPECTS = {
   cover: "aspect-[2/3]",
@@ -57,7 +58,7 @@ const ProductGallery = ({
     <div
       className={
         framed
-          ? "border border-accent p-2 shadow-cover lg:p-3.5"
+          ? "relative border border-accent p-2 shadow-cover lg:p-3.5"
           : "border border-edge"
       }
     >
@@ -117,6 +118,7 @@ const ProductGallery = ({
           </button>
         )}
       </div>
+      {framed && <FiligreeCorners />}
     </div>
   );
 };

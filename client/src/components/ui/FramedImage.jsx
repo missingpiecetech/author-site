@@ -1,3 +1,5 @@
+import { FiligreeCorners } from "./Filigree";
+
 const ASPECTS = {
   cover: "aspect-[2/3]",
   portrait: "aspect-[4/5]",
@@ -7,7 +9,7 @@ const ASPECTS = {
 };
 
 /**
- * Image in a 1px gold frame with an inset (8px mobile, 14px desktop) and the
+ * Image in a 1px gold frame with filigree corners, an inset (8px mobile, 14px desktop) and the
  * deep cover shadow. With no `src`, renders a `surface` placeholder showing
  * `placeholder` text.
  *
@@ -27,7 +29,7 @@ const FramedImage = ({
   ...rest
 }) => (
   <div
-    className={`border border-accent p-2 lg:p-3.5 ${shadow ? "shadow-cover" : ""} ${className}`}
+    className={`relative border border-accent p-2 lg:p-3.5 ${shadow ? "shadow-cover" : ""} ${className}`}
     {...rest}
   >
     <div className={`relative overflow-hidden ${ASPECTS[aspect] ?? ""}`}>
@@ -48,6 +50,7 @@ const FramedImage = ({
         </div>
       )}
     </div>
+    <FiligreeCorners />
   </div>
 );
 

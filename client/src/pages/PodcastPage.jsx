@@ -6,9 +6,10 @@ import authorAdjacentLogo from "../assets/logo_no_text.png";
 import PageIntro from "../components/ui/PageIntro";
 import Section from "../components/ui/Section";
 import FramedImage from "../components/ui/FramedImage";
+import { FiligreeCorners } from "../components/ui/Filigree";
 
 const TILE =
-  "group flex h-full flex-col items-center gap-2 border border-edge bg-well p-6 text-center no-underline transition-colors hover:border-accent";
+  "group relative flex h-full flex-col items-center gap-2 border border-edge bg-well p-6 text-center no-underline transition-colors hover:border-accent";
 
 const TileBody = ({ icon, title, detail }) => (
   <>
@@ -20,6 +21,7 @@ const TileBody = ({ icon, title, detail }) => (
       {title}
     </span>
     <span className="text-sm text-subtle">{detail}</span>
+    <FiligreeCorners size="sm" />
   </>
 );
 

@@ -68,14 +68,27 @@ against the ground, so never show state with a border alone (the pressed pill us
 
 - **Eyebrow:** small uppercase gold label above section headings, using the page's existing
   labels.
-- **Sections** are separated by 1px `rule` lines, alternating `ground` and `band`; 80px side
-  padding on desktop, 24px on mobile, content in a `max-w-7xl` column.
+- **Sections** alternate `ground` and `band`; 80px side padding on desktop, 24px on mobile,
+  content in a `max-w-7xl` column. Bands keep plain 1px `rule` edges; a plain section that
+  follows another (`<Section ruled>`) and the close of a `PageIntro` get the **filigree
+  divider** (`FiligreeDivider`: tapering hairlines either side of a centred flourish).
+- **Filigree, not plain gold boxes.** Gold framing is hand-drawn inline SVG in
+  `src/components/ui/Filigree.jsx` (`currentColor`, `aria-hidden`, 1px non-scaling strokes,
+  each ornament authored once and mirrored). Frames and panels keep a quiet 1px line and add
+  `FiligreeCorners` (parent `relative`; `size` md for frames/panels, sm for tiles, xs for icon
+  boxes). Applied to `FramedImage`, the store gallery frame, `ShippingNotice`, the
+  newsletter box, Podcast/About social tiles, Contact icon boxes, the About stats panel and
+  the checkout-success panel; `PullQuote` has the flourish between quote and attribution.
+  Not on list rows (`RuleList`), the lightbox, chips or the left-ruled `BookPraise`. Corners
+  reach 12px (18px from `lg`) outside their box, so keep that much room at 390px. No image
+  files or icon fonts for ornament.
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
   secondary = transparent with an `outline` border; toggle pills use `aria-pressed` and the
   gold fill when pressed. Labels in sentence case.
-- **Framed images:** covers and author photos sit in a 1px gold frame with a 14px inset
-  (8px on mobile) and `shadow-cover`.
-- **Pull quotes:** large italic Cormorant on a `band`, attribution in uppercase `subtle`.
+- **Framed images:** covers and author photos sit in a 1px gold frame with filigree corners,
+  a 14px inset (8px on mobile) and `shadow-cover`.
+- **Pull quotes:** large italic Cormorant on a `band`, a filigree flourish, then the
+  attribution in uppercase `subtle`.
 - **Writing desk** (works in progress): title, status and the book's `shortBlurb` — no
   progress percentages or bars.
 - **Lists** (episodes, contact rows, links) are rows divided by `rule` lines, not cards.
@@ -96,7 +109,8 @@ against the ground, so never show state with a border alone (the pressed pill us
 
 ### Building blocks
 
-- `src/components/ui/`: `Section` (`band`, `ruled`, `clipX`, `spacing`), `Eyebrow`, `Button`
+- `src/components/ui/`: `Section` (`band`, `ruled`, `divider`, `clipX`, `spacing`),
+  `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`), `Eyebrow`, `Button`
   (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
   `FramedImage` (`aspect`, `placeholder`), `PullQuote` (`quote`, `name`, `credit`),
   `RuleList`/`RuleRow` (`to`/`href`, `arrow`), `PageIntro` (`eyebrow`, `title`, `accent`,
@@ -164,6 +178,10 @@ Run from `client/`.
 | `npm run test:e2e`  | Puppeteer: /store → cart → checkout, desktop + 390px, no horizontal scroll on every route |
 | `npm run preview`   | Serve the production build locally                                                        |
 | `npm run lint`      | ESLint                                                                                    |
+
+`node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
+390 on the e2e harness: horizontal scroll, filigree overlapping text, reduced-motion opacity,
+the Home scroll cue's geometry, and (with `--shots`) element screenshots of the filigree.
 
 ## Square API — Two Implementations, Same Routes
 

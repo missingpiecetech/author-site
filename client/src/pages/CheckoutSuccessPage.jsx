@@ -1,6 +1,7 @@
 import Section from "../components/ui/Section";
 import PageIntro from "../components/ui/PageIntro";
 import Button from "../components/ui/Button";
+import { FiligreeCorners } from "../components/ui/Filigree";
 
 const CheckoutSuccessPage = () => {
   return (
@@ -13,7 +14,7 @@ const CheckoutSuccessPage = () => {
       />
 
       <Section>
-        <div className="mx-auto flex max-w-3xl flex-col items-center gap-8 border border-edge bg-well p-8 text-center lg:p-12">
+        <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-8 border border-edge bg-well p-8 text-center lg:p-12">
           <p className="text-lede text-muted">
             You should receive order details from Square shortly. If you have
             any questions, reach out through the contact page.
@@ -24,6 +25,7 @@ const CheckoutSuccessPage = () => {
               Browse Books
             </Button>
           </div>
+          <FiligreeCorners />
         </div>
       </Section>
     </div>
