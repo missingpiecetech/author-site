@@ -158,6 +158,13 @@ const checkoutFlow = async (kind, lines) => {
 
   await openCart[kind](page);
   await page.waitForSelector(`${byTestId("cart-panel")}[data-state="open"]`);
+  // The panel slides in; on phones its controls start below the viewport, so
+  // wait for the transition to finish before clicking anything inside it.
+  await page.waitForFunction(
+    (sel) => document.querySelector(sel).getAnimations().length === 0,
+    {},
+    byTestId("cart-panel"),
+  );
 
   for (const { product, quantity } of lines) {
     await page.waitForSelector(cartItem(product.itemId));
