@@ -3,6 +3,7 @@
 // reports, per route at 1440 and 390:
 //   - horizontal scroll after 2.5s of live animation;
 //   - filigree ornaments whose painted parts overlap text in the same section;
+//   - filigree corners that run into each other or onto their frame's content;
 //   - content left at opacity 0 with prefers-reduced-motion;
 //   - progress bars whose fill does not match aria-valuenow;
 // plus the Home scroll cue's geometry at 1440/1280/1024/768/390, and, with
@@ -53,6 +54,20 @@ const SHOTS = [
     pad: 40,
     maxHeight: 260,
     scale: 2,
+  },
+  {
+    name: "home-divider-1440",
+    route: "/",
+    selector: "section > div > [data-filigree=divider]",
+    pad: 40,
+    maxHeight: 140,
+    scale: 2,
+  },
+  {
+    name: "about-pull-quote-1440",
+    route: "/about",
+    selector: "figure",
+    pad: 30,
   },
   {
     name: "books-arcanist-1440",
@@ -130,6 +145,48 @@ const ornamentTextOverlaps = (page) =>
       }
     }
     return { parts, hits: [...new Set(hits)] };
+  });
+
+// Each set of filigree corners: no corner's painted parts touch another
+// corner's (arms along a short edge meeting), and none touch the frame's
+// in-flow content (the framed image, a panel's text blocks).
+const cornerCollisions = (page) =>
+  page.evaluate(() => {
+    const overlap = (a, b) =>
+      a.left < b.right - 0.5 &&
+      b.left < a.right - 0.5 &&
+      a.top < b.bottom - 0.5 &&
+      b.top < a.bottom - 0.5;
+    const hits = [];
+    for (const set of document.querySelectorAll('[data-filigree="corners"]')) {
+      const frame = set.parentElement;
+      const corners = [...set.querySelectorAll("svg")].map((svg) =>
+        [...svg.querySelectorAll("path, circle, polygon")].map((shape) =>
+          shape.getBoundingClientRect(),
+        ),
+      );
+      const content = [...frame.children]
+        .filter((child) => child !== set && child.tagName !== "svg")
+        .filter((child) => getComputedStyle(child).position !== "absolute")
+        .map((child) => child.getBoundingClientRect());
+      const box = frame.getBoundingClientRect();
+      const name = `${frame.tagName.toLowerCase()} ${Math.round(box.width)}×${Math.round(box.height)}`;
+      corners.forEach((parts, i) => {
+        for (const part of parts) {
+          if (
+            corners
+              .slice(i + 1)
+              .some((other) => other.some((o) => overlap(part, o)))
+          ) {
+            hits.push(`corners meet on ${name}`);
+          }
+          if (content.some((r) => overlap(part, r))) {
+            hits.push(`corner over content of ${name}`);
+          }
+        }
+      });
+    }
+    return [...new Set(hits)];
   });
 
 const invisibleUnderReducedMotion = (page) =>
@@ -236,6 +293,8 @@ const main = async () => {
         const overlaps = await ornamentTextOverlaps(still.page);
         console.log(`  ornament parts checked: ${overlaps.parts}`);
         for (const hit of overlaps.hits) fail(`${label}: ${hit}`);
+        const collisions = await cornerCollisions(still.page);
+        for (const hit of collisions) fail(`${label}: ${hit}`);
         const invisible = await invisibleUnderReducedMotion(still.page);
         for (const item of invisible) fail(`${label}: opacity 0 → ${item}`);
         const bars = await progressBarMismatches(still.page);
