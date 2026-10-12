@@ -93,6 +93,9 @@ export const BOOKS = [
     praise: [],
     release: "TBA",
     status: BOOK_STATUS.IN_DEVELOPMENT,
+    // Its own filigree style for every frame of this book (see
+    // components/ui/filigree/index.js); other books use the site's.
+    filigree: "artDeco",
     // genres: ["Time Travel", "Sci-Fantasy", "Action Adventure"],
     icon: <GiClockwork />,
     // blurb: (

@@ -1,5 +1,5 @@
 import { FiligreeCorners } from "./Filigree";
-import { FRAME_BORDER } from "./filigree/index.js";
+import { getFiligree } from "./filigree/index.js";
 
 const ASPECTS = {
   cover: "aspect-[2/3]",
@@ -17,6 +17,8 @@ const ASPECTS = {
  * - `aspect`: "cover" (2:3) | "portrait" (4:5) | "square" | "wide" (3:2) | "none".
  * - `shadow`: drop shadow on (default true).
  * - `imgClassName`: extra classes for the <img> (e.g. object-position).
+ * - `filigree`: a style name from FILIGREE_STYLES (frame line and corners),
+ *   e.g. "artDeco"; defaults to the site style.
  */
 const FramedImage = ({
   src,
@@ -27,10 +29,11 @@ const FramedImage = ({
   className = "",
   imgClassName = "",
   loading = "lazy",
+  filigree,
   ...rest
 }) => (
   <div
-    className={`relative ${FRAME_BORDER} border-accent p-3 lg:p-4.5 ${shadow ? "shadow-cover" : ""} ${className}`}
+    className={`relative ${getFiligree(filigree).FRAME_BORDER} border-accent p-3 lg:p-4.5 ${shadow ? "shadow-cover" : ""} ${className}`}
     {...rest}
   >
     <div className={`relative overflow-hidden ${ASPECTS[aspect] ?? ""}`}>
@@ -51,7 +54,7 @@ const FramedImage = ({
         </div>
       )}
     </div>
-    <FiligreeCorners size="lg" />
+    <FiligreeCorners size="lg" filigree={filigree} />
   </div>
 );
 

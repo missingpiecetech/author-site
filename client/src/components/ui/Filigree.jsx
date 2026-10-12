@@ -1,20 +1,12 @@
 /*
  * Gold filigree: corner ornaments for frames and a centred divider for
- * section breaks. The artwork comes from the active style module, chosen in
- * `./filigree/index.js` (see design/filigree-samples/README.md). Colour comes from
+ * section breaks. The artwork comes from a style module in `./filigree/`:
+ * the site style by default, or the one named by the `filigree` prop (see
+ * `./filigree/index.js` and design/filigree-samples/README.md). Colour comes from
  * `currentColor`, so `text-accent` (the default) or any text colour tints it.
  * All of it is decorative: aria-hidden and pointer-events-none.
  */
-import {
-  CORNER_VIEWBOX,
-  CornerArt,
-  DIVIDER_ART,
-  DIVIDER_VIEWBOX,
-  DividerArt,
-  FRAME_BORDER_WIDTH,
-  FRAME_INSET,
-  Rule,
-} from "./filigree/index.js";
+import { getFiligree } from "./filigree/index.js";
 
 /*
  * Corner sizes (`--cs`, the corner box's side). A fifth of the box sits
@@ -32,69 +24,91 @@ const SIZES = {
   xs: "[--cs:30px]",
 };
 
-// Offset from the padding edge: half the border, plus the part of the box
-// outside the frame line (the sample's `--bw / -2 - --cs * --k`).
-const OFFSET = `calc(${FRAME_BORDER_WIDTH / -2}px - var(--cs) * ${FRAME_INSET})`;
-
-const POSITIONS = [
-  { top: OFFSET, left: OFFSET },
-  { top: OFFSET, right: OFFSET, transform: "scaleX(-1)" },
-  { bottom: OFFSET, left: OFFSET, transform: "scaleY(-1)" },
-  { bottom: OFFSET, right: OFFSET, transform: "scale(-1)" },
-];
+// Each corner's position: offset from the padding edge by half the border,
+// plus the part of the box outside the frame line (the sample's
+// `--bw / -2 - --cs * --k`).
+const positions = ({ FRAME_BORDER_WIDTH, FRAME_INSET }) => {
+  const offset = `calc(${FRAME_BORDER_WIDTH / -2}px - var(--cs) * ${FRAME_INSET})`;
+  return [
+    { top: offset, left: offset },
+    { top: offset, right: offset, transform: "scaleX(-1)" },
+    { bottom: offset, left: offset, transform: "scaleY(-1)" },
+    { bottom: offset, right: offset, transform: "scale(-1)" },
+  ];
+};
 
 /**
  * Four corner ornaments over the parent's border box. The parent must be
- * `relative` and carry the frame line: `FRAME_BORDER` from `./filigree/index.js`
- * (2px for Thorned Bramble) plus a colour, e.g. `${FRAME_BORDER} border-accent`; the ornament sits on
- * the corners and the plain line runs between them.
+ * `relative` and carry the frame line of the same style: its `FRAME_BORDER`
+ * (from `./filigree/index.js` for the site style, or
+ * `getFiligree(name).FRAME_BORDER`) plus a colour, e.g.
+ * `${FRAME_BORDER} border-accent`; the ornament sits on the corners and the
+ * plain line runs between them.
  *
  * - `size`: "lg" (framed covers and photos) | "md" (panels) | "sm" (tiles) |
  *   "xs" (icon boxes).
+ * - `filigree`: a style name from FILIGREE_STYLES, e.g. "artDeco"; defaults
+ *   to the site style.
  */
-export const FiligreeCorners = ({ size = "md", className = "text-accent" }) => (
-  <span
-    aria-hidden="true"
-    className={`contents ${SIZES[size] ?? SIZES.md}`}
-    data-filigree="corners"
-  >
-    {POSITIONS.map((position, i) => (
-      <svg
-        key={i}
-        viewBox={CORNER_VIEWBOX}
-        focusable="false"
-        style={{ ...position, width: "var(--cs)", height: "var(--cs)" }}
-        className={`pointer-events-none absolute overflow-visible ${className}`}
-      >
-        <CornerArt />
-      </svg>
-    ))}
-  </span>
-);
+export const FiligreeCorners = ({
+  size = "md",
+  filigree,
+  className = "text-accent",
+}) => {
+  const style = getFiligree(filigree);
+  const { CORNER_VIEWBOX, CornerArt } = style;
+  return (
+    <span
+      aria-hidden="true"
+      className={`contents ${SIZES[size] ?? SIZES.md}`}
+      data-filigree="corners"
+      data-filigree-style={filigree}
+    >
+      {positions(style).map((position, i) => (
+        <svg
+          key={i}
+          viewBox={CORNER_VIEWBOX}
+          focusable="false"
+          style={{ ...position, width: "var(--cs)", height: "var(--cs)" }}
+          className={`pointer-events-none absolute overflow-visible ${className}`}
+        >
+          <CornerArt />
+        </svg>
+      ))}
+    </span>
+  );
+};
 
 /**
  * Ornamental section break: rules either side of a centred ornament. Fills
  * the width it is given (cap it with `max-w-*`).
  *
  * - `lines`: false for the ornament alone.
+ * - `filigree`: a style name from FILIGREE_STYLES; defaults to the site style.
  */
 export const FiligreeDivider = ({
   lines = true,
+  filigree,
   className = "text-accent",
-}) => (
-  <div
-    aria-hidden="true"
-    data-filigree="divider"
-    className={`pointer-events-none flex items-center ${lines ? "w-full" : "justify-center"} ${className}`}
-  >
-    {lines && <Rule side="left" />}
-    <svg
-      viewBox={DIVIDER_VIEWBOX}
-      focusable="false"
-      className={`shrink-0 overflow-visible ${DIVIDER_ART}`}
+}) => {
+  const { DIVIDER_ART, DIVIDER_VIEWBOX, DividerArt, Rule } =
+    getFiligree(filigree);
+  return (
+    <div
+      aria-hidden="true"
+      data-filigree="divider"
+      data-filigree-style={filigree}
+      className={`pointer-events-none flex items-center ${lines ? "w-full" : "justify-center"} ${className}`}
     >
-      <DividerArt />
-    </svg>
-    {lines && <Rule side="right" />}
-  </div>
-);
+      {lines && <Rule side="left" />}
+      <svg
+        viewBox={DIVIDER_VIEWBOX}
+        focusable="false"
+        className={`shrink-0 overflow-visible ${DIVIDER_ART}`}
+      >
+        <DividerArt />
+      </svg>
+      {lines && <Rule side="right" />}
+    </div>
+  );
+};

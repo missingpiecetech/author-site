@@ -5,17 +5,24 @@ import Eyebrow from "../components/ui/Eyebrow";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
 import { FiligreeCorners } from "../components/ui/Filigree";
-import { FRAME_BORDER } from "../components/ui/filigree/index.js";
+import { getFiligree } from "../components/ui/filigree/index.js";
 import RetailerLinks from "../components/RetailerLinks";
 import BookPraise from "../components/books/BookPraise";
 import useHashScroll from "../hooks/useHashScroll";
 
+/* The book's cover, framed in its own filigree style (`book.filigree`) or
+ * the site's; a book with no cover shows its icon instead. */
 const BookCover = ({ book }) =>
   book.cover ? (
-    <FramedImage src={book.cover} alt={book.title} loading="eager" />
+    <FramedImage
+      src={book.cover}
+      alt={book.title}
+      loading="eager"
+      filigree={book.filigree}
+    />
   ) : (
     <div
-      className={`relative ${FRAME_BORDER} border-accent p-3 shadow-cover lg:p-4.5`}
+      className={`relative ${getFiligree(book.filigree).FRAME_BORDER} border-accent p-3 shadow-cover lg:p-4.5`}
     >
       <div
         role="img"
@@ -24,7 +31,7 @@ const BookCover = ({ book }) =>
       >
         {book.icon}
       </div>
-      <FiligreeCorners size="lg" />
+      <FiligreeCorners size="lg" filigree={book.filigree} />
     </div>
   );
 
