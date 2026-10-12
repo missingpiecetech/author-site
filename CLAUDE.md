@@ -83,9 +83,9 @@ against the ground, so never show state with a border alone (the pressed pill us
   `/store`, Buy on Amazon, Add it on Goodreads); the Store shows `ShippingNotice` (US-only,
   "via Amazon" linked) above all products; the footer links Goodreads. Retailer URLs live in
   `BOOK_DATA` (`retailers`).
-- **Motion is kept, behind `prefers-reduced-motion`.** AOS, the keyframe classes in
-  `index.css` (`animate-fade-in-up`, `animate-slide-in-*`, `animate-float*`, `delay-*`, …) and
-  the floating circles (gold, 6–10% opacity) stay. Every keyframe and `opacity: 0` start state
+- **Motion is kept, behind `prefers-reduced-motion`.** AOS and the keyframe classes in
+  `index.css` (`animate-fade-in-up`, `animate-slide-in-*`, `delay-*`, …) stay. No floating
+  circles or other background shapes. Every keyframe and `opacity: 0` start state
   lives inside `@media (prefers-reduced-motion: no-preference)`; AOS is initialised with
   `disable: () => matchMedia("(prefers-reduced-motion: reduce)").matches`; Tailwind animations
   use `motion-safe:`; no parallax under reduced motion. The e2e fails if any content is left

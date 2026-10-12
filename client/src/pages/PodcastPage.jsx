@@ -33,17 +33,7 @@ const PodcastPage = () => {
         accent="Adjacent"
         lede="A show about the journey from hobbyist writer to professional author"
         align="center"
-        className="relative isolate overflow-hidden"
-      >
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10"
-        >
-          <div className="absolute top-10 left-[12%] h-24 w-24 rounded-full bg-accent/10"></div>
-          <div className="absolute top-16 right-[8%] h-32 w-32 rounded-full bg-accent/6"></div>
-          <div className="absolute bottom-6 left-1/5 h-28 w-28 rounded-full bg-accent/8"></div>
-        </div>
-      </PageIntro>
+      />
 
       {/* About the podcast */}
       <Section>

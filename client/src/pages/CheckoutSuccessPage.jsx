@@ -5,20 +5,12 @@ import Button from "../components/ui/Button";
 const CheckoutSuccessPage = () => {
   return (
     <div className="min-h-screen bg-ground">
-      <div className="relative overflow-hidden">
-        <div aria-hidden="true" className="absolute inset-0">
-          <div className="absolute top-20 left-10 h-24 w-24 rounded-full bg-accent/10"></div>
-          <div className="absolute top-40 right-20 h-32 w-32 rounded-full bg-accent/6"></div>
-          <div className="absolute bottom-20 left-1/4 h-28 w-28 rounded-full bg-accent/8"></div>
-        </div>
-        <PageIntro
-          className="relative"
-          align="center"
-          title="Thank"
-          accent="You"
-          lede="Thank you for purchasing the book. Your order was successfully submitted."
-        />
-      </div>
+      <PageIntro
+        align="center"
+        title="Thank"
+        accent="You"
+        lede="Thank you for purchasing the book. Your order was successfully submitted."
+      />
 
       <Section>
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-8 border border-edge bg-well p-8 text-center lg:p-12">

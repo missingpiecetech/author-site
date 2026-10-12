@@ -16,16 +16,7 @@ const AboutPage = () => {
   return (
     <>
       {/* Hero: framed portrait beside the bio */}
-      <Section className="relative isolate overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10"
-        >
-          <div className="absolute top-16 left-[6%] h-24 w-24 rounded-full bg-accent/10"></div>
-          <div className="absolute top-1/3 right-[5%] h-32 w-32 rounded-full bg-accent/6"></div>
-          <div className="absolute bottom-10 left-1/4 h-28 w-28 rounded-full bg-accent/8"></div>
-        </div>
-
+      <Section>
         <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-24">
           <div className="mx-auto w-full max-w-sm lg:col-span-5 lg:max-w-none">
             <FramedImage

@@ -10,7 +10,6 @@ import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
 import PullQuote from "../components/ui/PullQuote";
 import { RuleList, RuleRow } from "../components/ui/RuleList";
-import FloatingCircles from "../components/home/FloatingCircles";
 import BookHero from "../components/home/BookHero";
 import useHashScroll from "../hooks/useHashScroll";
 
@@ -35,24 +34,15 @@ const HomePage = () => {
 
   return (
     <div className="bg-ground">
-      {/* Author hero with floating circles */}
+      {/* Author hero */}
       <Section
         clipX
         className="relative flex min-h-[calc(100svh-var(--header-h))] items-center"
         innerClassName="relative w-full"
       >
-        <FloatingCircles />
         <div className="relative flex flex-col items-center gap-12 md:flex-row md:justify-around md:gap-16">
           {/* Author image */}
           <div className="relative shrink-0">
-            <div
-              aria-hidden="true"
-              className="absolute -top-6 -left-6 h-24 w-24 rounded-full bg-accent/10"
-            />
-            <div
-              aria-hidden="true"
-              className="absolute -right-8 -bottom-8 h-40 w-40 rounded-full bg-accent/8"
-            />
             <FramedImage
               src={authorPic}
               alt="Michael Vadney"

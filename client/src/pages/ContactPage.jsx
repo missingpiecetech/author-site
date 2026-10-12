@@ -13,19 +13,11 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen bg-ground">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div aria-hidden="true" className="absolute inset-0">
-          <div className="absolute top-15 left-20 h-24 w-24 rounded-full bg-accent/10"></div>
-          <div className="absolute top-20 right-30 h-32 w-32 rounded-full bg-accent/6"></div>
-          <div className="absolute bottom-25 left-1/5 h-28 w-28 rounded-full bg-accent/8"></div>
-        </div>
-        <PageIntro
-          className="relative"
-          title="Get in"
-          accent="Touch"
-          lede="Whether it's business, podcast topics, or just to say hello—I'd love to hear from you"
-        />
-      </div>
+      <PageIntro
+        title="Get in"
+        accent="Touch"
+        lede="Whether it's business, podcast topics, or just to say hello—I'd love to hear from you"
+      />
 
       {/* Contact Methods */}
       <Section>
