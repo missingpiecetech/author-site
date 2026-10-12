@@ -53,7 +53,7 @@ const BooksPage = () => {
             band={mirrored}
             ruled={!mirrored && index > 0}
           >
-            <div className="grid items-center gap-12 lg:grid-cols-5 lg:gap-24">
+            <div className="grid items-start gap-12 lg:grid-cols-5 lg:gap-24">
               <div
                 className={`mx-auto w-full max-w-xs min-w-0 sm:max-w-sm lg:col-span-2 lg:max-w-none ${mirrored ? "lg:order-2" : ""}`}
               >
