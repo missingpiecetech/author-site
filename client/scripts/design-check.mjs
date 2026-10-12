@@ -48,6 +48,12 @@ const SHOTS = [
     pad: 24,
   },
   {
+    name: "home-writing-desk-390",
+    route: "/",
+    selector: "#writing-desk",
+    mobile: true,
+  },
+  {
     name: "store-notice-1440",
     route: "/store",
     selector: '[role="note"]',

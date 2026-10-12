@@ -25,7 +25,7 @@ export const WorkProgress = ({ title, type, status, percent }) => {
 
   return (
     <li className="flex flex-col gap-2.5 lg:gap-3.5">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+      <div className="flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:items-baseline lg:justify-between lg:gap-x-6">
         <span
           id={titleId}
           className="text-base font-medium text-cream lg:font-display lg:text-[1.875rem] lg:leading-tight lg:font-semibold"
