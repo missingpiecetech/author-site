@@ -201,14 +201,28 @@ navigation or Square code.
 - **E2E** (`tests/e2e/`): starts the real `vite` CLI on a free port with the `square` package
   swapped for an in-process stub (`support/register-square-stub.mjs`) — nothing reaches
   Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
-  a featured "Crownfall" product and a grid product at desktop and 390px, and checks every
-  route for horizontal scroll (`/` and `/contact` are `it.fails` until #7 is fixed) and, with
-  `prefers-reduced-motion: reduce`, for content left at opacity 0.
+  each of the four Crownfall editions and a grid product at desktop and 390px (cart line,
+  checkout body and Square line item carry the right item/variation ID and price, plus the
+  $5.99 shipping fee), and checks every route for horizontal scroll (`/` and `/contact` are
+  `it.fails` until #7 is fixed) and, with `prefers-reduced-motion: reduce`, for content left
+  at opacity 0.
+- **Crownfall editions are mapped by Square item ID, never by name.** Square holds four
+  separate items (signed/unsigned × hardcover/paperback); `src/data/crownfallEditions.js`
+  maps each combination to its production and sandbox item IDs and exports
+  `partitionCatalog` (catalog → one product per combination + grid products). The stub
+  catalog (`support/square-stub-products.js`) uses the production IDs, so a changed ID in the
+  table fails the suite. Missing-edition cases serve the stub catalog with items removed
+  (`openPage(viewport, { dropItemIds })`): a value with no available pairing has a disabled
+  toggle; a single missing pairing is never selected (the other toggle flips); with no
+  mapped item there is no listing and everything goes to the grid. If Square items are ever
+  recreated, update the table and the stub together.
 - **The e2e selects only by `data-testid`.** Restyle freely, but keep these hooks:
-  `store-product` (+ `data-product-id`), `add-to-cart`, `qty-increase`, `qty-decrease`,
-  `qty-value`, `cart-toggle`, `cart-count`, `cart-panel` (+ `data-state`), `cart-close`,
-  `cart-item`, `cart-subtotal`, `checkout-button`, `checkout-error`, `mobile-menu-toggle`,
-  `mobile-cart-button`.
+  `store-product` (+ `data-product-id`; on the Crownfall listing it is the selected
+  edition's item ID), `add-to-cart`, `qty-increase`, `qty-decrease`, `qty-value`,
+  `edition-format-hardcover`, `edition-format-paperback`, `edition-signed`,
+  `edition-unsigned` (pills with `aria-pressed`), `cart-toggle`, `cart-count`, `cart-panel`
+  (+ `data-state`), `cart-close`, `cart-item`, `cart-subtotal`, `checkout-button`,
+  `checkout-error`, `mobile-menu-toggle`, `mobile-cart-button`.
 
 ## Conventions
 
