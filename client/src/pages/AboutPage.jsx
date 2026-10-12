@@ -19,8 +19,8 @@ const AboutPage = () => {
     <>
       {/* Hero: framed portrait beside the bio */}
       <Section>
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-24">
-          <div className="mx-auto w-full max-w-sm lg:col-span-5 lg:max-w-none">
+        <div className="grid items-center gap-10 lg:grid-cols-[5fr_7fr] lg:gap-24">
+          <div className="mx-auto w-full max-w-sm lg:max-w-none">
             <FramedImage
               src={authorPic}
               alt="Michael Vadney"
@@ -29,7 +29,7 @@ const AboutPage = () => {
             />
           </div>
 
-          <div className="flex flex-col gap-6 lg:col-span-7">
+          <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
               <h1 className="text-title text-cream">
                 About <span className="text-accent">Michael</span>
@@ -107,12 +107,12 @@ const AboutPage = () => {
 
       {/* Invite Michael */}
       <Section>
-        <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-24">
-          <div className="flex flex-col gap-4 lg:col-span-5 lg:gap-6">
+        <div className="grid gap-6 lg:grid-cols-[5fr_7fr] lg:items-end lg:gap-24">
+          <div className="flex flex-col gap-4 lg:gap-6">
             <Eyebrow>Press &amp; events</Eyebrow>
             <h2 className="text-heading text-cream">Invite Michael</h2>
           </div>
-          <div className="flex flex-col gap-6 lg:col-span-7">
+          <div className="flex flex-col gap-6">
             <p className="text-lede text-muted">
               Available for signings, conventions, panels, and podcast
               interviews.
