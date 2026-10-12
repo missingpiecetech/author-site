@@ -142,19 +142,26 @@ const HomePage = () => {
         </Section>
       )}
 
-      {/* Writing desk: books in progress, title and status only */}
+      {/* Writing desk: books in progress — title, status and short blurb; no progress percentage */}
       {IN_PROGRESS.length > 0 && (
         <Section spacing="compact">
           <RuleList data-aos="fade-up">
             {IN_PROGRESS.map((book) => (
               <RuleRow key={book.slug} id={book.slug} to={book.link} arrow>
-                <span className="flex flex-1 flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                  <span className="font-display text-[1.625rem] leading-tight font-semibold lg:text-[1.875rem]">
-                    {book.title}
+                <span className="flex flex-1 flex-col gap-2">
+                  <span className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                    <span className="font-display text-[1.625rem] leading-tight font-semibold lg:text-[1.875rem]">
+                      {book.title}
+                    </span>
+                    <span className="text-base text-muted lg:text-[1.0625rem]">
+                      {book.status}
+                    </span>
                   </span>
-                  <span className="text-base text-muted lg:text-[1.0625rem]">
-                    {book.status}
-                  </span>
+                  {book.shortBlurb && (
+                    <span className="max-w-[60ch] text-base leading-relaxed text-muted lg:text-[1.0625rem]">
+                      {book.shortBlurb}
+                    </span>
+                  )}
                 </span>
               </RuleRow>
             ))}
