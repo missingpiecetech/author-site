@@ -345,3 +345,259 @@ describe("prefers-reduced-motion leaves no content invisible", () => {
     });
   }
 });
+
+// Shared chrome from the dark re-skin (header, footer, newsletter, tokens).
+// These hold on every page regardless of how the page itself is styled.
+const NAV_LABELS = ["Home", "Books", "Podcast", "About", "Store", "Contact"];
+const XL = 1280; // Tailwind `xl`: full nav from here up, hamburger below
+
+describe("header: sticky, sized by --header-h, never wraps", () => {
+  for (const width of [1440, 1280, 1100, 390]) {
+    it(`${width}px`, async () => {
+      const viewport =
+        width === 390 ? MOBILE : { width, height: DESKTOP.height };
+      const { page } = await openPage(viewport);
+      await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
+      await page.evaluate(() => document.fonts.ready);
+
+      const header = await page.evaluate(() => {
+        const el = document.querySelector("header");
+        const visible = (node) =>
+          !!node &&
+          getComputedStyle(node).display !== "none" &&
+          node.getBoundingClientRect().width > 0;
+        const rem = parseFloat(
+          getComputedStyle(document.documentElement).fontSize,
+        );
+        const headerVar =
+          parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--header-h",
+            ),
+          ) * rem;
+        const desktopList = el.querySelector("nav ul");
+        // A label that wraps renders its text on more than one line box.
+        const wrapped = [...el.querySelectorAll("a, button")]
+          .filter(visible)
+          .filter((node) => {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            const tops = new Set(
+              [...range.getClientRects()].map((r) => Math.round(r.top)),
+            );
+            return tops.size > 1;
+          })
+          .map((node) => node.textContent.trim());
+        const bar = el.getBoundingClientRect();
+        const outside = [...el.querySelector("nav").children]
+          .filter(visible)
+          .map((node) => node.getBoundingClientRect())
+          .filter(
+            (r) =>
+              r.left < 0 ||
+              r.right > window.innerWidth ||
+              r.top < bar.top ||
+              r.bottom > bar.bottom,
+          ).length;
+        return {
+          height: bar.height,
+          headerVar,
+          position: getComputedStyle(el).position,
+          desktopLinks: visible(desktopList)
+            ? [...desktopList.querySelectorAll("a")].map((a) =>
+                a.textContent.trim(),
+              )
+            : null,
+          hamburger: visible(
+            document.querySelector('[data-testid="mobile-menu-toggle"]'),
+          ),
+          wrapped,
+          outside,
+        };
+      });
+
+      expect(header.height).toBe(header.headerVar);
+      expect(header.height).toBe(width >= 1024 ? 96 : 68);
+      expect(header.position).toBe("sticky");
+      expect(header.wrapped).toEqual([]);
+      expect(header.outside).toBe(0);
+      if (width >= XL) {
+        expect(header.desktopLinks).toEqual(NAV_LABELS);
+        expect(header.hamburger).toBe(false);
+      } else {
+        expect(header.desktopLinks).toBeNull();
+        expect(header.hamburger).toBe(true);
+        await page.click(byTestId("mobile-menu-toggle"));
+        await page.waitForSelector(byTestId("mobile-cart-button"), {
+          visible: true,
+        });
+        const menu = await page.$$eval("#mobile-menu a", (links) =>
+          links.map((a) => a.firstChild.textContent.trim()),
+        );
+        expect(menu).toEqual(NAV_LABELS);
+        expect(await textOf(page, byTestId("mobile-cart-button"))).toBe(
+          "Cart (0)",
+        );
+      }
+
+      // Still pinned to the top after scrolling down.
+      await page.evaluate(() => window.scrollTo(0, 1500));
+      await page.waitForFunction(() => window.scrollY > 0);
+      expect(
+        await page.$eval("header", (el) => el.getBoundingClientRect().top),
+      ).toBe(0);
+    });
+  }
+});
+
+describe("footer and newsletter", () => {
+  it("footer keeps the site links, adds Press Kit and Goodreads, and lists the socials", async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
+    const footer = await page.$eval("footer", (el) => ({
+      links: [...el.querySelectorAll("nav a")].map((a) => a.textContent.trim()),
+      routes: [...el.querySelectorAll("nav a")].map((a) =>
+        a.getAttribute("href"),
+      ),
+      socials: [...el.querySelectorAll("a[aria-label]")].map((a) => [
+        a.getAttribute("aria-label"),
+        new URL(a.href).hostname,
+      ]),
+    }));
+    expect(footer.links).toEqual([...NAV_LABELS, "Press Kit"]);
+    expect(footer.routes.slice(0, 6)).toEqual([
+      "/",
+      "/books",
+      "/podcast",
+      "/about",
+      "/store",
+      "/contact",
+    ]);
+    expect(footer.routes[6]).toMatch(/^https:\/\/drive\.google\.com\//);
+    expect(footer.socials).toContainEqual(["Goodreads", "www.goodreads.com"]);
+    for (const name of ["YouTube", "Instagram", "X", "Bluesky", "Threads"]) {
+      expect(footer.socials.map(([label]) => label)).toContain(name);
+    }
+  });
+
+  it("Subscribe and Join the Circle open the MailerLite form", async () => {
+    const { page } = await openPage(DESKTOP);
+    // Record ml() calls instead of letting the MailerLite script handle them.
+    await page.evaluateOnNewDocument(() => {
+      window.__mlCalls = [];
+      Object.defineProperty(window, "ml", {
+        configurable: true,
+        get:
+          () =>
+          (...args) =>
+            window.__mlCalls.push(args),
+        set: () => {},
+      });
+    });
+    await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
+    expect(await textOf(page, "#newsletter-heading")).toMatch(
+      /^(Join the Journey|Never Miss a Release|Receive Updates)$/,
+    );
+    await page.click("#subscribe-button");
+    const join = await page.waitForSelector(
+      "::-p-xpath(//header//button[normalize-space()='Join the Circle'])",
+      { visible: true },
+    );
+    await join.click();
+    const shows = await page.evaluate(() =>
+      window.__mlCalls.filter((call) => call[0] === "show"),
+    );
+    expect(shows).toEqual([
+      ["show", "oQiRIg", true],
+      ["show", "oQiRIg", true],
+    ]);
+  });
+});
+
+describe("design tokens", () => {
+  it("dark ground, self-hosted serif fonts, gold focus ring", async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
+    await page.evaluate(() => document.fonts.ready);
+    const tokens = await page.evaluate(() => ({
+      body: getComputedStyle(document.body).backgroundColor,
+      cormorant: document.fonts.check('600 20px "Cormorant Garamond"'),
+      spectral: document.fonts.check('400 16px "Spectral"'),
+      loaded: [...document.fonts]
+        .filter((f) => f.status === "loaded")
+        .map((f) => f.family.replace(/"/g, "")),
+    }));
+    expect(tokens.body).toBe("rgb(18, 16, 23)");
+    expect(tokens.cormorant).toBe(true);
+    expect(tokens.spectral).toBe(true);
+    expect(tokens.loaded).toEqual(
+      expect.arrayContaining(["Cormorant Garamond", "Spectral"]),
+    );
+
+    await page.keyboard.press("Tab");
+    // transition-colors also animates outline-color; read it once settled.
+    await page.waitForFunction(
+      () =>
+        document.activeElement !== document.body &&
+        document.activeElement.getAnimations().length === 0,
+    );
+    const outline = await page.evaluate(() => {
+      const style = getComputedStyle(document.activeElement);
+      return `${style.outlineStyle} ${style.outlineWidth} ${style.outlineColor}`;
+    });
+    expect(outline).toBe("solid 2px rgb(207, 174, 107)");
+  });
+});
+
+// The opacity check above proves nothing is left invisible; this one proves
+// nothing actually moves. "/" still runs AOS (HomePage.jsx AOS.init has no
+// `disable`) and an unprefixed animate-bounce, so it is it.fails until the
+// Home page conversion gates them.
+const KNOWN_MOTION_UNDER_REDUCE = new Set(["/"]);
+
+describe("prefers-reduced-motion: nothing animates", () => {
+  for (const route of ROUTES) {
+    const test = KNOWN_MOTION_UNDER_REDUCE.has(route) ? it.fails : it;
+    test(route, async () => {
+      const { page } = await openPage(DESKTOP);
+      await page.emulateMediaFeatures([
+        { name: "prefers-reduced-motion", value: "reduce" },
+      ]);
+      await page.goto(`${server.baseUrl}${route}`, { waitUntil: "load" });
+      await page.evaluate(async () => {
+        const step = window.innerHeight / 2;
+        for (let y = 0; y < document.body.scrollHeight; y += step) {
+          window.scrollTo(0, y);
+          await new Promise((r) => setTimeout(r, 30));
+        }
+      });
+      const motion = await page.evaluate(() => ({
+        aos: document.querySelectorAll(".aos-init").length,
+        running: document
+          .getAnimations()
+          .filter(
+            (a) => !a.effect?.target?.closest?.('[data-testid="cart-panel"]'),
+          )
+          .map((a) => a.animationName ?? a.transitionProperty),
+      }));
+      expect(motion).toEqual({ aos: 0, running: [] });
+    });
+  }
+});
+
+describe("motion allowed: entrance animations still run", () => {
+  it("/ initialises AOS and runs keyframe animations", async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.emulateMediaFeatures([
+      { name: "prefers-reduced-motion", value: "no-preference" },
+    ]);
+    await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
+    await page.waitForSelector(".aos-init");
+    const keyframes = await page.evaluate(
+      () =>
+        document.getAnimations().filter((a) => a.animationName !== undefined)
+          .length,
+    );
+    expect(keyframes).toBeGreaterThan(0);
+  });
+});
