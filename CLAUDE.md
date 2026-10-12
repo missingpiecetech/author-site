@@ -93,9 +93,9 @@ against the ground, so never show state with a border alone (the pressed pill us
   progress percentages or bars.
 - **Lists** (episodes, contact rows, links) are rows divided by `rule` lines, not cards.
 - **Retailer links:** the Home Crownfall block and `/books` show `RetailerLinks` (Buy direct →
-  `/store`, Buy on Amazon, Add it on Goodreads); the Store shows `ShippingNotice` (US-only,
-  "via Amazon" linked) above all products; the footer links Goodreads. Retailer URLs live in
-  `BOOK_DATA` (`retailers`).
+  `/store`, Buy on Amazon, Add it on Goodreads); the Store shows `ShippingNotice` (US-only
+  shipping, then "Available globally on Amazon." with "Amazon" linked, new tab) above all
+  products; the footer links Goodreads. Retailer URLs live in `BOOK_DATA` (`retailers`).
 - **Motion is kept, behind `prefers-reduced-motion`.** AOS and the keyframe classes in
   `index.css` (`animate-fade-in-up`, `animate-slide-in-*`, `delay-*`, …) stay. No floating
   circles or other background shapes. Every keyframe and `opacity: 0` start state

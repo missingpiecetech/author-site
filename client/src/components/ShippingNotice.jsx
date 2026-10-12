@@ -9,8 +9,8 @@ const AMAZON = BOOKS.find((book) => book.slug === "crownfall")?.retailers
 
 /**
  * The prominent US-only shipping warning shown above the store's products.
- * Renders only while SITE_INFO.shipping.usOnly is true. Wording is the site's
- * existing notice, unchanged.
+ * Renders only while SITE_INFO.shipping.usOnly is true; "Amazon" links to
+ * Crownfall's Amazon listing.
  */
 const ShippingNotice = ({ className = "" }) => {
   if (!SITE_INFO.shipping.usOnly) return null;
@@ -27,8 +27,7 @@ const ShippingNotice = ({ className = "" }) => {
       />
       <p>
         <strong className="font-medium">Note:</strong> Products are currently
-        only available for shipping within the USA. International availability
-        coming soon{" "}
+        only available for shipping within the USA. Available globally on{" "}
         {AMAZON ? (
           <a
             href={AMAZON}
@@ -36,10 +35,10 @@ const ShippingNotice = ({ className = "" }) => {
             rel="noopener noreferrer"
             className="text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
           >
-            via Amazon
+            Amazon
           </a>
         ) : (
-          "via Amazon"
+          "Amazon"
         )}
         .
       </p>
