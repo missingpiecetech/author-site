@@ -18,6 +18,9 @@ import {
   EXCERPTS,
   chapterId,
   chapterTitle,
+  isSceneBreak,
+  parseInline,
+  plainText,
   readableChapters,
 } from "../../src/excerpts/index.js";
 
@@ -877,6 +880,39 @@ describe("Crownfall excerpt", () => {
     }
   });
 
+  it.runIf(chapters.length > 0)(
+    "every paragraph is set as written, with *italics* as <em>",
+    async () => {
+      const { page } = await openPage(MOBILE);
+      await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
+      await page.waitForSelector(byTestId("excerpt-chapter"));
+      const rendered = await page.$$eval(byTestId("excerpt-chapter"), (els) =>
+        els.map((el) => ({
+          paragraphs: [...el.querySelectorAll("p")].map((p) => p.textContent),
+          italics: [...el.querySelectorAll("p em")].map((em) => em.textContent),
+        })),
+      );
+      expect(rendered).toEqual(
+        chapters.map((c) => {
+          const prose = c.paragraphs.filter((p) => !isSceneBreak(p));
+          return {
+            paragraphs: prose.map(plainText),
+            italics: prose.flatMap((p) =>
+              parseInline(p)
+                .filter((segment) => segment.italic)
+                .map((segment) => segment.text),
+            ),
+          };
+        }),
+      );
+      const text = await page.$eval(
+        byTestId("excerpt-text"),
+        (el) => el.textContent,
+      );
+      expect(text).not.toMatch(/[*\\]/);
+    },
+  );
+
   it.runIf(chapters.length > 1)(
     "a chapter link lands below the sticky header",
     async () => {
@@ -909,10 +945,14 @@ describe("Crownfall excerpt", () => {
     await page.waitForSelector("h1");
     const link = await page.$(byTestId("excerpt-keep-reading"));
     if (chapters.length) {
-      expect(await link.evaluate((a) => new URL(a.href).pathname)).toBe(path);
       expect(await page.$eval("#excerpt-heading", (el) => el.textContent)).toBe(
         chapterTitle(chapters[0]),
       );
+      await Promise.all([
+        page.waitForFunction((p) => location.pathname === p, {}, path),
+        link.click(),
+      ]);
+      await page.waitForSelector(byTestId("excerpt-chapter"));
     } else {
       expect(link).toBeNull();
       expect(await page.$("#excerpt")).toBeNull();
