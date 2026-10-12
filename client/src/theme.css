@@ -1,9 +1,4 @@
 @theme {
-  /* Legacy tokens: still used by pages not yet converted. Removed in step 3. */
-  --color-primary: #ffffff;
-  --color-secondary: #2b9994;
-  --color-secondary-dark: #025e59;
-
   /* Dark, bookish palette */
   --color-ground: #121017;
   --color-band: #17141d;

@@ -44,26 +44,6 @@ export const BOOKS = [
     ),
     shortBlurb:
       "Nearly a decade under the empire’s grip has left Burunt a troubled land, its unrest simmering beneath a fragile surface. In the fight for power, justice, and survival, everyone must decide: who they will become?",
-    quotes: [
-      <>
-        "An excellent debut novel. Crownfall brims with a captivating cast of
-        complex characters and a mesmerizing world of hope and darkness."
-        <br />
-        &mdash; Adrian M Gibson, award winning author of Mushroom Blues
-      </>,
-      <>
-        "Crownfall had me on the edge of my seat from the first page to the
-        last. This is a masterclass in political fantasy that I couldn't put
-        down!"
-        <br />
-        &mdash; Greta Kelly, author of The Queen of Day's and The Frozen Crown
-      </>,
-      <>
-        "A compelling debut that needs to be on your TBR."
-        <br />
-        &mdash; M.J. Kuhn, internationally bestselling author of Among Thieves
-      </>,
-    ],
     praise: [
       {
         text: "An excellent debut novel. Crownfall brims with a captivating cast of complex characters and a mesmerizing world of hope and darkness.",
@@ -98,11 +78,9 @@ export const BOOKS = [
     // title: "Chrono-Stained",
     title: "Project: Arcanist",
     subtitle: "Claim your past. Change your future.",
-    quotes: [],
     praise: [],
     release: "TBA",
     status: BOOK_STATUS.IN_DEVELOPMENT,
-    color: "bg-gray-600",
     // genres: ["Time Travel", "Sci-Fantasy", "Action Adventure"],
     icon: <GiClockwork />,
     // blurb: (
