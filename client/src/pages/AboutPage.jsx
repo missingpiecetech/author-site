@@ -79,7 +79,7 @@ const AboutPage = () => {
 
       {/* Quick Stats */}
       <Section band spacing="compact">
-        <dl className="grid gap-8 border border-edge p-8 sm:grid-cols-2 lg:gap-12 lg:p-12">
+        <dl className="grid gap-8 sm:grid-cols-2 lg:gap-12">
           {STATS.map(({ label, value, detail }) => (
             <div key={label} className="flex flex-col gap-2.5">
               <Eyebrow as="dt">{label}</Eyebrow>
