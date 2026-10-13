@@ -10,11 +10,13 @@ const CROWNFALL = BOOKS.find((book) => book.slug === "crownfall");
  * - `retailers`: `{ amazon, goodreads }`; defaults to Crownfall's.
  * - `compact`: 48px buttons instead of 54px.
  * - `align`: "start" (default) | "center".
+ * - `directLabel`: the store button's label (default "Buy direct").
  */
 const RetailerLinks = ({
   retailers = CROWNFALL?.retailers ?? {},
   compact = false,
   align = "start",
+  directLabel = "Buy direct",
   className = "",
 }) => {
   const size = compact ? "md" : "lg";
@@ -27,7 +29,7 @@ const RetailerLinks = ({
         className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-3.5 ${centered ? "w-full sm:w-auto sm:justify-center" : ""}`}
       >
         <Button to="/store" size={size}>
-          Buy direct
+          {directLabel}
         </Button>
         {retailers.amazon && (
           <Button href={retailers.amazon} variant="secondary" size={size}>

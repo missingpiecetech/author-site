@@ -148,13 +148,15 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
   };
 
   // Next chapter: show it, then bring its top to just under the header
-  // (scroll-padding-top; smooth unless reduced motion) and focus the panel.
+  // (scroll-padding-top) and focus the panel. It jumps rather than
+  // smooth-scrolls: the new chapter replaces the old one, so animating back
+  // up thousands of pixels of text that is no longer there only adds a wait.
   const handleNext = () => {
     const next = selected + 1;
     flushSync(() => select(next));
     const panel = document.getElementById(chapterId(chapters[next]));
     panel.focus({ preventScroll: true });
-    panel.scrollIntoView({ block: "start" });
+    panel.scrollIntoView({ block: "start", behavior: "instant" });
   };
 
   useEffect(() => {
@@ -220,6 +222,7 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
               </h2>
               <RetailerLinks
                 retailers={book?.retailers}
+                directLabel="Buy the book"
                 align="center"
                 className="mt-2 w-full"
               />
