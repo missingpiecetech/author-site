@@ -19,7 +19,7 @@ const ShippingNotice = ({ className = "" }) => {
   return (
     <div
       role="note"
-      className={`relative flex min-h-24 items-center gap-4 ${FRAME_BORDER} border-accent bg-well p-5 text-lede text-cream lg:min-h-28 lg:p-6 ${className}`}
+      className={`relative flex min-h-46 items-center gap-4 ${FRAME_BORDER} border-accent bg-well p-5 text-lede text-cream lg:p-6 ${className}`}
     >
       <FontAwesomeIcon
         icon={faTriangleExclamation}

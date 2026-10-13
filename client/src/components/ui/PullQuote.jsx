@@ -15,7 +15,7 @@ const PullQuote = ({ quote, name, credit, className = "" }) => (
     <blockquote className="font-display text-quote italic font-medium text-cream">
       <p>&ldquo;{quote}&rdquo;</p>
     </blockquote>
-    <FiligreeDivider className="max-w-lg text-accent" />
+    <FiligreeDivider />
     {(name || credit) && (
       <figcaption className="text-eyebrow uppercase tracking-[0.18em] text-subtle">
         {[name, credit].filter(Boolean).join(" · ")}

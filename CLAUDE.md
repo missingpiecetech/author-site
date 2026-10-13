@@ -73,21 +73,29 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Sections** alternate `ground` and `band`; 80px side padding on desktop, 24px on mobile,
   content in a `max-w-7xl` column. Bands keep plain 1px `rule` edges; a plain section that
   follows another (`<Section ruled>`) and the close of a `PageIntro` get the **filigree
-  divider** (`FiligreeDivider`: solid rules fading in either side of a centred ornament).
+  divider** (`FiligreeDivider`: the bramble ornament alone, centred, with no rules).
 - **Filigree, not plain gold boxes.** The site style is **#8 Thorned Bramble** (owner's
   choice, Oct 2026): tapering briar stems crossing at each corner around a closed bud, with
   hooked thorns; bold, solid `currentColor` fills. **Project: Arcanist's own frames use #10
   Art Deco Sunburst** (stepped bars, lozenges, a sunburst fan; 3px frame line) — today that
   is its cover frame on `/books`. Inline SVG only, no image files or icon fonts.
-  - `src/components/ui/Filigree.jsx`: `FiligreeCorners` (parent `relative`; `size` lg for
-    framed covers/photos, md for panels, sm for tiles, xs for 48px icon boxes) and
+  - `src/components/ui/Filigree.jsx`: `FiligreeCorners` (parent `relative`) and
     `FiligreeDivider`. Both `aria-hidden`, `pointer-events-none`, and take `filigree` (a
     style name; default the site style). No artwork lives here.
+  - **One scale for every thorn** (owner, Oct 2026): `src/components/ui/filigree/scale.js`
+    sets `CORNER_SIZE` (112px, at every viewport and on every frame; corners never scale
+    with the box) and `UNIT` (1.12px per artwork unit). The bramble divider has no size of
+    its own, so it is drawn at `UNIT` too (269×54px): stems and thorns are the same size
+    in corners and dividers everywhere. Never resize an ornament with classes
+    (`[&_svg]:…`, `max-w-*` on a divider); `design-check` fails any corner or bramble
+    divider more than 5% off `UNIT`.
   - `src/components/ui/filigree/bramble.jsx`: the artwork (ported verbatim from symbols
-    `c8`/`d8` of the samples) and its metrics: `FRAME_BORDER` (`border-2`), the inset (a
-    fifth of the corner box sits outside the frame line), the divider size and `Rule`.
+    `c8`/`d8` of the samples, the divider without the sample's rule lines) and its
+    metrics: `FRAME_BORDER` (`border-2`) and the inset (a fifth of the corner box sits
+    outside the frame line).
   - `src/components/ui/filigree/artDeco.jsx`: Art Deco Sunburst (symbols `c10`/`d10`,
-    `border-3`, solid 3px rule), same exports.
+    `border-3`), same exports plus its own divider size (`DIVIDER_ART`) and the solid
+    3px `Rule` either side, both unchanged.
   - `src/components/ui/filigree/index.js` names the site style (two marked lines) and
     registers styles by name in `FILIGREE_STYLES` (`bramble`, `artDeco`); `getFiligree(name)`
     returns one, falling back to the site style. Import it as `filigree/index.js`
@@ -98,11 +106,10 @@ against the ground, so never show state with a border alone (the pressed pill us
     `BOOK_DATA` (`filigree: "artDeco"` on Project: Arcanist), which `BooksPage`'s
     `BookCover` passes through. Never change the site style to style one item.
   - Every box carrying corners uses `${FRAME_BORDER}` plus a colour (`border-accent`, or
-    `border-edge` on tiles and panels). Corner boxes: lg 76/112/152px (base/lg/xl), md
-    52/64, sm 40/48, xs 30; a fifth of that reaches outside the box (30px for a cover at
-    xl, 15px at 390), so keep that much room. A framed box must be at least 1.6 corner
-    sizes tall and wide or the arms on one edge meet (`ShippingNotice` has a min height for
-    this).
+    `border-edge` on panels). A fifth of the 112px corner (23px) reaches outside the box,
+    so keep that much room. A framed box must be at least 1.6 corner sizes (180px) tall
+    and wide or the arms on one edge meet; a box smaller than that gets no corners
+    (`ShippingNotice` has a 184px min height for this).
   - **No filigree on repeating cards** (owner, Oct 2026: "it is just too much"). Corners go
     only on single framed elements: `FramedImage`, the store gallery frame,
     `ShippingNotice`, the newsletter box and the checkout-success panel. Tiles, stats and
@@ -227,7 +234,7 @@ Run from `client/`.
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness: horizontal scroll, filigree overlapping text, filigree corners meeting
-each other or their frame's content, reduced-motion opacity,
+each other or their frame's content, every ornament at the corners' scale, reduced-motion opacity,
 progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`.
 

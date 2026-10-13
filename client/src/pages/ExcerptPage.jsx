@@ -28,19 +28,16 @@ const COUNT_LABELS = {
 const DROP_CAP =
   "first-letter:float-left first-letter:pt-[0.12em] first-letter:pr-[0.12em] first-letter:font-display first-letter:text-[4.15em] first-letter:leading-[0.8] first-letter:font-semibold first-letter:text-accent";
 
-/** A scene break (`***` or `#` in the text): a small centred ornament. */
+/** A scene break (`***` or `#` in the text): the centred ornament. */
 const SceneBreak = () => (
   <div role="separator" className="my-9 text-accent lg:my-11">
-    <FiligreeDivider
-      lines={false}
-      className="[&_svg]:h-7 [&_svg]:w-35 lg:[&_svg]:h-8 lg:[&_svg]:w-40"
-    />
+    <FiligreeDivider />
   </div>
 );
 
 /**
- * A chapter opener: "Chapter 1: Kyndel" centred in Cormorant, with a small
- * bramble accent underneath.
+ * A chapter opener: "Chapter 1: Kyndel" centred in Cormorant, with the
+ * bramble ornament underneath.
  */
 const ChapterHeading = ({ chapter }) => {
   const id = chapterId(chapter);
@@ -49,7 +46,7 @@ const ChapterHeading = ({ chapter }) => {
       <h2 id={`${id}-heading`} className="text-hook text-cream">
         {chapterTitle(chapter)}
       </h2>
-      <FiligreeDivider className="w-full max-w-40 text-accent lg:max-w-48" />
+      <FiligreeDivider />
     </header>
   );
 };

@@ -54,7 +54,7 @@ const FramedImage = ({
         </div>
       )}
     </div>
-    <FiligreeCorners size="lg" filigree={filigree} />
+    <FiligreeCorners filigree={filigree} />
   </div>
 );
 

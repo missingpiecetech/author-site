@@ -8,9 +8,11 @@
  * Every filigree style module exports the same names, and `../Filigree.jsx`
  * imports exactly one module:
  *   - CornerArt:  top-left corner, drawn in a CORNER_VIEWBOX box;
- *   - DividerArt: the divider centrepiece, drawn in a DIVIDER_VIEWBOX box,
- *                 rendered at DIVIDER_ART's size;
- *   - Rule:       the line either side of the divider centrepiece;
+ *   - DividerArt: the divider ornament, drawn in a DIVIDER_VIEWBOX box,
+ *                 sized by DIVIDER_ART (class names), or, without it, at
+ *                 the corners' scale (scale.js);
+ *   - Rule:       optional, the line either side of the divider ornament
+ *                 (bramble has none: its ornament stands alone);
  *   - FRAME_*:    how corners sit on a frame (below).
  */
 
@@ -33,24 +35,10 @@ export const FRAME_INSET = 0.2;
 export const FRAME_MIN_SPAN = 1.6;
 
 /*
- * Divider: the centrepiece is 240×48 (300×60 from lg, the sample's
- * `--ds: 1.25`).
+ * Divider: the ornament alone (two arms and the bud, no rules). There is no
+ * DIVIDER_ART, so it is drawn at the corners' scale (UNIT px per unit,
+ * 269×54px) at every viewport and its thorns and stems match the corners'.
  */
-export const DIVIDER_ART = "h-12 w-60 lg:h-15 lg:w-75";
-
-/*
- * The rule either side of the divider (the sample's `rule-solid`): as thick
- * as the frame line, scaled with the centrepiece, fading in from transparent
- * to full gold at 60% of its length towards the centre.
- */
-export const Rule = ({ side }) => (
-  <span
-    className="h-0.5 min-w-3 flex-1 lg:h-[2.5px]"
-    style={{
-      background: `linear-gradient(${side === "left" ? "to right" : "to left"}, transparent, currentColor 60%)`,
-    }}
-  />
-);
 
 /* One arm: the stem running along the top edge, thorns and two leaves. */
 const ARM = (
@@ -125,13 +113,8 @@ export const CornerArt = () => (
   </>
 );
 
-/* Half the divider: the rule's inner end with an arm laid along it. */
-const DIVIDER_HALF = (
-  <>
-    <path d="M126 24H240" fill="none" stroke="currentColor" strokeWidth="2" />
-    <g transform="translate(118 5)">{ARM}</g>
-  </>
-);
+/* Half the divider: an arm running out from the bud. */
+const DIVIDER_HALF = <g transform="translate(118 5)">{ARM}</g>;
 
 export const DividerArt = () => (
   <>

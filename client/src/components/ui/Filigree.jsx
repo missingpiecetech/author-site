@@ -7,28 +7,15 @@
  * All of it is decorative: aria-hidden and pointer-events-none.
  */
 import { getFiligree } from "./filigree/index.js";
-
-/*
- * Corner sizes (`--cs`, the corner box's side). A fifth of the box sits
- * outside the frame line, so keep that much room around a framed box, and
- * keep the box at least FRAME_MIN_SPAN corner sizes tall and wide.
- *   lg (framed covers, photos): 76px, 112px from lg, 152px from xl
- *   md (panels):                52px, 64px from lg
- *   sm (tiles):                 40px, 48px from lg
- *   xs (48px icon boxes):       30px
- */
-const SIZES = {
-  lg: "[--cs:76px] lg:[--cs:112px] xl:[--cs:152px]",
-  md: "[--cs:52px] lg:[--cs:64px]",
-  sm: "[--cs:40px] lg:[--cs:48px]",
-  xs: "[--cs:30px]",
-};
+import { CORNER_SIZE, UNIT } from "./filigree/scale.js";
 
 // Each corner's position: offset from the padding edge by half the border,
 // plus the part of the box outside the frame line (the sample's
-// `--bw / -2 - --cs * --k`).
+// `--bw / -2 - --cs * --k`). Every corner is CORNER_SIZE px, whatever the
+// frame's size, so only frame a box at least FRAME_MIN_SPAN × CORNER_SIZE tall
+// and wide; on a smaller one the arms meet.
 const positions = ({ FRAME_BORDER_WIDTH, FRAME_INSET }) => {
-  const offset = `calc(${FRAME_BORDER_WIDTH / -2}px - var(--cs) * ${FRAME_INSET})`;
+  const offset = `${FRAME_BORDER_WIDTH / -2 - CORNER_SIZE * FRAME_INSET}px`;
   return [
     { top: offset, left: offset },
     { top: offset, right: offset, transform: "scaleX(-1)" },
@@ -45,22 +32,19 @@ const positions = ({ FRAME_BORDER_WIDTH, FRAME_INSET }) => {
  * `${FRAME_BORDER} border-accent`; the ornament sits on the corners and the
  * plain line runs between them.
  *
- * - `size`: "lg" (framed covers and photos) | "md" (panels) | "sm" (tiles) |
- *   "xs" (icon boxes).
+ * Corners are always CORNER_SIZE px (./filigree/scale.js). Use them only on
+ * single framed elements, never on repeating cards.
+ *
  * - `filigree`: a style name from FILIGREE_STYLES, e.g. "artDeco"; defaults
  *   to the site style.
  */
-export const FiligreeCorners = ({
-  size = "md",
-  filigree,
-  className = "text-accent",
-}) => {
+export const FiligreeCorners = ({ filigree, className = "text-accent" }) => {
   const style = getFiligree(filigree);
   const { CORNER_VIEWBOX, CornerArt } = style;
   return (
     <span
       aria-hidden="true"
-      className={`contents ${SIZES[size] ?? SIZES.md}`}
+      className="contents"
       data-filigree="corners"
       data-filigree-style={filigree}
     >
@@ -69,7 +53,7 @@ export const FiligreeCorners = ({
           key={i}
           viewBox={CORNER_VIEWBOX}
           focusable="false"
-          style={{ ...position, width: "var(--cs)", height: "var(--cs)" }}
+          style={{ ...position, width: CORNER_SIZE, height: CORNER_SIZE }}
           className={`pointer-events-none absolute overflow-visible ${className}`}
         >
           <CornerArt />
@@ -80,35 +64,38 @@ export const FiligreeCorners = ({
 };
 
 /**
- * Ornamental section break: rules either side of a centred ornament. Fills
- * the width it is given (cap it with `max-w-*`).
+ * Ornamental section break: a centred ornament, with rules either side when
+ * the style has them (Art Deco does; the bramble ornament stands alone). A
+ * style without DIVIDER_ART is drawn at the corners' scale (UNIT px per
+ * viewBox unit), so its thorns and stems match the corners' exactly.
  *
- * - `lines`: false for the ornament alone.
  * - `filigree`: a style name from FILIGREE_STYLES; defaults to the site style.
  */
-export const FiligreeDivider = ({
-  lines = true,
-  filigree,
-  className = "text-accent",
-}) => {
+export const FiligreeDivider = ({ filigree, className = "text-accent" }) => {
   const { DIVIDER_ART, DIVIDER_VIEWBOX, DividerArt, Rule } =
     getFiligree(filigree);
+  const hasRules = Boolean(Rule);
+  const [, , width, height] = DIVIDER_VIEWBOX.split(" ").map(Number);
+  const size = DIVIDER_ART
+    ? undefined
+    : { width: width * UNIT, height: height * UNIT };
   return (
     <div
       aria-hidden="true"
       data-filigree="divider"
       data-filigree-style={filigree}
-      className={`pointer-events-none flex items-center ${lines ? "w-full" : "justify-center"} ${className}`}
+      className={`pointer-events-none flex items-center ${hasRules ? "w-full" : "justify-center"} ${className}`}
     >
-      {lines && <Rule side="left" />}
+      {hasRules && <Rule side="left" />}
       <svg
         viewBox={DIVIDER_VIEWBOX}
         focusable="false"
-        className={`shrink-0 overflow-visible ${DIVIDER_ART}`}
+        style={size}
+        className={`shrink-0 overflow-visible ${DIVIDER_ART ?? ""}`}
       >
         <DividerArt />
       </svg>
-      {lines && <Rule side="right" />}
+      {hasRules && <Rule side="right" />}
     </div>
   );
 };
