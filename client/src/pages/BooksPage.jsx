@@ -51,12 +51,7 @@ const BooksPage = () => {
       {BOOKS.map((book, index) => {
         const mirrored = index % 2 === 1;
         return (
-          <Section
-            key={book.id}
-            id={book.slug}
-            band={mirrored}
-            ruled={!mirrored && index > 0}
-          >
+          <Section key={book.id} id={book.slug} band={mirrored}>
             <div className="grid items-start gap-12 lg:grid-cols-5 lg:gap-24">
               <div
                 className={`mx-auto w-full max-w-xs min-w-0 sm:max-w-sm lg:col-span-2 lg:max-w-none ${mirrored ? "lg:order-2" : ""}`}

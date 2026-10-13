@@ -1,53 +1,44 @@
 import Section from "./Section";
 import Eyebrow from "./Eyebrow";
+import { FiligreeDivider } from "./Filigree";
 
 /**
- * The opening block of a secondary page: eyebrow, h1 and lede, closed by a
- * filigree divider. Keeps the site's two-tone headings: `accent` is rendered after
- * `title` in gold, e.g. title="About" accent="Michael".
+ * The opening block of a secondary page, centred: eyebrow, h1 and lede, closed
+ * by a filigree divider under them. Keeps the site's two-tone headings:
+ * `accent` is rendered after `title` in gold, e.g. title="Book" accent="Store".
  *
- * - `align`: "left" (default) | "center".
- * - `children`: anything extra under the lede (buttons, notes).
+ * - `children`: anything extra under the lede (buttons, notes), above the
+ *   divider.
  */
 const PageIntro = ({
   eyebrow,
   title,
   accent,
   lede,
-  align = "left",
   className = "",
   children,
   ...rest
-}) => {
-  const centered = align === "center";
-  return (
-    <Section
-      spacing="none"
-      divider="bottom"
-      className={`pt-12 pb-10 lg:pt-22 lg:pb-18 ${className}`}
-      innerClassName={`flex flex-col gap-4 lg:gap-5 ${centered ? "items-center text-center" : ""}`}
-      {...rest}
-    >
-      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-      <h1 className="text-title text-cream">
-        {title}
-        {accent && (
-          <>
-            {" "}
-            <span className="text-accent">{accent}</span>
-          </>
-        )}
-      </h1>
-      {lede && (
-        <p
-          className={`text-lede text-muted ${centered ? "max-w-3xl" : "max-w-4xl"}`}
-        >
-          {lede}
-        </p>
+}) => (
+  <Section
+    spacing="none"
+    className={`pt-12 pb-4 lg:pt-22 lg:pb-8 ${className}`}
+    innerClassName="flex flex-col items-center gap-4 text-center lg:gap-5"
+    {...rest}
+  >
+    {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+    <h1 className="text-title text-cream">
+      {title}
+      {accent && (
+        <>
+          {" "}
+          <span className="text-accent">{accent}</span>
+        </>
       )}
-      {children}
-    </Section>
-  );
-};
+    </h1>
+    {lede && <p className="max-w-3xl text-lede text-muted">{lede}</p>}
+    {children}
+    <FiligreeDivider className="mt-2 text-accent lg:mt-3" />
+  </Section>
+);
 
 export default PageIntro;

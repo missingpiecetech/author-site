@@ -101,7 +101,6 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
   return (
     <div className="bg-ground">
       <PageIntro
-        align="center"
         eyebrow="Read an Excerpt"
         title={title}
         lede={chapters.length ? label : undefined}
@@ -137,10 +136,7 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
             </article>
           </Section>
 
-          <Section
-            ruled
-            innerClassName="flex flex-col items-center gap-5 text-center lg:gap-6"
-          >
+          <Section innerClassName="flex flex-col items-center gap-5 text-center lg:gap-6">
             <Eyebrow>End of the excerpt</Eyebrow>
             <h2 className="text-heading text-cream">
               Keep reading <span className="text-accent">{title}</span>

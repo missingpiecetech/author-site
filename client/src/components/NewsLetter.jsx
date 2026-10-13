@@ -27,7 +27,7 @@ const NewsLetter = () => {
   return (
     <section
       aria-labelledby="newsletter-heading"
-      className="border-t border-rule px-6 py-12 lg:px-20 lg:py-26"
+      className="px-6 py-12 lg:px-20 lg:py-26"
     >
       <div
         className={`relative mx-auto flex max-w-3xl flex-col items-center gap-4 ${FRAME_BORDER} border-accent px-6 py-8 text-center lg:gap-6 lg:px-16 lg:py-14`}
