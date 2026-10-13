@@ -169,14 +169,21 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
     <div className="bg-ground">
       <PageIntro
         eyebrow={
-          chapters.length ? `Read an Excerpt · ${label}` : "Read an Excerpt"
+          chapters.length ? (
+            <>
+              Read an Excerpt ·{" "}
+              <span className="whitespace-nowrap">{label}</span>
+            </>
+          ) : (
+            "Read an Excerpt"
+          )
         }
         title={title}
       />
 
       {chapters.length ? (
         <>
-          <Section spacing="none" className="pt-10 pb-20 lg:pt-14 lg:pb-28">
+          <Section spacing="none" className="pt-6 pb-20 lg:pt-8 lg:pb-28">
             {isTabbed && (
               <ChapterTabs
                 chapters={chapters}
