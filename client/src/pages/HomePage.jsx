@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { BOOKS } from "../BOOK_DATA";
@@ -8,6 +8,7 @@ import Section from "../components/ui/Section";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
 import PullQuote from "../components/ui/PullQuote";
+import { FiligreeDivider } from "../components/ui/Filigree";
 import BookHero from "../components/home/BookHero";
 import Excerpt from "../components/home/Excerpt";
 import WritingDesk from "../components/WritingDesk";
@@ -53,7 +54,8 @@ const HomePage = () => {
         </div>
       </Section>
 
-      {/* Praise: the existing quote band, in the mockup's big-quote style */}
+      {/* Praise: the existing quote band, in the mockup's big-quote style,
+          a divider between each pair of quotes */}
       {FEATURED?.praise?.length > 0 && (
         <Section
           band
@@ -61,15 +63,18 @@ const HomePage = () => {
           className="py-9 lg:py-16"
           innerClassName="flex flex-col gap-12 lg:gap-16"
         >
-          {FEATURED.praise.map((praise) => (
-            <div key={praise.name} data-aos="fade-up">
-              <PullQuote
-                quote={praise.text}
-                name={praise.name}
-                credit={praise.credit}
-                className="max-w-5xl"
-              />
-            </div>
+          {FEATURED.praise.map((praise, index) => (
+            <Fragment key={praise.name}>
+              {index > 0 && <FiligreeDivider />}
+              <div data-aos="fade-up">
+                <PullQuote
+                  quote={praise.text}
+                  name={praise.name}
+                  credit={praise.credit}
+                  className="max-w-5xl"
+                />
+              </div>
+            </Fragment>
           ))}
         </Section>
       )}
@@ -83,7 +88,7 @@ const HomePage = () => {
       <WritingDesk band={HAS_EXCERPT} />
 
       {/* Book tour */}
-      <Section clipX ruled>
+      <Section clipX>
         <FramedImage
           src={crownfallBookTour}
           alt="Crownfall Book Tour"
@@ -93,7 +98,7 @@ const HomePage = () => {
       </Section>
 
       {/* Author Adjacent podcast */}
-      <Section ruled>
+      <Section>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
           <div className="flex animate-fade-in-up flex-col gap-6 text-center lg:text-left">
             <h2 className="text-heading text-cream">

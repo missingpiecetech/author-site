@@ -8,7 +8,6 @@ const CheckoutSuccessPage = () => {
   return (
     <div className="min-h-screen bg-ground">
       <PageIntro
-        align="center"
         title="Thank"
         accent="You"
         lede="Thank you for purchasing the book. Your order was successfully submitted."

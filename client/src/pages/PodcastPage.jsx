@@ -33,7 +33,6 @@ const PodcastPage = () => {
         title="Author"
         accent="Adjacent"
         lede="A show about the journey from hobbyist writer to professional author"
-        align="center"
       />
 
       {/* About the podcast */}

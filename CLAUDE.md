@@ -41,7 +41,7 @@ the Works"). **Use the tokens below; never
 | `band`         | `#17141d` | Alternate section bands (quotes, writing desk)         |
 | `well`         | `#1c1922` | Inset panels, inputs, cart drawer, shipping notice     |
 | `surface`      | `#25202c` | Image placeholders                                     |
-| `rule`         | `#2c2733` | 1px section dividers and row separators                |
+| `rule`         | `#2c2733` | Header/footer hairlines and list row separators        |
 | `edge`         | `#3a3342` | Card / placeholder borders                             |
 | `outline`      | `#4a4353` | Secondary (outlined) button border                     |
 | `cream`        | `#ece4d4` | Primary text and headings                              |
@@ -71,9 +71,19 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Eyebrow:** small uppercase gold label above section headings, using the page's existing
   labels.
 - **Sections** alternate `ground` and `band`; 80px side padding on desktop, 24px on mobile,
-  content in a `max-w-7xl` column. Bands keep plain 1px `rule` edges; a plain section that
-  follows another (`<Section ruled>`) and the close of a `PageIntro` get the **filigree
-  divider** (`FiligreeDivider`: the bramble ornament alone, centred, with no rules).
+  content in a `max-w-7xl` column. **No hairline borders on sections** (owner, Oct 2026):
+  bands and plain sections have no 1px edges. Only the header's bottom edge and the
+  footer's top edge carry a `rule` hairline. Row separators inside lists (`RuleList`, the
+  cart, Books' release-date grid, Contact's two response columns) are content, not section
+  edges, and stay.
+- **Dividers only within a section** (owner, Oct 2026): the **filigree divider**
+  (`FiligreeDivider`: the bramble ornament alone, centred, with no rules) separates content
+  inside one section: between the Home praise quotes, under a centred page title
+  (`PageIntro`), under an excerpt chapter heading and at a scene break. Never on the seam
+  between two sections (`Section` has no prop for that).
+- **Page titles:** `PageIntro` is always centred (eyebrow, title, lede, then the divider
+  in flow under them); the thorny divider only works under a centred title. About's title
+  sits beside the portrait, left-aligned, so it gets no divider.
 - **Filigree, not plain gold boxes.** The site style is **#8 Thorned Bramble** (owner's
   choice, Oct 2026): tapering briar stems crossing at each corner around a closed bud, with
   hooked thorns; bold, solid `currentColor` fills. **Project: Arcanist's own frames use #10
@@ -108,16 +118,16 @@ against the ground, so never show state with a border alone (the pressed pill us
   - Every box carrying corners uses `${FRAME_BORDER}` plus a colour (`border-accent`, or
     `border-edge` on panels). A fifth of the 112px corner (23px) reaches outside the box,
     so keep that much room. A framed box must be at least 1.6 corner sizes (180px) tall
-    and wide or the arms on one edge meet; a box smaller than that gets no corners
-    (`ShippingNotice` has a 184px min height for this).
+    and wide or the arms on one edge meet; a box smaller than that gets no corners.
   - **No filigree on repeating cards** (owner, Oct 2026: "it is just too much"). Corners go
-    only on single framed elements: `FramedImage`, the store gallery frame,
-    `ShippingNotice`, the newsletter box and the checkout-success panel. Tiles, stats and
-    icon boxes that repeat (Podcast connect tiles, About social tiles, the About stats,
-    Contact icon boxes) get no corners and no frame line: the tiles are a plain `well`
-    fill, the stats and icon boxes a 1px border. The divider marks ruled sections,
-    `PageIntro` closes and `PullQuote` (between quote and attribution). Not on list rows
+    only on single framed elements: `FramedImage`, the store gallery frame, the newsletter
+    box and the checkout-success panel. Tiles, stats and icon boxes that repeat (Podcast
+    connect tiles, About social tiles, the About stats, Contact icon boxes) get no corners
+    and no frame line: the tiles are a plain `well` fill, the About stats sit unboxed on
+    their band, the Contact icon boxes have a 1px border. No divider on list rows
     (`RuleList`), the lightbox, chips or the left-ruled `BookPraise`.
+  - **Notices have no filigree:** `ShippingNotice` is a plain `well` panel with the gold
+    warning icon, no frame line and no corners.
   - **Other styles:** `design/filigree-samples/index.html` (repo root, never shipped) holds
     all thirteen candidates; its README gives the steps to port one and switch to it.
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
@@ -134,8 +144,9 @@ against the ground, so never show state with a border alone (the pressed pill us
   and opaque images such as the wide front+back cover letterbox.
   Previous/next show on hover or keyboard focus where the device can hover, always on
   touch screens.
-- **Pull quotes:** large italic Cormorant on a `band`, a filigree divider, then the
-  attribution in uppercase `subtle`.
+- **Pull quotes:** large italic Cormorant on a `band`, the attribution in uppercase
+  `subtle` directly under it (no divider between them). Several quotes in one band get a
+  divider between each pair, none before the first or after the last.
 - **Home** follows the mockup: the Crownfall book hero (`BookHero`: framed cover, eyebrow
   the eyebrow from BOOK_DATA `heroEyebrow` (Crownfall is a standalone, never "Book One"), the title as
   the page's h1, subtitle as hook, `shortBlurb` from `sm`, `RetailerLinks`) with the scroll
@@ -167,7 +178,7 @@ against the ground, so never show state with a border alone (the pressed pill us
 
 ### Building blocks
 
-- `src/components/ui/`: `Section` (`band`, `ruled`, `divider`, `clipX`, `spacing`),
+- `src/components/ui/`: `Section` (`band`, `clipX`, `spacing`),
   `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`; artwork in `filigree/`), `Eyebrow`, `Button`
   (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
   `FramedImage` (`aspect`, `placeholder`, `filigree`), `PullQuote` (`quote`, `name`, `credit`),

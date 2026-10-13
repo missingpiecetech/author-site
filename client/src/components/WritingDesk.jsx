@@ -60,8 +60,7 @@ export const WorkProgress = ({ title, type, status, percent }) => {
 /**
  * "From the Writing Desk": the works in progress listed in WRITING_DESK.js,
  * most complete first (works with no percent last). Renders nothing when the
- * list is empty. Section props (`band`, `ruled`, …)
- * pass through.
+ * list is empty. Section props (`band`, …) pass through.
  */
 const WritingDesk = ({ works = WRITING_DESK, ...rest }) => {
   if (!works.length) return null;

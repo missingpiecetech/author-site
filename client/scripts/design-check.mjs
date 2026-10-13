@@ -77,6 +77,23 @@ const SHOTS = [
     scale: 2,
   },
   {
+    name: "about-stats-1440",
+    route: "/about",
+    selector: "section:has(> div > dl)",
+  },
+  {
+    name: "contact-intro-1440",
+    route: "/contact",
+    selector: "section:has(h1)",
+    pad: 24,
+  },
+  {
+    name: "books-intro-1440",
+    route: "/books",
+    selector: "section:has(h1)",
+    pad: 24,
+  },
+  {
     name: "about-pull-quote-1440",
     route: "/about",
     selector: "figure",

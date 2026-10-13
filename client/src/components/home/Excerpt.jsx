@@ -19,7 +19,7 @@ const Excerpt = ({ excerpt, to, ...rest }) => {
     <Section
       id="excerpt"
       aria-labelledby="excerpt-heading"
-      className="border-b border-rule lg:py-28"
+      className="lg:py-28"
       innerClassName="flex flex-col gap-8 lg:flex-row lg:gap-24"
       {...rest}
     >
