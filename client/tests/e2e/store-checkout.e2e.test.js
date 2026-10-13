@@ -880,22 +880,43 @@ describe("Crownfall excerpt", () => {
     }
   });
 
+  // One chapter shows at a time, so this walks the tabs and reads the
+  // visible panel each time.
   it.runIf(chapters.length > 0)(
     "every paragraph is set as written, with *italics* as <em>",
     async () => {
       const { page } = await openPage(MOBILE);
       await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
       await page.waitForSelector(byTestId("excerpt-chapter"));
-      const rendered = await page.$$eval(byTestId("excerpt-chapter"), (els) =>
-        els.map((el) => ({
-          paragraphs: [...el.querySelectorAll("p")].map((p) => p.textContent),
-          italics: [...el.querySelectorAll("p em")].map((em) => em.textContent),
-        })),
-      );
+      const rendered = [];
+      for (const chapter of chapters) {
+        if (chapters.length > 1) {
+          await page.click(byTestId(`excerpt-tab-${chapter.number}`));
+        }
+        rendered.push(
+          await page.$$eval(byTestId("excerpt-chapter"), (els) => {
+            const shown = els.filter((el) => el.checkVisibility());
+            if (shown.length !== 1) return { shown: shown.map((el) => el.id) };
+            const [panel] = shown;
+            return {
+              id: panel.id,
+              paragraphs: [...panel.querySelectorAll("p")].map(
+                (p) => p.textContent,
+              ),
+              italics: [...panel.querySelectorAll("p em")].map(
+                (em) => em.textContent,
+              ),
+              hasMarkup: /[*\\]/.test(panel.textContent),
+            };
+          }),
+        );
+      }
       expect(rendered).toEqual(
         chapters.map((c) => {
           const prose = c.paragraphs.filter((p) => !isSceneBreak(p));
           return {
+            id: chapterId(c),
+            hasMarkup: false,
             paragraphs: prose.map(plainText),
             italics: prose.flatMap((p) =>
               parseInline(p)
@@ -905,37 +926,139 @@ describe("Crownfall excerpt", () => {
           };
         }),
       );
-      const text = await page.$eval(
-        byTestId("excerpt-text"),
-        (el) => el.textContent,
-      );
-      expect(text).not.toMatch(/[*\\]/);
     },
   );
 
   it.runIf(chapters.length > 1)(
-    "a chapter link lands below the sticky header",
+    "chapter tabs follow clicks, arrow keys and Next chapter, and the hash follows them",
     async () => {
       const { page } = await openPage(MOBILE);
       await page.emulateMediaFeatures([
         { name: "prefers-reduced-motion", value: "reduce" },
       ]);
-      const target = chapterId(chapters[1]);
-      await page.goto(`${server.baseUrl}${path}#${target}`, {
-        waitUntil: "load",
-      });
-      await page.evaluate(() => document.fonts.ready);
-      await new Promise((r) => setTimeout(r, 300));
-      const { top, headerBottom } = await page.evaluate((id) => {
-        const heading = document.getElementById(id).querySelector("h2");
-        return {
-          top: heading.getBoundingClientRect().top,
-          headerBottom: document.querySelector("header").getBoundingClientRect()
-            .bottom,
-        };
-      }, target);
-      expect(top).toBeGreaterThanOrEqual(headerBottom);
-      expect(top).toBeLessThan(headerBottom + 120);
+      await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
+      await page.waitForSelector(byTestId("excerpt-chapter"));
+      const historyLength = await page.evaluate(() => history.length);
+      const current = () =>
+        page.evaluate(() => {
+          const panel = [
+            ...document.querySelectorAll('[data-testid="excerpt-chapter"]'),
+          ].find((el) => el.checkVisibility());
+          const selected = [
+            ...document.querySelectorAll('[role="tab"]'),
+          ].filter((tab) => tab.getAttribute("aria-selected") === "true");
+          return {
+            hash: location.hash,
+            panel: panel.id,
+            tab: selected.map((tab) => tab.getAttribute("aria-controls")),
+            focusable: [...document.querySelectorAll('[role="tab"]')]
+              .filter((tab) => tab.tabIndex === 0)
+              .map((tab) => tab.getAttribute("aria-controls")),
+            headingTop: panel.querySelector("h2").getBoundingClientRect().top,
+            headerBottom: document
+              .querySelector("header")
+              .getBoundingClientRect().bottom,
+            hasEnd: !!document.querySelector('[data-testid="excerpt-end"]'),
+          };
+        });
+      const expectChapter = (state, index) => {
+        const id = chapterId(chapters[index]);
+        expect(state).toMatchObject({
+          panel: id,
+          tab: [id],
+          focusable: [id],
+          hasEnd: index === chapters.length - 1,
+        });
+      };
+
+      const first = await current();
+      expectChapter(first, 0);
+      expect(first.hash).toBe("");
+
+      await page.click(byTestId(`excerpt-tab-${chapters[1].number}`));
+      let state = await current();
+      expectChapter(state, 1);
+      expect(state.hash).toBe(`#${chapterId(chapters[1])}`);
+
+      await page.keyboard.press("ArrowLeft");
+      expectChapter(await current(), 0);
+      await page.keyboard.press("End");
+      expectChapter(await current(), chapters.length - 1);
+      await page.keyboard.press("ArrowRight");
+      expectChapter(await current(), 0);
+      expect(
+        await page.evaluate(() =>
+          document.activeElement.getAttribute("aria-controls"),
+        ),
+      ).toBe(chapterId(chapters[0]));
+
+      for (let index = 1; index < chapters.length; index += 1) {
+        await page.click(
+          `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`,
+        );
+        state = await current();
+        expectChapter(state, index);
+        expect(state.hash).toBe(`#${chapterId(chapters[index])}`);
+        expect(state.headingTop).toBeGreaterThanOrEqual(state.headerBottom);
+        expect(state.headingTop).toBeLessThan(state.headerBottom + 120);
+      }
+      expect(
+        await page.$(
+          `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`,
+        ),
+      ).toBeNull();
+      expect(
+        await page.$eval(
+          `${byTestId("excerpt-end")} a[href="/store"]`,
+          (a) => a.pathname,
+        ),
+      ).toBe("/store");
+      expect(await page.evaluate(() => history.length)).toBe(historyLength);
+    },
+  );
+
+  it.runIf(chapters.length > 1)(
+    "a chapter hash opens that chapter below the sticky header",
+    async () => {
+      for (const chapter of chapters) {
+        const { page } = await openPage(MOBILE);
+        await page.emulateMediaFeatures([
+          { name: "prefers-reduced-motion", value: "reduce" },
+        ]);
+        const target = chapterId(chapter);
+        await page.goto(`${server.baseUrl}${path}#${target}`, {
+          waitUntil: "load",
+        });
+        await page.evaluate(() => document.fonts.ready);
+        await new Promise((r) => setTimeout(r, 300));
+        const { top, headerBottom, isShown, isSelected } = await page.evaluate(
+          (id, tab) => {
+            const panel = document.getElementById(id);
+            return {
+              top: panel.querySelector("h2").getBoundingClientRect().top,
+              headerBottom: document
+                .querySelector("header")
+                .getBoundingClientRect().bottom,
+              isShown: panel.checkVisibility(),
+              isSelected:
+                document
+                  .querySelector(`[data-testid="${tab}"]`)
+                  .getAttribute("aria-selected") === "true",
+            };
+          },
+          target,
+          `excerpt-tab-${chapter.number}`,
+        );
+        expect({ target, isShown, isSelected }).toEqual({
+          target,
+          isShown: true,
+          isSelected: true,
+        });
+        expect(top).toBeGreaterThanOrEqual(headerBottom);
+        expect(top).toBeLessThan(headerBottom + 120);
+        await context.close();
+        context = undefined;
+      }
     },
   );
 
@@ -953,6 +1076,11 @@ describe("Crownfall excerpt", () => {
         link.click(),
       ]);
       await page.waitForSelector(byTestId("excerpt-chapter"));
+      expect(
+        await page.$$eval(byTestId("excerpt-chapter"), (els) =>
+          els.filter((el) => el.checkVisibility()).map((el) => el.id),
+        ),
+      ).toEqual([chapterId(chapters[0])]);
     } else {
       expect(link).toBeNull();
       expect(await page.$("#excerpt")).toBeNull();

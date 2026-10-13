@@ -1,16 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
+import { useLocation } from "react-router-dom";
 import { BOOKS } from "../BOOK_DATA";
 import Section from "../components/ui/Section";
 import PageIntro from "../components/ui/PageIntro";
-import Eyebrow from "../components/ui/Eyebrow";
 import Button from "../components/ui/Button";
 import { FiligreeDivider } from "../components/ui/Filigree";
 import RetailerLinks from "../components/RetailerLinks";
 import Prose from "../components/excerpt/Prose";
+import ChapterTabs from "../components/excerpt/ChapterTabs";
 import useHashScroll from "../hooks/useHashScroll";
 import {
   EXCERPTS,
   chapterId,
+  chapterTabId,
   chapterTitle,
   isSceneBreak,
   readableChapters,
@@ -51,14 +54,25 @@ const ChapterHeading = ({ chapter }) => {
   );
 };
 
-const Chapter = ({ chapter }) => {
+/**
+ * One chapter's tab panel (`hidden` unless selected): heading, text and, when
+ * there is a `next` chapter, a "Next chapter" button at its foot.
+ */
+const Chapter = ({ chapter, isSelected, isTabbed, next, onNext }) => {
   const id = chapterId(chapter);
   return (
     <section
       id={id}
-      aria-labelledby={`${id}-heading`}
+      {...(isTabbed
+        ? {
+            role: "tabpanel",
+            "aria-labelledby": chapterTabId(chapter),
+            tabIndex: 0,
+          }
+        : { "aria-labelledby": `${id}-heading` })}
+      hidden={!isSelected}
       data-testid="excerpt-chapter"
-      className="scroll-mt-4 not-first:mt-20 lg:scroll-mt-6 lg:not-first:mt-28"
+      className="scroll-mt-4 focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-accent lg:scroll-mt-6"
     >
       <ChapterHeading chapter={chapter} />
       <div className="[&>p+p]:indent-[1.5em]">
@@ -74,21 +88,74 @@ const Chapter = ({ chapter }) => {
           ),
         )}
       </div>
+      {next && (
+        <div className="mt-14 flex justify-center lg:mt-18">
+          <Button onClick={onNext} data-testid="excerpt-next">
+            Next chapter: {next.pov ?? `Chapter ${next.number}`}
+          </Button>
+        </div>
+      )}
     </section>
   );
 };
 
+// The chapter a hash such as `#chapter-2` names, or the first.
+const chapterIndexFor = (chapters, hash) =>
+  Math.max(
+    0,
+    chapters.findIndex(
+      (chapter) => `#${chapterId(chapter)}` === decodeURIComponent(hash),
+    ),
+  );
+
 /**
  * The excerpt page for one book (`slug`): the chapters from its module in
- * src/excerpts/, in a narrow reading column, with a chapter list at the top
- * and the buy row at the end. Says "coming soon" while there is no text.
+ * src/excerpts/, one at a time behind chapter tabs, in a narrow reading
+ * column. The URL hash names the chapter (`#chapter-2`) and follows the tabs
+ * without adding history entries. After the last chapter comes the buy band.
+ * Says "coming soon" while there is no text.
  */
 const ExcerptPage = ({ slug = "crownfall" }) => {
   useHashScroll();
+  const { hash, key } = useLocation();
   const book = BOOKS.find((b) => b.slug === slug);
-  const chapters = readableChapters(EXCERPTS[slug]?.excerpt);
+  const chapters = useMemo(
+    () => readableChapters(EXCERPTS[slug]?.excerpt),
+    [slug],
+  );
   const label = COUNT_LABELS[chapters.length] ?? "The opening chapters";
   const title = book?.title ?? "Excerpt";
+  const isTabbed = chapters.length > 1;
+
+  // Follows the router when it navigates (a hash typed into the address
+  // bar); tab changes only replace the URL, which the router never sees.
+  const [selection, setSelection] = useState(() => ({
+    key,
+    index: chapterIndexFor(chapters, hash),
+  }));
+  if (selection.key !== key) {
+    setSelection({ key, index: chapterIndexFor(chapters, hash) });
+  }
+  const selected = selection.index;
+
+  const select = (index) => {
+    setSelection({ key, index });
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `#${chapterId(chapters[index])}`,
+    );
+  };
+
+  // Next chapter: show it, then bring its top to just under the header
+  // (scroll-padding-top; smooth unless reduced motion) and focus the panel.
+  const handleNext = () => {
+    const next = selected + 1;
+    flushSync(() => select(next));
+    const panel = document.getElementById(chapterId(chapters[next]));
+    panel.focus({ preventScroll: true });
+    panel.scrollIntoView({ block: "start" });
+  };
 
   useEffect(() => {
     const previous = document.title;
@@ -101,52 +168,56 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
   return (
     <div className="bg-ground">
       <PageIntro
-        eyebrow="Read an Excerpt"
+        eyebrow={
+          chapters.length ? `Read an Excerpt · ${label}` : "Read an Excerpt"
+        }
         title={title}
-        lede={chapters.length ? label : undefined}
-      >
-        {chapters.length > 1 && (
-          <nav aria-label="Chapters" data-testid="excerpt-chapter-nav">
-            <ol className="mt-2 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8">
-              {chapters.map((chapter) => (
-                <li key={chapter.number}>
-                  <a
-                    href={`#${chapterId(chapter)}`}
-                    className="text-accent transition-colors hover:text-accent-hover"
-                  >
-                    {chapterTitle(chapter)}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
-        )}
-      </PageIntro>
+      />
 
       {chapters.length ? (
         <>
-          <Section spacing="none" className="pt-16 pb-20 lg:pt-24 lg:pb-28">
+          <Section spacing="none" className="pt-10 pb-20 lg:pt-14 lg:pb-28">
+            {isTabbed && (
+              <ChapterTabs
+                chapters={chapters}
+                selected={selected}
+                onSelect={select}
+                className="mx-auto mb-14 max-w-3xl lg:mb-20"
+              />
+            )}
             <article
               data-testid="excerpt-text"
               className="mx-auto max-w-[66ch] text-[1.125rem] leading-[1.8] text-muted lg:text-[1.25rem]"
             >
-              {chapters.map((chapter) => (
-                <Chapter key={chapter.number} chapter={chapter} />
+              {chapters.map((chapter, index) => (
+                <Chapter
+                  key={chapter.number}
+                  chapter={chapter}
+                  isSelected={index === selected}
+                  isTabbed={isTabbed}
+                  next={chapters[index + 1]}
+                  onNext={handleNext}
+                />
               ))}
             </article>
           </Section>
 
-          <Section innerClassName="flex flex-col items-center gap-5 text-center lg:gap-6">
-            <Eyebrow>End of the excerpt</Eyebrow>
-            <h2 className="text-heading text-cream">
-              Keep reading <span className="text-accent">{title}</span>
-            </h2>
-            <RetailerLinks
-              retailers={book?.retailers}
-              align="center"
-              className="mt-2 w-full"
-            />
-          </Section>
+          {selected === chapters.length - 1 && (
+            <Section
+              band
+              data-testid="excerpt-end"
+              innerClassName="flex flex-col items-center gap-5 text-center lg:gap-6"
+            >
+              <h2 className="text-heading text-cream">
+                Keep reading <span className="text-accent">{title}</span>
+              </h2>
+              <RetailerLinks
+                retailers={book?.retailers}
+                align="center"
+                className="mt-2 w-full"
+              />
+            </Section>
+          )}
         </>
       ) : (
         <Section innerClassName="flex flex-col items-center gap-8 text-center">

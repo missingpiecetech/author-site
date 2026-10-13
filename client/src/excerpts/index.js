@@ -22,6 +22,9 @@ export const chapterTitle = ({ number, pov }) =>
 /** The anchor id for a chapter: `chapter-1`. */
 export const chapterId = ({ number }) => `chapter-${number}`;
 
+/** The id of a chapter's tab, which labels its panel: `chapter-1-tab`. */
+export const chapterTabId = (chapter) => `${chapterId(chapter)}-tab`;
+
 /*
  * Chapters that have text, each with its paragraphs trimmed, blanks dropped,
  * and scene breaks only between two runs of text (never leading, trailing or
