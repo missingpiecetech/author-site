@@ -127,10 +127,11 @@ against the ground, so never show state with a border alone (the pressed pill us
   art deco) with filigree corners,
   an 18px inset (12px on mobile) and `shadow-cover`.
 - **Store gallery** (`ProductGallery`): a 2:3 pane (4:3 on grid cards) with the image
-  contained. Square's book mockups sit on wide transparent canvases, so on load the
-  gallery scans the image's alpha (it loads with `crossOrigin`, which Square's S3 allows,
-  and retries plainly on an image host without CORS) and crops the transparent margins,
-  so the book fills the pane; opaque images such as the wide front+back cover letterbox.
+  contained. Square's book mockups come on wide transparent canvases with a soft drop
+  shadow, so they are cropped to the book at the source with
+  `client/scripts/crop-catalog-images.mjs` (reads production, writes crops locally; its
+  `--upload-sandbox` puts them on the sandbox mirror); the gallery simply contains them,
+  and opaque images such as the wide front+back cover letterbox.
   Previous/next show on hover or keyboard focus where the device can hover, always on
   touch screens.
 - **Pull quotes:** large italic Cormorant on a `band`, a filigree divider, then the
