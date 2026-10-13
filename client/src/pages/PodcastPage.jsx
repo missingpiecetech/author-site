@@ -6,10 +6,10 @@ import authorAdjacentLogo from "../assets/logo_no_text.png";
 import PageIntro from "../components/ui/PageIntro";
 import Section from "../components/ui/Section";
 import FramedImage from "../components/ui/FramedImage";
-import { FiligreeCorners } from "../components/ui/Filigree";
-import { FRAME_BORDER } from "../components/ui/filigree/index.js";
 
-const TILE = `group relative flex h-full flex-col items-center gap-2 ${FRAME_BORDER} border-edge bg-well p-6 text-center no-underline transition-colors hover:border-accent`;
+// A repeating tile: no frame or filigree (CLAUDE.md, "no filigree on repeating cards").
+const TILE =
+  "group flex h-full flex-col items-center gap-2 bg-well p-6 text-center no-underline";
 
 const TileBody = ({ icon, title, detail }) => (
   <>
@@ -17,11 +17,10 @@ const TileBody = ({ icon, title, detail }) => (
       icon={icon}
       className="mb-1 text-3xl text-accent transition-colors group-hover:text-accent-hover"
     />
-    <span className="font-display text-2xl font-semibold text-cream">
+    <span className="font-display text-2xl font-semibold text-cream transition-colors group-hover:text-accent-hover">
       {title}
     </span>
     <span className="text-sm text-subtle">{detail}</span>
-    <FiligreeCorners size="sm" />
   </>
 );
 

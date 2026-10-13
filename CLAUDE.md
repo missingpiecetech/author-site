@@ -103,11 +103,14 @@ against the ground, so never show state with a border alone (the pressed pill us
     xl, 15px at 390), so keep that much room. A framed box must be at least 1.6 corner
     sizes tall and wide or the arms on one edge meet (`ShippingNotice` has a min height for
     this).
-  - Applied to `FramedImage`, the store gallery frame, `ShippingNotice`, the newsletter
-    box, Podcast connect tiles and About social tiles, Contact icon boxes, the About stats
-    panel and the checkout-success panel; the divider marks ruled sections, `PageIntro`
-    closes and `PullQuote` (between quote and attribution). Not on list rows (`RuleList`),
-    the lightbox, chips or the left-ruled `BookPraise`.
+  - **No filigree on repeating cards** (owner, Oct 2026: "it is just too much"). Corners go
+    only on single framed elements: `FramedImage`, the store gallery frame,
+    `ShippingNotice`, the newsletter box and the checkout-success panel. Tiles, stats and
+    icon boxes that repeat (Podcast connect tiles, About social tiles, the About stats,
+    Contact icon boxes) get no corners and no frame line: the tiles are a plain `well`
+    fill, the stats and icon boxes a 1px border. The divider marks ruled sections,
+    `PageIntro` closes and `PullQuote` (between quote and attribution). Not on list rows
+    (`RuleList`), the lightbox, chips or the left-ruled `BookPraise`.
   - **Other styles:** `design/filigree-samples/index.html` (repo root, never shipped) holds
     all thirteen candidates; its README gives the steps to port one and switch to it.
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;

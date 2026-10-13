@@ -4,14 +4,16 @@ import Eyebrow from "../components/ui/Eyebrow";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
 import PullQuote from "../components/ui/PullQuote";
-import { FiligreeCorners } from "../components/ui/Filigree";
-import { FRAME_BORDER } from "../components/ui/filigree/index.js";
 import SITE_INFO from "../SITE_INFO";
 import authorPic from "../assets/author-pic.jpeg";
 
 const STATS = [
   { label: "Location", value: SITE_INFO.location },
-  { label: "Focus", value: "Nobledark Fantasy" },
+  {
+    label: "Focus",
+    value: "Nobledark Fantasy",
+    detail: "Hopeful characters in dark worlds",
+  },
 ];
 
 const AboutPage = () => {
@@ -77,18 +79,16 @@ const AboutPage = () => {
 
       {/* Quick Stats */}
       <Section band spacing="compact">
-        <dl
-          className={`relative grid gap-8 ${FRAME_BORDER} border-edge p-8 sm:grid-cols-2 lg:gap-12 lg:p-12`}
-        >
-          {STATS.map(({ label, value }) => (
+        <dl className="grid gap-8 border border-edge p-8 sm:grid-cols-2 lg:gap-12 lg:p-12">
+          {STATS.map(({ label, value, detail }) => (
             <div key={label} className="flex flex-col gap-2.5">
               <Eyebrow as="dt">{label}</Eyebrow>
               <dd className="font-display text-3xl font-semibold text-cream lg:text-[2rem]">
                 {value}
               </dd>
+              {detail && <dd className="text-base text-muted">{detail}</dd>}
             </div>
           ))}
-          <FiligreeCorners />
         </dl>
       </Section>
 

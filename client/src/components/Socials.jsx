@@ -1,6 +1,4 @@
 import SOCIAL_LINKS from "../SOCIAL_LINKS";
-import { FiligreeCorners } from "./ui/Filigree";
-import { FRAME_BORDER } from "./ui/filigree/index.js";
 
 const Socials = () => (
   <div className="flex flex-col gap-8">
@@ -18,18 +16,17 @@ const Socials = () => (
             href={social.url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`group relative flex h-full flex-col items-center gap-2 ${FRAME_BORDER} border-edge bg-well p-6 text-center transition-colors hover:border-accent`}
+            className="group flex h-full flex-col items-center gap-2 bg-well p-6 text-center"
           >
             <span className="mb-1 text-3xl text-accent transition-colors group-hover:text-accent-hover">
               {social.icon}
             </span>
-            <span className="font-display text-2xl font-semibold text-cream">
+            <span className="font-display text-2xl font-semibold text-cream transition-colors group-hover:text-accent-hover">
               {social.platform}
             </span>
             <span className="min-w-0 text-sm break-all text-subtle">
               {social.handle}
             </span>
-            <FiligreeCorners size="sm" />
           </a>
         </li>
       ))}

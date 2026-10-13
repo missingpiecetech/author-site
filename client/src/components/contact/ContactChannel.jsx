@@ -1,6 +1,4 @@
 import { RuleList, RuleRow } from "../ui/RuleList";
-import { FiligreeCorners } from "../ui/Filigree";
-import { FRAME_BORDER } from "../ui/filigree/index.js";
 
 /**
  * One contact column: heading, lede, the email row and the "good for" list.
@@ -26,10 +24,9 @@ const ContactChannel = ({
       <RuleRow className="min-w-0">
         <span
           aria-hidden="true"
-          className={`relative flex h-12 w-12 shrink-0 items-center justify-center ${FRAME_BORDER} border-accent/50 text-2xl text-accent`}
+          className="flex h-12 w-12 shrink-0 items-center justify-center border border-accent/50 text-2xl text-accent"
         >
           {icon}
-          <FiligreeCorners size="xs" />
         </span>
         <div className="min-w-0">
           <p className="text-lg font-medium text-cream">{label}</p>
