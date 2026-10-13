@@ -2,8 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import SITE_INFO from "../SITE_INFO";
 import { BOOKS } from "../BOOK_DATA";
-import { FiligreeCorners } from "./ui/Filigree";
-import { FRAME_BORDER } from "./ui/filigree/index.js";
 
 const AMAZON = BOOKS.find((book) => book.slug === "crownfall")?.retailers
   ?.amazon;
@@ -11,7 +9,8 @@ const AMAZON = BOOKS.find((book) => book.slug === "crownfall")?.retailers
 /**
  * The prominent US-only shipping warning shown above the store's products.
  * Renders only while SITE_INFO.shipping.usOnly is true; "Amazon" links to
- * Crownfall's Amazon listing.
+ * Crownfall's Amazon listing. A plain `well` panel with the gold warning
+ * icon: no filigree and no frame line.
  */
 const ShippingNotice = ({ className = "" }) => {
   if (!SITE_INFO.shipping.usOnly) return null;
@@ -19,7 +18,7 @@ const ShippingNotice = ({ className = "" }) => {
   return (
     <div
       role="note"
-      className={`relative flex min-h-46 items-center gap-4 ${FRAME_BORDER} border-accent bg-well p-5 text-lede text-cream lg:p-6 ${className}`}
+      className={`flex items-center gap-4 bg-well p-5 text-lede text-cream lg:p-6 ${className}`}
     >
       <FontAwesomeIcon
         icon={faTriangleExclamation}
@@ -43,7 +42,6 @@ const ShippingNotice = ({ className = "" }) => {
         )}
         .
       </p>
-      <FiligreeCorners />
     </div>
   );
 };
