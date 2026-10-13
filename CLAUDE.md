@@ -327,6 +327,10 @@ navigation or Square code.
   mirrors the production catalog into sandbox (production is only read) and records the
   production → sandbox ID map in `client/scripts/sandbox-catalog-map.json`, so re-runs update
   rather than duplicate.
+- **Favicon:** `client/public/favicon.svg` is `design/crystal-icon/favicon-wide.svg` (the
+  owner's hand-edited gold crystal cluster from the Crownfall cover, on a `ground` tile);
+  `favicon-32.png` and `apple-touch-icon.png` are rendered from it, never redrawn.
+  `design/crystal-icon/crystal-icon-gold-wide.svg` is the tile-less version for use on pages.
 - **SPA routing on Cloudflare** relies on `client/public/_redirects`.
 - **Cover image:** pages use `crownfall_cover_web.jpg` (776×1200); `crownfall_cover.jpg` is
   the 10MB original — don't import it.
