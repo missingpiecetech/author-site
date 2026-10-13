@@ -154,6 +154,18 @@ against the ground, so never show state with a border alone (the pressed pill us
   Excerpt" (`Excerpt`, from BOOK_DATA crownfall `excerpt` — hidden while `paragraphs` is
   empty); the writing desk; then the book-tour image and Author Adjacent. No author-photo
   hero.
+- **Excerpt page** (`/books/crownfall/excerpt`, `ExcerptPage`, text from
+  `src/excerpts/crownfall.js`): a `PageIntro` whose eyebrow carries the count ("Read an
+  Excerpt · The first three chapters") over the title, with no lede; then one chapter at a
+  time behind `components/excerpt/ChapterTabs` (WAI-ARIA tabs: automatic activation, roving
+  tabindex, Left/Right/Home/End; the selected tab is the gold fill, never a border alone;
+  "Chapter 1: Kyndel" from `sm`, "Ch. 1" over "Kyndel" on phones). Each chapter keeps its
+  full heading and drop cap. The hash names the chapter (`#chapter-2` opens and scrolls to
+  it; no hash is chapter 1) and tab changes `replaceState` it, so history gets no entries.
+  Every chapter but the last ends in a primary "Next chapter: <name>" button that shows the
+  next tab, focuses its panel and scrolls its top under the header (smooth only without
+  reduced motion). After the last chapter, and only then, the buy band ("Keep reading
+  Crownfall" + `RetailerLinks`, no eyebrow) shows on `band`, a step lighter than `ground`.
 - **Writing desk** ("From the Writing Desk", `WritingDesk`): one `WorkProgress` row per entry
   in `src/WRITING_DESK.js` (`{ title, type, status, percent }`, edited by hand) — title, then
   "type · status · N%" (any missing part skipped, no stray separator; under the title below
@@ -252,7 +264,7 @@ Run from `client/`.
 | `npm run lint`      | ESLint                                                                                    |
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
-390 on the e2e harness: horizontal scroll, filigree overlapping text, filigree corners meeting
+390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
 each other or their frame's content, every ornament at the corners' scale, reduced-motion opacity,
 progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`.
@@ -314,7 +326,11 @@ navigation or Square code.
   `edition-format-hardcover`, `edition-format-paperback`, `edition-signed`,
   `edition-unsigned` (pills with `aria-pressed`), `cart-toggle`, `cart-count`, `cart-panel`
   (+ `data-state`), `cart-close`, `cart-item`, `cart-subtotal`, `checkout-button`,
-  `checkout-error`, `mobile-menu-toggle`, `mobile-cart-button`.
+  `checkout-error`, `mobile-menu-toggle`, `mobile-cart-button`; on the excerpt,
+  `excerpt-chapter` (each tab panel; inactive ones `hidden`), `excerpt-chapter-nav` (the
+  tablist), `excerpt-tab-1`…`excerpt-tab-3` (by chapter number), `excerpt-next`,
+  `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`.
+  The excerpt e2e walks the tabs and checks every paragraph and italic of every chapter.
 
 ## Conventions
 

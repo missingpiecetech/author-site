@@ -30,7 +30,10 @@ const ROUTES = [
   "/store",
   "/contact",
   "/checkout/success",
+  // One excerpt chapter shows at a time (tabs): check each.
   "/books/crownfall/excerpt",
+  "/books/crownfall/excerpt#chapter-2",
+  "/books/crownfall/excerpt#chapter-3",
 ];
 // The longest line the excerpt's reading column may hold, in ch of its font.
 const MAX_MEASURE_CH = 72;
@@ -38,7 +41,8 @@ const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844, isMobile: true, hasTouch: true };
 
 // Element screenshots for review (`--shots <dir>`): the top of each element,
-// full viewport width, at most `maxHeight` CSS px tall.
+// full viewport width, at most `maxHeight` CSS px tall; with `until`, down to
+// the bottom of that element instead (plus `pad`).
 const SHOTS = [
   { name: "home-hero-1440", route: "/", selector: "#crownfall" },
   { name: "home-hero-390", route: "/", selector: "#crownfall", mobile: true },
@@ -115,6 +119,37 @@ const SHOTS = [
     selector: '[data-testid="excerpt-text"]',
     mobile: true,
     maxHeight: 760,
+    optional: true,
+  },
+  {
+    name: "excerpt-intro-tabs-1440",
+    route: "/books/crownfall/excerpt",
+    selector: "section:has(h1)",
+    until: '[role="tablist"]',
+    pad: 32,
+    optional: true,
+  },
+  {
+    name: "excerpt-intro-tabs-390",
+    route: "/books/crownfall/excerpt",
+    selector: "section:has(h1)",
+    until: '[role="tablist"]',
+    pad: 24,
+    mobile: true,
+    optional: true,
+  },
+  {
+    name: "excerpt-next-1440",
+    route: "/books/crownfall/excerpt",
+    selector: '#chapter-1 [data-testid="excerpt-next"]',
+    pad: 120,
+    optional: true,
+  },
+  {
+    name: "excerpt-end-1440",
+    route: "/books/crownfall/excerpt#chapter-3",
+    selector: '[data-testid="excerpt-end"]',
+    pad: 60,
     optional: true,
   },
   {
@@ -243,6 +278,9 @@ const SCALE_TOLERANCE = 0.05;
 const ornamentScales = (page) =>
   page.evaluate(() =>
     [...document.querySelectorAll("[data-filigree]")].flatMap((ornament) => {
+      // Not rendered (an excerpt chapter behind another tab; each tab is
+      // checked on its own #chapter-N route): no size to measure.
+      if (!ornament.checkVisibility()) return [];
       const svg = ornament.querySelector("svg");
       const style = ornament.dataset.filigreeStyle ?? "bramble";
       if (ornament.dataset.filigree === "divider" && style !== "bramble") {
@@ -472,7 +510,12 @@ const main = async () => {
           (el) => el.getBoundingClientRect().top + window.scrollY,
         );
         const height = await handle.evaluate(
-          (el) => el.getBoundingClientRect().height,
+          (el, until) =>
+            (until
+              ? document.querySelector(until).getBoundingClientRect().bottom
+              : el.getBoundingClientRect().bottom) -
+            el.getBoundingClientRect().top,
+          shot.until,
         );
         const pad = shot.pad ?? 0;
         await page.screenshot({
