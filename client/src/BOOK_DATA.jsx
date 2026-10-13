@@ -9,7 +9,7 @@ export const BOOK_STATUS = {
   EDITING_STAGE: "Editing",
   COMING_SOON: "Coming Soon",
   PRE_ORDER: "Available for Pre-order",
-  RELEASED: "Out Now",
+  RELEASED: "Available Now",
 };
 
 export const BOOKS = [
