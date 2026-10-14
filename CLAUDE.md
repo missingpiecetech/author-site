@@ -202,8 +202,18 @@ against the ground, so never show state with a border alone (the pressed pill us
   `Socials`, `ShoppingCart`.
 - `src/hooks/useHashScroll.js`: call it on pages with `#section` links (`/#crownfall`,
   `/books#<slug>`); the header skips scroll-to-top when the URL has a hash.
-- `src/SITE_INFO.js`: name, tagline, location, emails, press kit, newsletter form id and
+- `src/SITE_INFO.js`: name, tagline, location, domain, emails, press kit, newsletter form id and
   `shipping.usOnly` (the switch that shows `ShippingNotice`).
+
+## Analytics
+
+Minilytics, loaded only by production builds (`client/.env.production` +
+`client/vite/minilyticsPlugin.js`; dev and tests load nothing, branch previews track).
+Every event goes through `track()` and the `EVENTS` map in `src/lib/analytics.js`; excerpt
+reading depth lives in `src/lib/excerptReading.js`. **`docs/ANALYTICS.md`** has the rules
+and one row per event (where it fires, its properties): add a row with every new event.
+`node scripts/analytics-debug.mjs` shows what the real tracker sends from a production
+build.
 
 ## Repo Layout
 
@@ -219,6 +229,8 @@ author-site/
 └── client/                   # All app code lives here — run npm commands from this dir
     ├── index.html            # SPA shell; loads MailerLite snippet
     ├── vite.config.js        # Registers createSquareApiPlugin for local /api/square
+    ├── vite/minilyticsPlugin.js  # Adds the Minilytics scripts when PUBLIC_MINILYTICS_* are set
+    ├── .env.production       # PUBLIC_MINILYTICS_* (committed; nothing secret)
     ├── wrangler.toml         # Cloudflare Pages config (nodejs_compat)
     ├── .env.example          # SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_ENVIRONMENT
     ├── public/
@@ -241,10 +253,12 @@ author-site/
         ├── assets/               # Author photos, book covers, podcast logos
         ├── components/           # Layout, Navigation, Footer, ShoppingCart, ...
         │   └── ui/               # Section, Eyebrow, Button, FramedImage, PullQuote, ...
+        ├── lib/                  # analytics.js (track, EVENTS), excerptReading.js
         ├── pages/                # One file per route: / /books /podcast /about /store
         │                         #   /contact /checkout/success
         └── hooks/
             ├── useCart.js         # Zustand cart store (persisted)
+            ├── useExcerptReading.js # Excerpt reading depth on the selected chapter
             ├── useHashScroll.js   # Scroll to location.hash after render
             └── useSquare.js       # Fetches /api/square/* + maps catalog → products
 ```
