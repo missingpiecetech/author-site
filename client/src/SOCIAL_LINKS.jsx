@@ -12,18 +12,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const SOCIAL_LINKS = [
   {
     platform: "YouTube",
+    network: "youtube",
     url: "https://www.youtube.com/@AuthorAdjacent",
     icon: <FontAwesomeIcon icon={faYoutube} />,
     handle: "@AuthorAdjacent",
   },
   {
     platform: "Instagram",
+    network: "instagram",
     url: "https://www.instagram.com/michael_vadney/",
     icon: <FontAwesomeIcon icon={faInstagram} />,
     handle: "@michael_vadney",
   },
   {
     platform: "X",
+    network: "x",
     url: "https://x.com/Michael_Vadney",
     icon: <FontAwesomeIcon icon={faXTwitter} />,
     handle: "@Michael_Vadney",
@@ -37,12 +40,14 @@ const SOCIAL_LINKS = [
   // },
   {
     platform: "Bluesky",
+    network: "bluesky",
     url: "https://bsky.app/profile/michaelvadney.bsky.social",
     icon: <FontAwesomeIcon icon={faBluesky} />,
     handle: "@michaelvadney.bsky.social",
   },
   {
     platform: "Threads",
+    network: "threads",
     url: "https://www.threads.com/@michael_vadney",
     icon: <FontAwesomeIcon icon={faThreads} />,
     handle: "@michael_vadney",

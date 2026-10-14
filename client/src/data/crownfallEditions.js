@@ -63,6 +63,12 @@ const editionForItemId = new Map(
   ),
 );
 
+/** The `{ format, signing }` of a Crownfall item id, or null for any other item. */
+export const editionForItem = (itemId) => {
+  const edition = editionForItemId.get(itemId);
+  return edition ? { format: edition.format, signing: edition.signing } : null;
+};
+
 /**
  * Splits mapped catalog products into the Crownfall listing and the grid.
  *

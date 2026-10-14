@@ -4,6 +4,7 @@ import ShoppingCart, { CartIcon } from "./ShoppingCart";
 import JoinCircleButton from "./JoinCircleButton";
 import useCart from "../hooks/useCart";
 import SITE_INFO from "../SITE_INFO";
+import { EVENTS, track } from "../lib/analytics.js";
 
 const NAV_ITEMS = [
   { path: "/", label: "Home" },
@@ -65,7 +66,7 @@ const Navigation = () => {
         <div className="flex items-center gap-3 lg:gap-4">
           <ShoppingCart />
           <div className="hidden sm:block">
-            <JoinCircleButton />
+            <JoinCircleButton placement="header" />
           </div>
 
           {/* Mobile menu button */}
@@ -128,6 +129,10 @@ const Navigation = () => {
                 onClick={() => {
                   setIsMenuOpen(false);
                   setCartOpen(true);
+                  track(EVENTS.CART_OPENED, {
+                    placement: "mobile_menu",
+                    item_count: totalItems(),
+                  });
                 }}
                 className="flex h-14 w-full cursor-pointer items-center gap-3 border-b border-rule font-display text-2xl font-semibold text-cream transition-colors hover:text-accent-hover"
               >
@@ -138,6 +143,7 @@ const Navigation = () => {
           </ul>
           <div className="mt-6 sm:hidden">
             <JoinCircleButton
+              placement="mobile_menu"
               size="lg"
               block
               onClick={() => setIsMenuOpen(false)}

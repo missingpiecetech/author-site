@@ -38,6 +38,7 @@ const BookHero = ({ book, className = "", ...rest }) => {
         )}
         <RetailerLinks
           retailers={book.retailers}
+          placement="home_hero"
           className="w-full pt-1.5 lg:w-auto lg:pt-2"
         />
       </div>
