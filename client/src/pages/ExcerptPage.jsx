@@ -170,16 +170,7 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
   return (
     <div className="bg-ground">
       <PageIntro
-        eyebrow={
-          chapters.length ? (
-            <>
-              Read an Excerpt ·{" "}
-              <span className="whitespace-nowrap">{label}</span>
-            </>
-          ) : (
-            "Read an Excerpt"
-          )
-        }
+        eyebrow={chapters.length ? label : "Read an Excerpt"}
         title={title}
       />
 
