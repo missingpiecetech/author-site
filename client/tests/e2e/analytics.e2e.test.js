@@ -523,6 +523,153 @@ describe("analytics: store and checkout", () => {
   });
 });
 
+describe("analytics: links, newsletter and cart placements", () => {
+  // Off-site and mailto links would open tabs or leave the page; a listener
+  // on window runs after React's handlers and only cancels the navigation.
+  const keepOnSite = (page) =>
+    page.evaluateOnNewDocument(() => {
+      window.addEventListener("click", (event) => {
+        const link = event.target.closest?.("a[href]");
+        if (link && new URL(link.href).origin !== location.origin) {
+          event.preventDefault();
+        }
+      });
+    });
+
+  // Waits until the previous page's content has left the DOM, so a selector
+  // shared by both pages never matches the old one.
+  const navigate = async (page, path) => {
+    await page.$eval("main > *", (el) => el.setAttribute("data-leaving", ""));
+    await page.click(`header a[href="${path}"]`);
+    await page.waitForFunction(
+      (p) =>
+        location.pathname === p &&
+        !document.querySelector("[data-leaving]") &&
+        document.querySelector("main > *"),
+      {},
+      path,
+    );
+  };
+
+  const clickVisible = async (page, selector, text) => {
+    const handle = await page.waitForFunction(
+      (sel, label) =>
+        [...document.querySelectorAll(sel)].find(
+          (el) => el.offsetParent && (!label || el.textContent.includes(label)),
+        ),
+      {},
+      selector,
+      text,
+    );
+    await handle.evaluate((el) =>
+      el.scrollIntoView({ block: "center", behavior: "instant" }),
+    );
+    await handle.click();
+  };
+
+  it("retailer, podcast, social, press kit, contact and newsletter clicks send their placements", async () => {
+    const { page, named } = await openPage(DESKTOP);
+    await keepOnSite(page);
+    await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
+
+    await clickVisible(page, "main a", "Watch on YouTube");
+    await clickVisible(page, 'main a[href*="amazon."]');
+    await clickVisible(page, 'footer a[href*="goodreads"]');
+    await clickVisible(page, 'footer a[href*="instagram"]');
+    await clickVisible(page, "footer a", "Press Kit");
+    await clickVisible(page, "header button", "Join the Circle");
+    await clickVisible(page, "#subscribe-button");
+
+    await navigate(page, "/books");
+    await clickVisible(page, 'main a[href*="goodreads"]');
+    await navigate(page, "/podcast");
+    await clickVisible(page, 'main a[href*="spotify"]');
+    await navigate(page, "/about");
+    await clickVisible(page, 'main a[href*="x.com"]');
+    await clickVisible(page, "main a", "Press kit");
+    await navigate(page, "/contact");
+    for (const link of await page.$$('main a[href^="mailto:"]')) {
+      await link.click();
+    }
+    await navigate(page, "/store");
+    await page.waitForSelector(byTestId("store-product"));
+    const amazonLinks = await page.$$('main a[href*="amazon."]');
+    for (const link of amazonLinks) {
+      await link.evaluate((el) => el.scrollIntoView({ block: "center" }));
+      await link.click();
+    }
+    await settle(page);
+
+    expect(named("podcast_link_click")).toEqual([
+      { platform: "youtube", placement: "home" },
+      { platform: "spotify", placement: "podcast" },
+    ]);
+    expect(named("retailer_click")).toEqual([
+      { retailer: "amazon", placement: "home_hero" },
+      { retailer: "goodreads", placement: "footer" },
+      { retailer: "goodreads", placement: "books" },
+      { retailer: "amazon", placement: "store_notice" },
+      { retailer: "amazon", placement: "store_ebook" },
+    ]);
+    expect(named("social_link_click")).toEqual([
+      { network: "instagram", placement: "footer" },
+      { network: "x", placement: "about" },
+    ]);
+    expect(named("press_kit_click")).toEqual([
+      { placement: "footer" },
+      { placement: "about" },
+    ]);
+    expect(named("newsletter_opened")).toEqual([
+      { placement: "header" },
+      { placement: "newsletter" },
+    ]);
+    expect(named("contact_email_click")).toEqual([
+      { channel: "business" },
+      { channel: "podcast" },
+    ]);
+  });
+
+  it("the cart panel's quantity buttons and the mobile menu's Cart and Join send their placements", async () => {
+    const { page, named } = await openPage(MOBILE);
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    const listing = `${byTestId("store-product")}[data-product-id="${PAPERBACK_UNSIGNED.itemId}"]`;
+    await page.waitForSelector(byTestId("edition-format-paperback"));
+    await page.click(byTestId("edition-format-paperback"));
+    await page.click(byTestId("edition-unsigned"));
+    await clickVisible(page, `${listing} ${byTestId("add-to-cart")}`);
+    await page.click(byTestId("mobile-menu-toggle"));
+    await clickVisible(page, byTestId("mobile-cart-button"));
+    await page.waitForSelector(`${byTestId("cart-panel")}[data-state="open"]`);
+    await page.waitForFunction(
+      (sel) => document.querySelector(sel).getAnimations().length === 0,
+      {},
+      byTestId("cart-panel"),
+    );
+    await page.click(`${byTestId("cart-panel")} ${byTestId("qty-increase")}`);
+    await page.click(`${byTestId("cart-panel")} ${byTestId("qty-decrease")}`);
+    await page.click(`${byTestId("cart-panel")} ${byTestId("qty-decrease")}`);
+    await page.waitForFunction(
+      (sel) => !document.querySelector(sel),
+      {},
+      `${byTestId("cart-panel")} ${byTestId("cart-item")}`,
+    );
+    await page.click(byTestId("cart-close"));
+    await page.click(byTestId("mobile-menu-toggle"));
+    await clickVisible(page, "button", "Join the Circle");
+    await settle(page);
+
+    expect(named("cart_opened")).toEqual([
+      { placement: "mobile_menu", item_count: 1 },
+    ]);
+    expect(named("cart_quantity_changed")).toEqual([
+      { item_id: PAPERBACK_UNSIGNED.itemId, quantity: 2, placement: "cart" },
+      { item_id: PAPERBACK_UNSIGNED.itemId, quantity: 1, placement: "cart" },
+      { item_id: PAPERBACK_UNSIGNED.itemId, quantity: 0, placement: "cart" },
+    ]);
+    expect(named("newsletter_opened")).toEqual([{ placement: "mobile_menu" }]);
+  });
+});
+
 describe("analytics: no tracker configured", () => {
   it("sends nothing and raises no errors through reading, copying, the store and checkout", async () => {
     const { page, errors, foreignRequests } = await openExcerpt(DESKTOP, {
