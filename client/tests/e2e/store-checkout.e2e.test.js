@@ -930,7 +930,7 @@ describe("Crownfall excerpt", () => {
   );
 
   it.runIf(chapters.length > 1)(
-    "chapter tabs follow clicks, arrow keys and Next chapter, and the hash follows them",
+    "chapter tabs follow clicks, arrow keys and the next-chapter button, every chapter end offers the book, and the hash follows them",
     async () => {
       const { page } = await openPage(MOBILE);
       await page.emulateMediaFeatures([
@@ -993,6 +993,28 @@ describe("Crownfall excerpt", () => {
       ).toBe(chapterId(chapters[0]));
 
       for (let index = 1; index < chapters.length; index += 1) {
+        const end = await page.evaluate(() => {
+          const panel = document.querySelector(
+            '[data-testid="excerpt-chapter"]:not([hidden])',
+          );
+          const next = panel.querySelector('[data-testid="excerpt-next"]');
+          return {
+            label: [...next.childNodes]
+              .filter((node) => !node.classList?.contains("sr-only"))
+              .map((node) => node.textContent)
+              .join(""),
+            buy: panel.querySelector('[data-testid="excerpt-buy"]').pathname,
+          };
+        });
+        expect(end).toEqual({
+          label: chapterTitle(chapters[index]),
+          buy: "/store",
+        });
+        expect(
+          await page.$(
+            `aria/Next: ${chapterTitle(chapters[index])}[role="button"]`,
+          ),
+        ).not.toBeNull();
         await page.click(
           `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`,
         );
@@ -1005,6 +1027,11 @@ describe("Crownfall excerpt", () => {
       expect(
         await page.$(
           `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`,
+        ),
+      ).toBeNull();
+      expect(
+        await page.$(
+          `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-buy")}`,
         ),
       ).toBeNull();
       expect(
