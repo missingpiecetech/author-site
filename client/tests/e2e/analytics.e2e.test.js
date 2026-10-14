@@ -441,6 +441,23 @@ describe("analytics: excerpt reading depth", () => {
         .concat(CHAPTERS.length > 2 ? [last] : []),
     );
   });
+
+  it("the Buy the book button at a chapter's end sends that chapter", async () => {
+    const { page, named, waitForEvent } = await openExcerpt(DESKTOP);
+    const first = CHAPTERS[0].number;
+    await waitForEvent("excerpt_chapter_view");
+    await Promise.all([
+      page.waitForFunction(() => location.pathname === "/store"),
+      page.click(byTestId("excerpt-buy")),
+    ]);
+    await waitForEvent("excerpt_buy_click");
+    expect(named("excerpt_buy_click")).toEqual([
+      { chapter: first, retailer: "direct" },
+    ]);
+    expect(named("retailer_click")).toEqual([
+      { retailer: "direct", placement: `excerpt_chapter_${first}` },
+    ]);
+  });
 });
 
 describe("analytics: store and checkout", () => {

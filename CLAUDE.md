@@ -155,16 +155,18 @@ against the ground, so never show state with a border alone (the pressed pill us
   empty); the writing desk; then the book-tour image and Author Adjacent. No author-photo
   hero.
 - **Excerpt page** (`/books/crownfall/excerpt`, `ExcerptPage`, text from
-  `src/excerpts/crownfall.js`): a `PageIntro` whose eyebrow carries the count ("Read an
-  Excerpt · The first three chapters") over the title, with no lede; then one chapter at a
+  `src/excerpts/crownfall.js`): a `PageIntro` whose eyebrow is the count alone ("The first
+  three chapters"; "Read an Excerpt" only in the coming-soon state) over the title, with no
+  lede; then one chapter at a
   time behind `components/excerpt/ChapterTabs` (WAI-ARIA tabs: automatic activation, roving
   tabindex, Left/Right/Home/End; the selected tab is the gold fill, never a border alone;
   "Chapter 1: Kyndel" from `sm`, "Ch. 1" over "Kyndel" on phones). Each chapter keeps its
   full heading and drop cap. The hash names the chapter (`#chapter-2` opens and scrolls to
   it; no hash is chapter 1) and tab changes `replaceState` it, so history gets no entries.
-  Every chapter but the last ends in a primary "Next chapter: <name>" button that shows the
-  next tab, focuses its panel and scrolls its top under the header (smooth only without
-  reduced motion). After the last chapter, and only then, the buy band ("Keep reading
+  Every chapter but the last ends in a primary button named for the next chapter's heading
+  ("Chapter 2: Jelert", with a visually hidden "Next: " prefix) that shows the next tab,
+  focuses its panel and jumps (never smooth-scrolls) its top under the header, beside a secondary "Buy the book" (`/store`; stacked full width on phones).
+  After the last chapter, and only then, the buy band ("Keep reading
   Crownfall" + `RetailerLinks`, no eyebrow) shows on `band`, a step lighter than `ground`.
 - **Writing desk** ("From the Writing Desk", `WritingDesk`): one `WorkProgress` row per entry
   in `src/WRITING_DESK.js` (`{ title, type, status, percent }`, edited by hand) — title, then
@@ -343,7 +345,7 @@ navigation or Square code.
   `checkout-error`, `mobile-menu-toggle`, `mobile-cart-button`; on the excerpt,
   `excerpt-chapter` (each tab panel; inactive ones `hidden`), `excerpt-chapter-nav` (the
   tablist), `excerpt-tab-1`…`excerpt-tab-3` (by chapter number), `excerpt-next`,
-  `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`.
+  `excerpt-buy` (the "Buy the book" beside it), `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`.
   The excerpt e2e walks the tabs and checks every paragraph and italic of every chapter.
 
 ## Conventions

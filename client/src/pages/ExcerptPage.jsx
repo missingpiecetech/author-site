@@ -72,9 +72,10 @@ const paragraphOfRange = (panel, range) => {
 
 /**
  * One chapter's tab panel (`hidden` unless selected): heading, text and, when
- * there is a `next` chapter, a "Next chapter" button at its foot. Measures
- * reading depth while selected, and adds `credit` to whatever is copied from
- * it (never blocking the copy).
+ * there is a `next` chapter, a button named for it ("Chapter 2: Jelert") and a
+ * secondary "Buy the book" at its foot. Measures reading depth while
+ * selected, and adds `credit` to whatever is copied from it (never blocking
+ * the copy).
  */
 const Chapter = ({ chapter, isSelected, isTabbed, next, onNext, credit }) => {
   const id = chapterId(chapter);
@@ -133,9 +134,27 @@ const Chapter = ({ chapter, isSelected, isTabbed, next, onNext, credit }) => {
         )}
       </div>
       {next && (
-        <div className="mt-14 flex justify-center lg:mt-18">
+        <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-3.5 lg:mt-18">
           <Button onClick={onNext} data-testid="excerpt-next">
-            Next chapter: {next.pov ?? `Chapter ${next.number}`}
+            <span className="sr-only">Next: </span>
+            {chapterTitle(next)}
+          </Button>
+          <Button
+            to="/store"
+            variant="secondary"
+            data-testid="excerpt-buy"
+            onClick={() => {
+              track(EVENTS.EXCERPT_BUY_CLICK, {
+                chapter: chapter.number,
+                retailer: "direct",
+              });
+              track(EVENTS.RETAILER_CLICK, {
+                retailer: "direct",
+                placement: `excerpt_chapter_${chapter.number}`,
+              });
+            }}
+          >
+            Buy the book
           </Button>
         </div>
       )}
