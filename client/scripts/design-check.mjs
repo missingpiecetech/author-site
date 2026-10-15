@@ -9,6 +9,10 @@
 //   - content left at opacity 0 with prefers-reduced-motion;
 //   - progress bars whose fill does not match aria-valuenow;
 //   - an excerpt reading column wider than 72ch of its own font;
+//   - text over section background art (`Section background`) below WCAG
+//     contrast (4.5:1, or 3:1 for large text), measured against the brightest
+//     pixel of the art under each line as cropped, after the scrim and any
+//     panel fill between the art and the text;
 // plus the Home scroll cue's geometry at 1440/1280/1024/768/390, and, with
 // `--shots <dir>`, element screenshots for review (see SHOTS).
 //
@@ -341,6 +345,99 @@ const readingMeasure = (page) =>
     return { width: Math.round(width), ch: Math.round((width / ch) * 10) / 10 };
   });
 
+const textOnArtContrast = (page) =>
+  page.evaluate(async () => {
+    const rgba = (css) => {
+      const [r, g, b, a = 1] = css.match(/[\d.]+/g).map(Number);
+      return { r, g, b, a };
+    };
+    const over = (top, base) => ({
+      r: top.r * top.a + base.r * (1 - top.a),
+      g: top.g * top.a + base.g * (1 - top.a),
+      b: top.b * top.a + base.b * (1 - top.a),
+      a: 1,
+    });
+    const luminance = ({ r, g, b }) => {
+      const lin = (c) => {
+        const v = c / 255;
+        return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      };
+      return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    };
+    const ratio = (x, y) => {
+      const [hi, lo] = [luminance(x), luminance(y)].sort((a, b) => b - a);
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    const results = [];
+    for (const img of document.querySelectorAll(
+      '[data-testid="section-background"]',
+    )) {
+      if (!img.complete) await img.decode();
+      const section = img.parentElement;
+      const scrim = rgba(
+        getComputedStyle(img.nextElementSibling).backgroundColor,
+      );
+      const box = img.getBoundingClientRect();
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(box.width);
+      canvas.height = Math.round(box.height);
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const scale = Math.max(
+        box.width / img.naturalWidth,
+        box.height / img.naturalHeight,
+      );
+      const [px, py] = getComputedStyle(img)
+        .objectPosition.split(" ")
+        .map((v) => parseFloat(v) / 100);
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      ctx.drawImage(img, (box.width - dw) * px, (box.height - dh) * py, dw, dh);
+      const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const el = node.parentElement;
+        if (!node.textContent.trim() || el.closest(".sr-only")) continue;
+        const style = getComputedStyle(el);
+        const size = parseFloat(style.fontSize);
+        const isLarge =
+          size >= 24 || (size >= 18.66 && Number(style.fontWeight) >= 700);
+        // Fills between the art and this text, outermost first.
+        const fills = [];
+        for (let a = el; a && a !== section; a = a.parentElement) {
+          const fill = rgba(getComputedStyle(a).backgroundColor);
+          if (fill.a > 0) fills.unshift(fill);
+        }
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        for (const r of range.getClientRects()) {
+          const x = Math.max(0, Math.floor(r.left - box.left));
+          const y = Math.max(0, Math.floor(r.top - box.top));
+          const w = Math.min(canvas.width - x, Math.ceil(r.width));
+          const h = Math.min(canvas.height - y, Math.ceil(r.height));
+          if (w <= 0 || h <= 0) continue;
+          const data = ctx.getImageData(x, y, w, h).data;
+          let brightest = { r: 0, g: 0, b: 0, a: 1 };
+          let max = -1;
+          for (let i = 0; i < data.length; i += 4) {
+            const p = { r: data[i], g: data[i + 1], b: data[i + 2], a: 1 };
+            const l = luminance(p);
+            if (l > max) [max, brightest] = [l, p];
+          }
+          const behind = fills.reduce(
+            (base, fill) => over(fill, base),
+            over(scrim, brightest),
+          );
+          results.push({
+            text: node.textContent.trim().slice(0, 30),
+            ratio: ratio(rgba(style.color), behind),
+            min: isLarge ? 3 : 4.5,
+          });
+        }
+      }
+    }
+    return results;
+  });
+
 const scrollCueGeometry = (page) =>
   page.evaluate(() => {
     const cue = document.querySelector('[data-testid="scroll-cue"]');
@@ -435,6 +532,22 @@ const main = async () => {
           if (measure.ch > MAX_MEASURE_CH) {
             fail(
               `${label}: reading column ${measure.ch}ch > ${MAX_MEASURE_CH}ch`,
+            );
+          }
+        }
+        const contrasts = await textOnArtContrast(still.page);
+        if (contrasts.length) {
+          const worst = contrasts.reduce((a, b) =>
+            a.ratio / a.min < b.ratio / b.min ? a : b,
+          );
+          console.log(
+            `  text on art: ${contrasts.length} lines, worst ${worst.ratio.toFixed(2)}:1 ("${worst.text}", needs ${worst.min}:1)`,
+          );
+        }
+        for (const { text, ratio, min } of contrasts) {
+          if (ratio < min) {
+            fail(
+              `${label}: "${text}" on art at ${ratio.toFixed(2)}:1 < ${min}:1`,
             );
           }
         }

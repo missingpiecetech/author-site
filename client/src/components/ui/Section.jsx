@@ -13,6 +13,11 @@ const SPACING = {
  * - `clipX`: overflow-x-clip, for sections with horizontal entrance animations.
  * - `spacing`: "default" | "compact" | "none".
  * - `contained`: wraps children in a centred max-w-7xl column (default true).
+ * - `background`: section art from `assets/backgrounds` (`{ src, srcSet,
+ *   position }`), drawn decoratively behind the content and cropped to fill.
+ *   It loads lazily, at the width the screen needs.
+ * - `scrim`: classes for the dark wash over the art that keeps the text
+ *   legible (default `bg-ground/60`).
  */
 const Section = ({
   as = "section",
@@ -22,6 +27,8 @@ const Section = ({
   contained = true,
   className = "",
   innerClassName = "",
+  background,
+  scrim = "bg-ground/60",
   children,
   ...rest
 }) => {
@@ -31,6 +38,7 @@ const Section = ({
     SPACING[spacing] ?? SPACING.default,
     band && "bg-band",
     clipX && "overflow-x-clip",
+    background && "relative isolate overflow-hidden",
     className,
   ]
     .filter(Boolean)
@@ -38,6 +46,25 @@ const Section = ({
 
   return (
     <Tag className={classes} {...rest}>
+      {background && (
+        <>
+          <img
+            src={background.src}
+            srcSet={background.srcSet}
+            sizes="100vw"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            data-testid="section-background"
+            className={`absolute inset-0 -z-10 h-full w-full object-cover ${background.position}`}
+          />
+          <div
+            aria-hidden="true"
+            className={`absolute inset-0 -z-10 ${scrim}`}
+          />
+        </>
+      )}
       {contained ? (
         <div className={`mx-auto max-w-7xl ${innerClassName}`}>{children}</div>
       ) : (

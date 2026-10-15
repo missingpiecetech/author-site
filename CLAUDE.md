@@ -186,13 +186,25 @@ against the ground, so never show state with a border alone (the pressed pill us
   `disable: () => matchMedia("(prefers-reduced-motion: reduce)").matches`; Tailwind animations
   use `motion-safe:`; no parallax under reduced motion. The e2e fails if any content is left
   at opacity 0 with reduced motion on.
+- **Background art** (Michael's paintings) is an accent on two sections only: the Home
+  praise band (`cracks`, gold fissures on dark ground) and the site-wide newsletter
+  (`crystal`, the gold crystal and the city at night). Art goes behind short, large text
+  or a call to action, never behind body copy or a section that already shows a cover.
+  `<Section background={BACKGROUNDS.name} scrim="bg-ground/NN">` draws it as a lazy,
+  decorative `<img>` cropped to fill, under a `ground` scrim; text that needs more than
+  the scrim sits on a filled panel (the newsletter box is `bg-ground/90`). Art lives in
+  `src/assets/backgrounds/` as two WebP widths made by
+  `node scripts/optimize-backgrounds.mjs <source-dir> <name>…` from
+  `<name>_background.png`; the full-size PNGs stay out of the repo. `index.js` registers
+  each with the object-position classes that keep its subject in view. `design-check`
+  fails text on art below WCAG contrast against the brightest pixel under it.
 - Sections with horizontal entrance animations use `<Section clipX>` (`overflow-x-clip`).
 - Every layout must work at 390px with no horizontal scroll.
 - About will get an Instagram feed (separate work); there is no appearances list.
 
 ### Building blocks
 
-- `src/components/ui/`: `Section` (`band`, `clipX`, `spacing`),
+- `src/components/ui/`: `Section` (`band`, `clipX`, `spacing`, `background`, `scrim`),
   `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`; artwork in `filigree/`), `Eyebrow`, `Button`
   (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
   `FramedImage` (`aspect`, `placeholder`, `filigree`), `PullQuote` (`quote`, `name`, `credit`),
@@ -268,7 +280,7 @@ Run from `client/`.
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
 each other or their frame's content, every ornament at the corners' scale, reduced-motion opacity,
-progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
+progress bars against their aria-valuenow, text contrast over background art, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`.
 
 ## Square API — Two Implementations, Same Routes
