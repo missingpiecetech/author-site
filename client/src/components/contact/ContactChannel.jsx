@@ -1,11 +1,14 @@
 import { RuleList, RuleRow } from "../ui/RuleList";
+import { EVENTS, track } from "../../lib/analytics.js";
 
 /**
  * One contact column: heading, lede, the email row and the "good for" list.
  * Every flex/grid child that holds the address carries `min-w-0`, and the
  * address itself `break-all`, so a long email can never widen the page.
+ * `channel` ("business" or "podcast") goes with contact_email_click.
  */
 const ContactChannel = ({
+  channel,
   title,
   lede,
   icon,
@@ -32,6 +35,7 @@ const ContactChannel = ({
           <p className="text-lg font-medium text-cream">{label}</p>
           <a
             href={`mailto:${email}`}
+            onClick={() => track(EVENTS.CONTACT_EMAIL_CLICK, { channel })}
             className="block min-w-0 break-all text-lg text-accent transition-colors hover:text-accent-hover hover:underline"
           >
             {email}

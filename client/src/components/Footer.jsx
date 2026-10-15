@@ -4,6 +4,7 @@ import { faGoodreads } from "@fortawesome/free-brands-svg-icons";
 import SOCIAL_LINKS from "../SOCIAL_LINKS";
 import SITE_INFO from "../SITE_INFO";
 import { BOOKS } from "../BOOK_DATA";
+import { EVENTS, track } from "../lib/analytics.js";
 
 const GOODREADS = BOOKS.find((book) => book.slug === "crownfall")?.retailers
   ?.goodreads;
@@ -23,12 +24,25 @@ const SOCIALS = [
     ? [
         {
           platform: "Goodreads",
+          retailer: "goodreads",
           url: GOODREADS,
           icon: <FontAwesomeIcon icon={faGoodreads} />,
         },
       ]
     : []),
 ];
+
+// Goodreads is a retailer link; the rest are social networks.
+const trackSocial = (social) =>
+  social.retailer
+    ? track(EVENTS.RETAILER_CLICK, {
+        retailer: social.retailer,
+        placement: "footer",
+      })
+    : track(EVENTS.SOCIAL_LINK_CLICK, {
+        network: social.network,
+        placement: "footer",
+      });
 
 const linkClass = "text-subtle transition-colors hover:text-accent-hover";
 
@@ -59,6 +73,9 @@ const Footer = () => (
               href={SITE_INFO.pressKit}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                track(EVENTS.PRESS_KIT_CLICK, { placement: "footer" })
+              }
               className={linkClass}
             >
               Press Kit
@@ -74,6 +91,7 @@ const Footer = () => (
               target="_blank"
               rel="noopener noreferrer"
               aria-label={social.platform}
+              onClick={() => trackSocial(social)}
               className="text-accent transition-colors hover:text-accent-hover"
             >
               {social.icon}

@@ -6,6 +6,7 @@ import authorAdjacentLogo from "../assets/logo_no_text.png";
 import PageIntro from "../components/ui/PageIntro";
 import Section from "../components/ui/Section";
 import FramedImage from "../components/ui/FramedImage";
+import { EVENTS, track } from "../lib/analytics.js";
 
 // A repeating tile: no frame or filigree (CLAUDE.md, "no filigree on repeating cards").
 const TILE =
@@ -25,6 +26,9 @@ const TileBody = ({ icon, title, detail }) => (
 );
 
 const LINK = "text-accent underline hover:text-accent-hover";
+
+const trackPlatform = (platform) => () =>
+  track(EVENTS.PODCAST_LINK_CLICK, { platform, placement: "podcast" });
 
 const PodcastPage = () => {
   return (
@@ -73,6 +77,7 @@ const PodcastPage = () => {
                 <a
                   href="https://open.spotify.com/show/1PLTufzD1727pDp6xCR97h"
                   className={LINK}
+                  onClick={trackPlatform("spotify")}
                 >
                   Spotify
                 </a>{" "}
@@ -80,6 +85,7 @@ const PodcastPage = () => {
                 <a
                   href="https://www.youtube.com/@AuthorAdjacent"
                   className={LINK}
+                  onClick={trackPlatform("youtube")}
                 >
                   YouTube
                 </a>
@@ -113,6 +119,7 @@ const PodcastPage = () => {
                 href="https://x.com/AuthorAdjacent"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={trackPlatform("x")}
                 className={TILE}
               >
                 <TileBody
@@ -127,6 +134,7 @@ const PodcastPage = () => {
                 href="https://www.youtube.com/@AuthorAdjacent"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={trackPlatform("youtube")}
                 className={TILE}
               >
                 <TileBody
