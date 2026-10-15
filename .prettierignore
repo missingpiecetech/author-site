@@ -1,0 +1,3 @@
+# Hand-packed SVG sprite: one <symbol> per line. Prettier expands it ~7x and
+# can shift inline whitespace in the demo covers.
+design/filigree-samples/index.html

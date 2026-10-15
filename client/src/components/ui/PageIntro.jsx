@@ -1,0 +1,55 @@
+import Section from "./Section";
+import Eyebrow from "./Eyebrow";
+import { FiligreeDivider } from "./Filigree";
+
+/**
+ * The opening block of a secondary page, centred: eyebrow, h1 and lede, closed
+ * by a filigree divider under them. Keeps the site's two-tone headings:
+ * `accent` is rendered after `title` in gold, e.g. title="Book" accent="Store".
+ *
+ * - `children`: anything extra under the lede (buttons, notes), above the
+ *   divider.
+ * - `background`, `scrim`: section art behind the title (see `Section`). The
+ *   default scrim is a light wash with a darker pool sized to the title block,
+ *   so the art stays visible around legible text. The art fades into the page
+ *   at its foot, and the block gets more room below the divider so the fade
+ *   does not start under it.
+ */
+const PageIntro = ({
+  eyebrow,
+  title,
+  accent,
+  lede,
+  className = "",
+  background,
+  scrim = "bg-[radial-gradient(ellipse_36%_55%_at_50%_45%,rgb(18_16_23/0.85),rgb(18_16_23/0.8)_70%,rgb(18_16_23/0.18))] max-sm:bg-[radial-gradient(ellipse_70%_60%_at_50%_45%,rgb(18_16_23/0.85),rgb(18_16_23/0.8)_70%,rgb(18_16_23/0.3))]",
+  children,
+  ...rest
+}) => (
+  <Section
+    spacing="none"
+    className={`pt-12 lg:pt-22 ${background ? "pb-16 lg:pb-24" : "pb-4 lg:pb-8"} ${className}`}
+    background={background}
+    scrim={scrim}
+    fade
+    priority
+    innerClassName={`flex flex-col items-center gap-4 text-center lg:gap-5`}
+    {...rest}
+  >
+    {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+    <h1 className="text-title text-cream">
+      {title}
+      {accent && (
+        <>
+          {" "}
+          <span className="text-accent">{accent}</span>
+        </>
+      )}
+    </h1>
+    {lede && <p className="max-w-3xl text-lede text-muted">{lede}</p>}
+    {children}
+    <FiligreeDivider className="mt-2 text-accent lg:mt-3" />
+  </Section>
+);
+
+export default PageIntro;
