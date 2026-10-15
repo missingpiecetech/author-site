@@ -15,9 +15,12 @@ const SPACING = {
  * - `contained`: wraps children in a centred max-w-7xl column (default true).
  * - `background`: section art from `assets/backgrounds` (`{ src, srcSet,
  *   position }`), drawn decoratively behind the content and cropped to fill.
- *   It loads lazily, at the width the screen needs.
+ *   It loads at the width the screen needs: lazily, or at once with
+ *   `priority` (art at the top of a page).
  * - `scrim`: classes for the dark wash over the art that keeps the text
- *   legible (default `bg-ground/60`).
+ *   legible (default `bg-ground/60`; a gradient works too).
+ * - `fade`: also fades the art's lower half into `ground`, for a section
+ *   followed by plain ground (page titles), so the art has no hard bottom edge.
  */
 const Section = ({
   as = "section",
@@ -29,6 +32,8 @@ const Section = ({
   innerClassName = "",
   background,
   scrim = "bg-ground/60",
+  fade = false,
+  priority = false,
   children,
   ...rest
 }) => {
@@ -54,7 +59,8 @@ const Section = ({
             sizes="100vw"
             alt=""
             aria-hidden="true"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
             decoding="async"
             data-testid="section-background"
             className={`absolute inset-0 -z-10 h-full w-full object-cover ${background.position}`}
@@ -63,6 +69,12 @@ const Section = ({
             aria-hidden="true"
             className={`absolute inset-0 -z-10 ${scrim}`}
           />
+          {fade && (
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-linear-to-b from-transparent to-ground"
+            />
+          )}
         </>
       )}
       {contained ? (

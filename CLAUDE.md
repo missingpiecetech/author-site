@@ -186,18 +186,25 @@ against the ground, so never show state with a border alone (the pressed pill us
   `disable: () => matchMedia("(prefers-reduced-motion: reduce)").matches`; Tailwind animations
   use `motion-safe:`; no parallax under reduced motion. The e2e fails if any content is left
   at opacity 0 with reduced motion on.
-- **Background art** (Michael's paintings) is an accent on two sections only: the Home
-  praise band (`cracks`, gold fissures on dark ground) and the site-wide newsletter
-  (`crystal`, the gold crystal and the city at night). Art goes behind short, large text
-  or a call to action, never behind body copy or a section that already shows a cover.
-  `<Section background={BACKGROUNDS.name} scrim="bg-ground/NN">` draws it as a lazy,
-  decorative `<img>` cropped to fill, under a `ground` scrim; text that needs more than
-  the scrim sits on a filled panel (the newsletter box is `bg-ground/90`). Art lives in
-  `src/assets/backgrounds/` as two WebP widths made by
+- **Background art** (Michael's paintings) goes behind short, large text and calls to
+  action, never behind body copy. Placements: every centred page title but Podcast's
+  (`PageIntro background`: Books `characters`, Store `skyline`, Contact `cliffs`, the
+  excerpt `city`, checkout success `harren`), the Home praise band (`cracks`) and the
+  site-wide newsletter (`crystal`). Podcast's title stays plain (it has a different feel).
+  **Keep washes light** (owner, Oct 2026: the earlier ones were "always too dark"): the
+  art carries a light wash over most of its area, and legibility comes from a darker pool
+  sized to the text instead: `PageIntro`'s default scrim is a radial pool around the title
+  block, each Home quote sits on its own soft radial pool over a 35% wash, and the
+  newsletter text sits in its `bg-ground/90` box over a 45% wash (heavier there so the
+  crystal does not run into the gold frame). `<Section background={BACKGROUNDS.name}
+scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fill
+  (`priority` loads it at once, for art at the top of a page; `fade` fades its foot into
+  `ground`). Art lives in `src/assets/backgrounds/` as two WebP widths made by
   `node scripts/optimize-backgrounds.mjs <source-dir> <name>…` from
   `<name>_background.png`; the full-size PNGs stay out of the repo. `index.js` registers
   each with the object-position classes that keep its subject in view. `design-check`
-  fails text on art below WCAG contrast against the brightest pixel under it.
+  fails text on art below WCAG contrast against the brightest rendered pixel next to its
+  letters.
 - Sections with horizontal entrance animations use `<Section clipX>` (`overflow-x-clip`).
 - Every layout must work at 390px with no horizontal scroll.
 - About will get an Instagram feed (separate work); there is no appearances list.

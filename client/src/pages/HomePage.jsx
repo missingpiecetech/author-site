@@ -61,7 +61,7 @@ const HomePage = () => {
         <Section
           band
           background={BACKGROUNDS.cracks}
-          scrim="bg-ground/70"
+          scrim="bg-ground/35"
           spacing="none"
           className="py-9 lg:py-16"
           innerClassName="flex flex-col gap-12 lg:gap-16"
@@ -69,7 +69,12 @@ const HomePage = () => {
           {FEATURED.praise.map((praise, index) => (
             <Fragment key={praise.name}>
               {index > 0 && <FiligreeDivider />}
-              <div data-aos="fade-up">
+              {/* A dark pool behind each quote keeps the small credit
+                  legible while the wash over the art stays light */}
+              <div
+                data-aos="fade-up"
+                className="-mx-6 -my-12 bg-[radial-gradient(farthest-side,rgb(18_16_23/0.85),rgb(18_16_23/0.8)_80%,transparent)] px-6 py-12"
+              >
                 <PullQuote
                   quote={praise.text}
                   name={praise.name}

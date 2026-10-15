@@ -9,6 +9,11 @@ import { FiligreeDivider } from "./Filigree";
  *
  * - `children`: anything extra under the lede (buttons, notes), above the
  *   divider.
+ * - `background`, `scrim`: section art behind the title (see `Section`). The
+ *   default scrim is a light wash with a darker pool sized to the title block,
+ *   so the art stays visible around legible text. The art fades into the page
+ *   at its foot, and the block gets more room below the divider so the fade
+ *   does not start under it.
  */
 const PageIntro = ({
   eyebrow,
@@ -16,13 +21,19 @@ const PageIntro = ({
   accent,
   lede,
   className = "",
+  background,
+  scrim = "bg-[radial-gradient(ellipse_36%_55%_at_50%_45%,rgb(18_16_23/0.85),rgb(18_16_23/0.8)_70%,rgb(18_16_23/0.18))] max-sm:bg-[radial-gradient(ellipse_70%_60%_at_50%_45%,rgb(18_16_23/0.85),rgb(18_16_23/0.8)_70%,rgb(18_16_23/0.3))]",
   children,
   ...rest
 }) => (
   <Section
     spacing="none"
-    className={`pt-12 pb-4 lg:pt-22 lg:pb-8 ${className}`}
-    innerClassName="flex flex-col items-center gap-4 text-center lg:gap-5"
+    className={`pt-12 lg:pt-22 ${background ? "pb-16 lg:pb-24" : "pb-4 lg:pb-8"} ${className}`}
+    background={background}
+    scrim={scrim}
+    fade
+    priority
+    innerClassName={`flex flex-col items-center gap-4 text-center lg:gap-5`}
     {...rest}
   >
     {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}

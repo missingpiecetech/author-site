@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import useCart from "../hooks/useCart";
 import useSquare from "../hooks/useSquare";
 import PageIntro from "../components/ui/PageIntro";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 import Section from "../components/ui/Section";
 import ShippingNotice from "../components/ShippingNotice";
 import CrownfallListing from "../components/store/CrownfallListing";
@@ -70,6 +71,7 @@ const StorePage = () => {
   return (
     <>
       <PageIntro
+        background={BACKGROUNDS.skyline}
         title="Book"
         accent="Store"
         lede="Explore and purchase my latest works and exclusive merchandise right here."

@@ -1,5 +1,6 @@
 import Section from "../components/ui/Section";
 import PageIntro from "../components/ui/PageIntro";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 import Button from "../components/ui/Button";
 import { FiligreeCorners } from "../components/ui/Filigree";
 import { FRAME_BORDER } from "../components/ui/filigree/index.js";
@@ -8,6 +9,7 @@ const CheckoutSuccessPage = () => {
   return (
     <div className="min-h-screen bg-ground">
       <PageIntro
+        background={BACKGROUNDS.harren}
         title="Thank"
         accent="You"
         lede="Thank you for purchasing the book. Your order was successfully submitted."

@@ -11,8 +11,8 @@
 //   - an excerpt reading column wider than 72ch of its own font;
 //   - text over section background art (`Section background`) below WCAG
 //     contrast (4.5:1, or 3:1 for large text), measured against the brightest
-//     pixel of the art under each line as cropped, after the scrim and any
-//     panel fill between the art and the text;
+//     backdrop pixel within HALO_REACH px of each letter stroke, as rendered
+//     (art, scrim, fades, panel fills and a text halo all count);
 // plus the Home scroll cue's geometry at 1440/1280/1024/768/390, and, with
 // `--shots <dir>`, element screenshots for review (see SHOTS).
 //
@@ -23,6 +23,7 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import puppeteer from "puppeteer";
+import sharp from "sharp";
 import { startServer } from "../tests/e2e/support/server.js";
 import { UNIT } from "../src/components/ui/filigree/scale.js";
 
@@ -39,6 +40,11 @@ const ROUTES = [
   "/books/crownfall/excerpt#chapter-2",
   "/books/crownfall/excerpt#chapter-3",
 ];
+// Text on background art is measured against the backdrop this close to its
+// strokes (CSS px); strokes are where the page with and without its letters
+// differs by more than GLYPH_DIFF (sum over RGB).
+const HALO_REACH = 2;
+const GLYPH_DIFF = 48;
 // The longest line the excerpt's reading column may hold, in ch of its font.
 const MAX_MEASURE_CH = 72;
 const DESKTOP = { width: 1440, height: 900 };
@@ -345,98 +351,124 @@ const readingMeasure = (page) =>
     return { width: Math.round(width), ch: Math.round((width / ch) * 10) / 10 };
   });
 
-const textOnArtContrast = (page) =>
-  page.evaluate(async () => {
-    const rgba = (css) => {
-      const [r, g, b, a = 1] = css.match(/[\d.]+/g).map(Number);
-      return { r, g, b, a };
-    };
-    const over = (top, base) => ({
-      r: top.r * top.a + base.r * (1 - top.a),
-      g: top.g * top.a + base.g * (1 - top.a),
-      b: top.b * top.a + base.b * (1 - top.a),
-      a: 1,
-    });
-    const luminance = ({ r, g, b }) => {
-      const lin = (c) => {
-        const v = c / 255;
-        return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-      };
-      return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-    };
-    const ratio = (x, y) => {
-      const [hi, lo] = [luminance(x), luminance(y)].sort((a, b) => b - a);
-      return (hi + 0.05) / (lo + 0.05);
-    };
-    const results = [];
-    for (const img of document.querySelectorAll(
-      '[data-testid="section-background"]',
-    )) {
+const luminance = ({ r, g, b }) => {
+  const lin = (c) => {
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+};
+
+// Every text line in a section with background art, against the brightest
+// backdrop pixel next to its letters: the section is captured with its text
+// and again with the letters transparent (a halo still draws), and the
+// pixels that differ are the strokes.
+const textOnArtContrast = async (page) => {
+  const sections = await page.$$(
+    'section:has(> [data-testid="section-background"])',
+  );
+  const results = [];
+  for (const section of sections) {
+    await section.evaluate(async (el) => {
+      el.scrollIntoView({ block: "center", behavior: "instant" });
+      const img = el.querySelector(
+        ':scope > [data-testid="section-background"]',
+      );
       if (!img.complete) await img.decode();
-      const section = img.parentElement;
-      const scrim = rgba(
-        getComputedStyle(img.nextElementSibling).backgroundColor,
-      );
-      const box = img.getBoundingClientRect();
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(box.width);
-      canvas.height = Math.round(box.height);
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      const scale = Math.max(
-        box.width / img.naturalWidth,
-        box.height / img.naturalHeight,
-      );
-      const [px, py] = getComputedStyle(img)
-        .objectPosition.split(" ")
-        .map((v) => parseFloat(v) / 100);
-      const dw = img.naturalWidth * scale;
-      const dh = img.naturalHeight * scale;
-      ctx.drawImage(img, (box.width - dw) * px, (box.height - dh) * py, dw, dh);
-      const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT);
+    });
+    const lines = await section.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const out = [];
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         const node = walker.currentNode;
-        const el = node.parentElement;
-        if (!node.textContent.trim() || el.closest(".sr-only")) continue;
-        const style = getComputedStyle(el);
+        const parent = node.parentElement;
+        if (!node.textContent.trim() || parent.closest(".sr-only")) continue;
+        const style = getComputedStyle(parent);
+        if (style.visibility === "hidden" || style.display === "none") continue;
         const size = parseFloat(style.fontSize);
-        const isLarge =
-          size >= 24 || (size >= 18.66 && Number(style.fontWeight) >= 700);
-        // Fills between the art and this text, outermost first.
-        const fills = [];
-        for (let a = el; a && a !== section; a = a.parentElement) {
-          const fill = rgba(getComputedStyle(a).backgroundColor);
-          if (fill.a > 0) fills.unshift(fill);
-        }
+        const [r, g, b] = style.color.match(/[\d.]+/g).map(Number);
         const range = document.createRange();
         range.selectNodeContents(node);
-        for (const r of range.getClientRects()) {
-          const x = Math.max(0, Math.floor(r.left - box.left));
-          const y = Math.max(0, Math.floor(r.top - box.top));
-          const w = Math.min(canvas.width - x, Math.ceil(r.width));
-          const h = Math.min(canvas.height - y, Math.ceil(r.height));
-          if (w <= 0 || h <= 0) continue;
-          const data = ctx.getImageData(x, y, w, h).data;
-          let brightest = { r: 0, g: 0, b: 0, a: 1 };
-          let max = -1;
-          for (let i = 0; i < data.length; i += 4) {
-            const p = { r: data[i], g: data[i + 1], b: data[i + 2], a: 1 };
-            const l = luminance(p);
-            if (l > max) [max, brightest] = [l, p];
-          }
-          const behind = fills.reduce(
-            (base, fill) => over(fill, base),
-            over(scrim, brightest),
-          );
-          results.push({
+        for (const rect of range.getClientRects()) {
+          if (!rect.width || !rect.height) continue;
+          out.push({
             text: node.textContent.trim().slice(0, 30),
-            ratio: ratio(rgba(style.color), behind),
-            min: isLarge ? 3 : 4.5,
+            color: { r, g, b },
+            min:
+              size >= 24 || (size >= 18.66 && Number(style.fontWeight) >= 700)
+                ? 3
+                : 4.5,
+            x: rect.left - box.left,
+            y: rect.top - box.top,
+            w: rect.width,
+            h: rect.height,
           });
         }
       }
+      el.dataset.artCheck = "";
+      return out;
+    });
+    const raw = async (png) =>
+      sharp(png).raw().toBuffer({ resolveWithObject: true });
+    const shown = await raw(await section.screenshot({ type: "png" }));
+    const style = await page.addStyleTag({
+      content: "[data-art-check] * { color: transparent !important; }",
+    });
+    const { data, info } = await raw(await section.screenshot({ type: "png" }));
+    await style.evaluate((el) => el.remove());
+    const dpr = info.width / (await section.evaluate((el) => el.offsetWidth));
+    const reach = Math.round(HALO_REACH * dpr);
+    const at = (x, y) => (y * info.width + x) * info.channels;
+    const isGlyph = (x, y) => {
+      const i = at(x, y);
+      return (
+        Math.abs(shown.data[i] - data[i]) +
+          Math.abs(shown.data[i + 1] - data[i + 1]) +
+          Math.abs(shown.data[i + 2] - data[i + 2]) >
+        GLYPH_DIFF
+      );
+    };
+    for (const line of lines) {
+      const x0 = Math.max(0, Math.floor(line.x * dpr));
+      const y0 = Math.max(0, Math.floor(line.y * dpr));
+      const x1 = Math.min(info.width, Math.ceil((line.x + line.w) * dpr));
+      const y1 = Math.min(info.height, Math.ceil((line.y + line.h) * dpr));
+      // The brightest backdrop pixel within `reach` of a letter stroke.
+      let brightest = 0;
+      for (let y = y0; y < y1; y++) {
+        for (let x = x0; x < x1; x++) {
+          if (!isGlyph(x, y)) continue;
+          for (
+            let ny = Math.max(0, y - reach);
+            ny <= Math.min(info.height - 1, y + reach);
+            ny++
+          ) {
+            for (
+              let nx = Math.max(0, x - reach);
+              nx <= Math.min(info.width - 1, x + reach);
+              nx++
+            ) {
+              const i = at(nx, ny);
+              brightest = Math.max(
+                brightest,
+                luminance({ r: data[i], g: data[i + 1], b: data[i + 2] }),
+              );
+            }
+          }
+        }
+      }
+      const [hi, lo] = [luminance(line.color), brightest].sort((a, b) => b - a);
+      results.push({
+        text: line.text,
+        ratio: (hi + 0.05) / (lo + 0.05),
+        min: line.min,
+      });
     }
-    return results;
-  });
+    await section.evaluate((el) => delete el.dataset.artCheck);
+  }
+  return results;
+};
 
 const scrollCueGeometry = (page) =>
   page.evaluate(() => {

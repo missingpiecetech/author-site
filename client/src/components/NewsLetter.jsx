@@ -31,7 +31,7 @@ const NewsLetter = () => {
       aria-labelledby="newsletter-heading"
       contained={false}
       background={BACKGROUNDS.crystal}
-      scrim="bg-ground/30"
+      scrim="bg-ground/45"
     >
       {/* The framed box is nearly opaque, so its text never sits on the art */}
       <div
