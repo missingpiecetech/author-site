@@ -3,7 +3,6 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { BOOKS } from "../BOOK_DATA";
 import authorAdjacentLogo from "../assets/logo_no_text.png";
-import crownfallBookTour from "../assets/crownfall-book-tour.jpeg";
 import Section from "../components/ui/Section";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
@@ -12,6 +11,7 @@ import { FiligreeDivider } from "../components/ui/Filigree";
 import BookHero from "../components/home/BookHero";
 import Excerpt from "../components/home/Excerpt";
 import WritingDesk from "../components/WritingDesk";
+import InstagramFeed from "../components/instagram/InstagramFeed";
 import { EXCERPTS, hasExcerptText } from "../excerpts/index.js";
 import useHashScroll from "../hooks/useHashScroll";
 import { BACKGROUNDS } from "../assets/backgrounds/index.js";
@@ -95,15 +95,8 @@ const HomePage = () => {
           in the mockup; plain when it would sit against the quote band. */}
       <WritingDesk band={HAS_EXCERPT} />
 
-      {/* Book tour */}
-      <Section clipX>
-        <FramedImage
-          src={crownfallBookTour}
-          alt="Crownfall Book Tour"
-          aspect="square"
-          className="mx-auto max-w-2xl animate-slide-in-right"
-        />
-      </Section>
+      {/* Instagram: Michael's latest posts, via /api/instagram (Behold) */}
+      <InstagramFeed />
 
       {/* Author Adjacent podcast */}
       <Section>
