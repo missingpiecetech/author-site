@@ -18,7 +18,7 @@ const SPACING = {
  *   It loads at the width the screen needs: lazily, or at once with
  *   `priority` (art at the top of a page).
  * - Every background gets a 20% `ground` wash over the whole art (owner, Oct
- *   2026).
+ *   2026), and the section's text a soft `text-halo` so it stays legible.
  * - `fade`: also fades the art's bottom quarter to solid `ground`, so it
  *   blends into the page below. Page titles only.
  */
@@ -42,7 +42,7 @@ const Section = ({
     SPACING[spacing] ?? SPACING.default,
     band && "bg-band",
     clipX && "overflow-x-clip",
-    background && "relative isolate overflow-hidden",
+    background && "relative isolate overflow-hidden text-halo",
     className,
   ]
     .filter(Boolean)

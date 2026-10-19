@@ -31,6 +31,14 @@
   }
 }
 
+/* A soft dark glow hugging text set on background art: no offset, so it reads
+   as a slight darkening right behind the letters rather than a shadow. */
+@utility text-halo {
+  text-shadow:
+    0 0 6px rgb(18 16 23 / 0.55),
+    0 0 18px rgb(18 16 23 / 0.35);
+}
+
 @layer components {
   /* Rich text from Square item descriptions */
   .prose-square {
