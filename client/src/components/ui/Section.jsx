@@ -17,9 +17,10 @@ const SPACING = {
  *   position }`), drawn decoratively behind the content and cropped to fill.
  *   It loads at the width the screen needs: lazily, or at once with
  *   `priority` (art at the top of a page).
- * - Every background gets the same treatment (owner, Oct 2026): a 20% `ground`
- *   wash over the whole art, and over its bottom quarter a fade to solid
- *   `ground`, so it blends into the page below.
+ * - Every background gets a 20% `ground` wash over the whole art (owner, Oct
+ *   2026).
+ * - `fade`: also fades the art's bottom quarter to solid `ground`, so it
+ *   blends into the page below. Page titles only.
  */
 const Section = ({
   as = "section",
@@ -31,6 +32,7 @@ const Section = ({
   innerClassName = "",
   background,
   priority = false,
+  fade = false,
   children,
   ...rest
 }) => {
@@ -66,10 +68,12 @@ const Section = ({
             aria-hidden="true"
             className="absolute inset-0 -z-10 bg-ground/20"
           />
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 -z-10 h-1/4 bg-linear-to-b from-transparent to-ground"
-          />
+          {fade && (
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 -z-10 h-1/4 bg-linear-to-b from-transparent to-ground"
+            />
+          )}
         </>
       )}
       {contained ? (

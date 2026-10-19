@@ -28,6 +28,7 @@ const PageIntro = ({
     className={`pt-12 lg:pt-22 ${background ? "pb-16 lg:pb-24" : "pb-4 lg:pb-8"} ${className}`}
     background={background}
     priority
+    fade
     innerClassName={`flex flex-col items-center gap-4 text-center lg:gap-5`}
     {...rest}
   >

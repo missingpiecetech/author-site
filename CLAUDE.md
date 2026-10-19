@@ -205,9 +205,9 @@ against the ground, so never show state with a border alone (the pressed pill us
   action, never behind body copy. Placements: every centred page title (`PageIntro
 background`: Books `characters`, Store `skyline`, Contact `cliffs`, the excerpt `city`,
   checkout success `harren`, Podcast `cracks`), the Home praise band (`cracks`) and the
-  site-wide newsletter (`crystal`). **Every background gets the same overlay** (owner, Oct
-  2026): a 20% `ground` wash over the whole image, and over its bottom quarter a fade to
-  solid `ground` so it blends into the page below. `Section` draws both; there is no
+  site-wide newsletter (`crystal`). **Every background gets a 20% `ground` wash** over the whole
+  image (owner, Oct 2026); page titles alone also fade their bottom quarter to solid
+  `ground` (`Section fade`) so they blend into the page below. there is no
   per-section scrim. **Never put a radial-gradient oval or dark pool behind text** (owner,
   Oct 2026: "They DO NOT look good"). The
   newsletter text sits in its own `bg-ground/90` box. `<Section background={BACKGROUNDS.name}
