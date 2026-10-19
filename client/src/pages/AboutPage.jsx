@@ -6,6 +6,7 @@ import FramedImage from "../components/ui/FramedImage";
 import PullQuote from "../components/ui/PullQuote";
 import SITE_INFO from "../SITE_INFO";
 import authorPic from "../assets/author-pic.jpeg";
+import { EVENTS, track } from "../lib/analytics.js";
 
 const STATS = [
   { label: "Location", value: SITE_INFO.location },
@@ -119,7 +120,13 @@ const AboutPage = () => {
             </p>
             <div className="flex flex-wrap gap-3.5">
               <Button to="/contact">Get in touch</Button>
-              <Button variant="secondary" href={SITE_INFO.pressKit}>
+              <Button
+                variant="secondary"
+                href={SITE_INFO.pressKit}
+                onClick={() =>
+                  track(EVENTS.PRESS_KIT_CLICK, { placement: "about" })
+                }
+              >
                 Press kit
               </Button>
             </div>

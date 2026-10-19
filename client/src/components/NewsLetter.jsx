@@ -43,6 +43,7 @@ const NewsLetter = () => {
         <p className="max-w-2xl text-lede text-muted">{description}</p>
         <div className="mt-2 flex w-full max-w-md flex-col items-center gap-4">
           <JoinCircleButton
+            placement="newsletter"
             id="subscribe-button"
             size="lg"
             block

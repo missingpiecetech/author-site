@@ -114,7 +114,10 @@ const BooksPage = () => {
                 {/* Action Buttons */}
                 {book.status === BOOK_STATUS.RELEASED && (
                   <div className="pt-2">
-                    <RetailerLinks retailers={book.retailers ?? {}} />
+                    <RetailerLinks
+                      retailers={book.retailers ?? {}}
+                      placement="books"
+                    />
                   </div>
                 )}
                 {book.status === BOOK_STATUS.PRE_ORDER && (

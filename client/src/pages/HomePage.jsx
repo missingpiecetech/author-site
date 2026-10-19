@@ -14,6 +14,7 @@ import WritingDesk from "../components/WritingDesk";
 import InstagramFeed from "../components/instagram/InstagramFeed";
 import { EXCERPTS, hasExcerptText } from "../excerpts/index.js";
 import useHashScroll from "../hooks/useHashScroll";
+import { EVENTS, track } from "../lib/analytics.js";
 import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 
 const prefersReducedMotion = () =>
@@ -119,6 +120,12 @@ const HomePage = () => {
               <Button
                 href="https://youtube.com/@AuthorAdjacent"
                 variant="secondary"
+                onClick={() =>
+                  track(EVENTS.PODCAST_LINK_CLICK, {
+                    platform: "youtube",
+                    placement: "home",
+                  })
+                }
               >
                 Watch on YouTube
               </Button>

@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import SITE_INFO from "../SITE_INFO";
 import { BOOKS } from "../BOOK_DATA";
+import { EVENTS, track } from "../lib/analytics.js";
 
 const AMAZON = BOOKS.find((book) => book.slug === "crownfall")?.retailers
   ?.amazon;
@@ -33,6 +34,12 @@ const ShippingNotice = ({ className = "" }) => {
             href={AMAZON}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              track(EVENTS.RETAILER_CLICK, {
+                retailer: "amazon",
+                placement: "store_notice",
+              })
+            }
             className="text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
           >
             Amazon

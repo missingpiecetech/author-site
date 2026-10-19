@@ -8,7 +8,8 @@ import ShippingNotice from "../components/ShippingNotice";
 import CrownfallListing from "../components/store/CrownfallListing";
 import ProductCard from "../components/store/ProductCard";
 import Lightbox from "../components/store/Lightbox";
-import { partitionCatalog } from "../data/crownfallEditions";
+import { editionForItem, partitionCatalog } from "../data/crownfallEditions";
+import { EVENTS, track } from "../lib/analytics.js";
 
 const StorePage = () => {
   const { addItem } = useCart();
@@ -56,6 +57,13 @@ const StorePage = () => {
       title: product.title,
       price: product.price,
       image: product.featureImage,
+    });
+    const edition = editionForItem(product.id);
+    track(EVENTS.ADD_TO_CART, {
+      item_id: product.id,
+      format: edition?.format ?? null,
+      signed: edition ? edition.signing === "signed" : null,
+      quantity: 1,
     });
   };
 
