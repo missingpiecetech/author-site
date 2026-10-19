@@ -129,7 +129,7 @@ const Album = ({ post, isReducedMotion }) => {
 };
 
 /**
- * The open post. Phones and tablets: full screen, media centred on the ground,
+ * The open post. Phones and tablets: full screen, media centered on the ground,
  * the date, a two-line caption (a button that expands it in place) and the
  * Instagram link over a gradient at the foot. From lg: the media beside a
  * panel with the date, the full caption and the link.

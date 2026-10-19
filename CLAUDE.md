@@ -152,8 +152,23 @@ against the ground, so never show state with a border alone (the pressed pill us
   the page's h1, subtitle as hook, `shortBlurb` from `sm`, `RetailerLinks`) with the scroll
   cue at its foot; the praise band (every Crownfall quote, big-quote style); "Read an
   Excerpt" (`Excerpt`, from BOOK_DATA crownfall `excerpt` — hidden while `paragraphs` is
-  empty); the writing desk; then the book-tour image and Author Adjacent. No author-photo
+  empty); the writing desk; then the Instagram section and Author Adjacent. No author-photo
   hero.
+- **Instagram** (`components/instagram/InstagramFeed`, Home only): eyebrow "Latest Updates",
+  h2 "Follow" + gold "Along", then Michael's posts as a masonry (owner: "masonry with no
+  captions"): CSS columns, 2 on phones and 3 from `lg`, every tile at Behold's own
+  width/height (never cropped), srcset from `small`/`medium`/`large`, lazy-loaded, a small
+  corner icon on video and album tiles, no filigree (repeating tiles). Under it a primary
+  "Follow @<username>" (new tab). A tile opens `InstagramViewer`, a `<dialog>` opened with
+  `showModal` (Escape, the close button or a backdrop click closes it; focus returns to the
+  tile). From `lg`: media at its own aspect (max 85vh) beside a panel with the date, the
+  full caption (line breaks kept) and a secondary "View on Instagram". Below `lg`: full
+  screen, media centered on `ground`, close top-right, and over a gradient at the foot the
+  date, the caption clamped to two lines (a button with `aria-expanded` that expands it in
+  place to a scrollable panel up to 60% of the viewport) and the link. Videos play muted
+  and looped (autoplay unless reduced motion); albums are a scroll-snap strip with
+  previous/next and "n / total". The section renders nothing while loading, on error or
+  with no posts.
 - **Excerpt page** (`/books/crownfall/excerpt`, `ExcerptPage`, text from
   `src/excerpts/crownfall.js`): a `PageIntro` whose eyebrow carries the count ("Read an
   Excerpt · The first three chapters") over the title, with no lede; then one chapter at a
@@ -207,7 +222,7 @@ scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fil
   letters.
 - Sections with horizontal entrance animations use `<Section clipX>` (`overflow-x-clip`).
 - Every layout must work at 390px with no horizontal scroll.
-- About will get an Instagram feed (separate work); there is no appearances list.
+- Instagram lives on Home (above); About has no feed and there is no appearances list.
 
 ### Building blocks
 
@@ -219,8 +234,10 @@ scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fil
   `lede`).
 - `src/components/`: `RetailerLinks` (`compact`), `ShippingNotice`, `JoinCircleButton`
   (opens the MailerLite popup), `WritingDesk` / `WorkProgress`, `home/BookHero`,
-  `home/Excerpt`, plus the restyled `Navigation`, `Footer`, `NewsLetter`,
+  `home/Excerpt`, `instagram/InstagramFeed` / `InstagramViewer`, plus the restyled `Navigation`, `Footer`, `NewsLetter`,
   `Socials`, `ShoppingCart`.
+- `src/hooks/useInstagramFeed.js`: React Query over `/api/instagram`, no retries (a failed
+  feed is not cached, so a retry would spend a Behold request).
 - `src/hooks/useHashScroll.js`: call it on pages with `#section` links (`/#crownfall`,
   `/books#<slug>`); the header skips scroll-to-top when the URL has a hash.
 - `src/SITE_INFO.js`: name, tagline, location, emails, press kit, newsletter form id and
@@ -230,7 +247,7 @@ scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fil
 
 Everything lives under `client/`. The repo root only has the README, DEPLOYMENT.md, `.nvmrc`,
 `.gitignore`, `.prettierignore` and `design/` (reference material that never ships: the
-filigree samples).
+filigree samples, the Instagram layout mockups).
 
 ```
 author-site/
@@ -239,14 +256,18 @@ author-site/
 ├── DEPLOYMENT.md             # Cloudflare Pages setup walkthrough
 └── client/                   # All app code lives here — run npm commands from this dir
     ├── index.html            # SPA shell; loads MailerLite snippet
-    ├── vite.config.js        # Registers createSquareApiPlugin for local /api/square
+    ├── vite.config.js        # Registers the Square and Instagram dev middleware
     ├── wrangler.toml         # Cloudflare Pages config (nodejs_compat)
     ├── .env.example          # SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_ENVIRONMENT
     ├── public/
     │   └── _redirects        # "/* /index.html 200" — SPA routing on Cloudflare
+    ├── shared/
+    │   └── instagramFeed.js      # Behold feed URL, fetch + trim; used by both /api/instagram
     ├── api/
-    │   └── squareApiPlugin.js    # Vite dev-server middleware for /api/square/*
+    │   ├── squareApiPlugin.js    # Vite dev-server middleware for /api/square/*
+    │   └── instagramApiPlugin.js # Dev twin of /api/instagram (1-hour in-memory cache)
     ├── functions/
+    │   ├── api/instagram.js      # GET /api/instagram (prod; 1-hour edge cache)
     │   └── api/square/           # Cloudflare Pages Functions (prod /api/square/*)
     │       ├── catalog.js        # GET  /api/square/catalog
     │       ├── checkout.js       # POST /api/square/checkout
@@ -274,21 +295,36 @@ author-site/
 
 Run from `client/`.
 
-| Command             | Purpose                                                                                   |
-| ------------------- | ----------------------------------------------------------------------------------------- |
-| `npm run dev`       | Vite dev server (default http://localhost:5173)                                           |
-| `npm run build`     | Production build to `client/dist/`                                                        |
-| `npm test`          | Unit, then e2e                                                                            |
-| `npm run test:unit` | Vitest: both checkout implementations, Square SDK mocked                                  |
-| `npm run test:e2e`  | Puppeteer: /store → cart → checkout, desktop + 390px, no horizontal scroll on every route |
-| `npm run preview`   | Serve the production build locally                                                        |
-| `npm run lint`      | ESLint                                                                                    |
+| Command             | Purpose                                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`       | Vite dev server (default http://localhost:5173)                                                                  |
+| `npm run build`     | Production build to `client/dist/`                                                                               |
+| `npm test`          | Unit, then e2e                                                                                                   |
+| `npm run test:unit` | Vitest: both checkout implementations (Square SDK mocked); Instagram trim and edge cache                         |
+| `npm run test:e2e`  | Puppeteer: /store → cart → checkout, Home Instagram viewer, desktop + 390px, no horizontal scroll on every route |
+| `npm run preview`   | Serve the production build locally                                                                               |
+| `npm run lint`      | ESLint                                                                                                           |
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
 each other or their frame's content, every ornament at the corners' scale, reduced-motion opacity,
 progress bars against their aria-valuenow, text contrast over background art, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`.
+
+## Instagram feed — `/api/instagram`
+
+Michael's posts come from his Behold JSON feed (`BEHOLD_FEED_URL` in
+`client/shared/instagramFeed.js`; public, not a secret). Behold's free plan gives 6 posts,
+refreshed daily, and **1,200 requests a month, counting every fetch of the feed URL**, so
+browsers never fetch it. `GET /api/instagram` fetches it server-side, trims it to the fields
+the site draws (`trimFeed`: username; each post's id, mediaType, mediaUrl, caption,
+prunedCaption, permalink, timestamp, `small`/`medium`/`large` sizes, and album children) and
+caches it for an hour: the Pages Function `client/functions/api/instagram.js` in the edge
+Cache API (`caches.default`, keyed on the path so a query string cannot bypass it), its dev
+twin `client/api/instagramApiPlugin.js` in memory. Both import the shared module, so the URL
+and trim cannot drift. A Behold failure answers 502 with an error naming the cause and is not
+cached. A VIDEO post's `mediaUrl` is the signed, expiring video file on Instagram's CDN; the
+hourly refetch keeps it fresh.
 
 ## Square API — Two Implementations, Same Routes
 
@@ -324,6 +360,12 @@ navigation or Square code.
   implementations (shipping fee, address prompt, line items) and fails if their
   `checkoutOptions` drift apart. The one known drift (`squareMarketingOptIn` in dev only) is
   listed in the test.
+- **Instagram** (`tests/unit/instagram.test.js`): the trim against the fixture, and the
+  Pages Function's edge cache (one Behold fetch per hour, query strings share the entry)
+  and 502, with `fetch` and `caches` mocked. `tests/e2e/instagram.e2e.test.js` drives Home
+  at desktop and 390px: one tile per post at the fixture's `medium` size, the video viewer
+  (`src`, poster, Instagram link), album slides and count, the phone caption's two-line
+  clamp and expand, Escape/close returning focus to the tile, and nothing rendered on a 502.
 - **E2E** (`tests/e2e/`): starts the real `vite` CLI on a free port with the `square` package
   swapped for an in-process stub (`support/register-square-stub.mjs`) — nothing reaches
   Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
@@ -331,6 +373,11 @@ navigation or Square code.
   checkout body and Square line item carry the right item/variation ID and price, plus the
   $5.99 shipping fee), and checks every route for horizontal scroll at 390px and, with
   `prefers-reduced-motion: reduce`, for content left at opacity 0 or still animating.
+  The harness sets `INSTAGRAM_FEED_FIXTURE` to `support/instagram-fixture.json` (built from
+  the live feed: IMAGE, VIDEO and CAROUSEL_ALBUM posts), so the dev twin serves it instead
+  of calling Behold, and its media URLs point at `/api/instagram/fixture-media/<w>x<h>.svg`
+  placeholders the twin draws. Nothing in the suite or `design-check` reaches Behold or
+  Instagram.
 - **Crownfall editions are mapped by Square item ID, never by name.** Square holds four
   separate items (signed/unsigned × hardcover/paperback); `src/data/crownfallEditions.js`
   maps each combination to its production and sandbox item IDs and exports
@@ -350,7 +397,10 @@ navigation or Square code.
   `checkout-error`, `mobile-menu-toggle`, `mobile-cart-button`; on the excerpt,
   `excerpt-chapter` (each tab panel; inactive ones `hidden`), `excerpt-chapter-nav` (the
   tablist), `excerpt-tab-1`…`excerpt-tab-3` (by chapter number), `excerpt-next`,
-  `excerpt-buy` (the "Buy the book" beside it), `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`.
+  `excerpt-buy` (the "Buy the book" beside it), `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`; Home's Instagram section:
+  `instagram-feed` (the section), `instagram-tile` (each), `instagram-viewer` (the dialog),
+  `instagram-caption`, `instagram-link`, `instagram-video`, `instagram-close`,
+  `instagram-album-slide`, `instagram-album-count`, `instagram-album-next`.
   The excerpt e2e walks the tabs and checks every paragraph and italic of every chapter.
 
 ## Conventions
