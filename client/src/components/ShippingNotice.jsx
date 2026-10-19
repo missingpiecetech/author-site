@@ -27,8 +27,8 @@ const ShippingNotice = ({ className = "" }) => {
         aria-hidden="true"
       />
       <p>
-        <strong className="font-medium">Note:</strong> Products are currently
-        only available for shipping within the USA. Available globally on{" "}
+        Books purchased through this site are only available for shipping within
+        the USA. Available globally on{" "}
         {AMAZON ? (
           <a
             href={AMAZON}

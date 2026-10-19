@@ -31,12 +31,9 @@
   }
 }
 
-/* A soft dark glow hugging text set on background art: no offset, so it reads
-   as a slight darkening right behind the letters rather than a shadow. */
+/* Text set on background art (owner's value). */
 @utility text-halo {
-  text-shadow:
-    0 0 6px rgb(18 16 23 / 0.55),
-    0 0 18px rgb(18 16 23 / 0.35);
+  text-shadow: 0 2px 8px #000000;
 }
 
 @layer components {
