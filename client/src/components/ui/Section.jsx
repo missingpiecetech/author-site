@@ -12,7 +12,7 @@ const SPACING = {
  *   footer carry a hairline, and no divider marks a seam between sections).
  * - `clipX`: overflow-x-clip, for sections with horizontal entrance animations.
  * - `spacing`: "default" | "compact" | "none".
- * - `contained`: wraps children in a centred max-w-7xl column (default true).
+ * - `contained`: wraps children in a centred max-w-6xl column (default true).
  * - `background`: section art from `assets/backgrounds` (`{ src, srcSet,
  *   position }`), drawn decoratively behind the content and cropped to fill.
  *   It loads at the width the screen needs: lazily, or at once with
@@ -77,7 +77,7 @@ const Section = ({
         </>
       )}
       {contained ? (
-        <div className={`mx-auto max-w-7xl ${innerClassName}`}>{children}</div>
+        <div className={`mx-auto max-w-6xl ${innerClassName}`}>{children}</div>
       ) : (
         children
       )}

@@ -71,7 +71,7 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Eyebrow:** small uppercase gold label above section headings, using the page's existing
   labels.
 - **Sections** alternate `ground` and `band`; 80px side padding on desktop, 24px on mobile,
-  content in a `max-w-7xl` column. **No hairline borders on sections** (owner, Oct 2026):
+  content in a `max-w-6xl` column. **No hairline borders on sections** (owner, Oct 2026):
   bands and plain sections have no 1px edges. Only the header's bottom edge and the
   footer's top edge carry a `rule` hairline. Row separators inside lists (`RuleList`, the
   cart, Books' release-date grid, Contact's two response columns) are content, not section

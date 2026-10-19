@@ -48,7 +48,7 @@ const linkClass = "text-subtle transition-colors hover:text-accent-hover";
 
 const Footer = () => (
   <footer className="border-t border-rule px-6 pt-8 pb-8 text-[0.9375rem] text-subtle lg:px-24 xl:px-28 lg:pt-14 lg:pb-12">
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+    <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
       <div className="flex flex-col gap-2.5">
         <span className="font-display text-[1.5rem] text-cream">
           {SITE_INFO.name}
