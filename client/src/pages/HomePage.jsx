@@ -64,7 +64,7 @@ const HomePage = () => {
           background={BACKGROUNDS.cracks}
           spacing="none"
           className="py-9 lg:py-16"
-          innerClassName="flex flex-col gap-12 lg:gap-16"
+          innerClassName="flex flex-col gap-4 lg:gap-8"
         >
           {FEATURED.praise.map((praise, index) => (
             <Fragment key={praise.name}>
