@@ -160,7 +160,16 @@ const ViewerContent = ({ post, onRequestClose }) => {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-ground via-ground/85 to-transparent px-5 pt-16 pb-[max(1.25rem,env(safe-area-inset-bottom))] lg:pointer-events-auto lg:relative lg:inset-auto lg:w-96 lg:shrink-0 lg:bg-none lg:p-0">
+      {/* Collapsed, a gradient keeps the two caption lines legible over the
+          media; expanded, the full text gets a near-solid panel, since a
+          gradient leaves its upper lines on the bright media. */}
+      <div
+        className={`pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] lg:pointer-events-auto lg:relative lg:inset-auto lg:w-96 lg:shrink-0 lg:bg-none lg:p-0 ${
+          isExpanded
+            ? "bg-ground/95 pt-5"
+            : "bg-linear-to-t from-ground via-ground/85 to-transparent pt-16"
+        }`}
+      >
         <div className="pointer-events-auto flex flex-col items-start gap-3 lg:absolute lg:inset-0 lg:gap-5 lg:p-8 lg:pt-16">
           <time
             dateTime={post.timestamp}
