@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { BOOKS } from "../BOOK_DATA";
@@ -11,6 +11,9 @@ import RetailerLinks from "../components/RetailerLinks";
 import Prose from "../components/excerpt/Prose";
 import ChapterTabs from "../components/excerpt/ChapterTabs";
 import useHashScroll from "../hooks/useHashScroll";
+import useExcerptReading from "../hooks/useExcerptReading";
+import { EVENTS, track } from "../lib/analytics.js";
+import { blockIndexes, copyCredit, withCredit } from "../lib/excerptReading.js";
 import {
   EXCERPTS,
   chapterId,
@@ -55,15 +58,55 @@ const ChapterHeading = ({ chapter }) => {
   );
 };
 
+// The paragraph a selection starts in, or the first one it covers.
+const paragraphOfRange = (panel, range) => {
+  const start = range.startContainer;
+  const element =
+    start.nodeType === Node.ELEMENT_NODE ? start : start.parentElement;
+  const paragraph =
+    element?.closest("[data-paragraph]") ??
+    [...panel.querySelectorAll("[data-paragraph]")].find((p) =>
+      range.intersectsNode(p),
+    );
+  return paragraph ? Number(paragraph.dataset.paragraph) : 0;
+};
+
 /**
  * One chapter's tab panel (`hidden` unless selected): heading, text and, when
  * there is a `next` chapter, a button named for it ("Chapter 2: Jelert") and a
- * secondary "Buy the book" at its foot.
+ * secondary "Buy the book" at its foot. Measures reading depth while
+ * selected, and adds `credit` to whatever is copied from it (never blocking
+ * the copy).
  */
-const Chapter = ({ chapter, isSelected, isTabbed, next, onNext }) => {
+const Chapter = ({ chapter, isSelected, isTabbed, next, onNext, credit }) => {
   const id = chapterId(chapter);
+  const panelRef = useRef(null);
+  const tracker = useExcerptReading({ panelRef, chapter, isSelected });
+
+  const handleCopy = (event) => {
+    const selection = window.getSelection();
+    const text = selection?.toString() ?? "";
+    if (!text.trim() || !selection.rangeCount || !event.clipboardData) return;
+    const range = selection.getRangeAt(0);
+    const holder = document.createElement("div");
+    holder.append(range.cloneContents());
+    const copied = withCredit({ text, html: holder.innerHTML }, credit);
+    event.clipboardData.setData("text/plain", copied.text);
+    event.clipboardData.setData("text/html", copied.html);
+    event.preventDefault();
+    const blocks = tracker.current?.blocks;
+    const paragraph = paragraphOfRange(panelRef.current, range);
+    track(EVENTS.EXCERPT_COPY, {
+      chapter: chapter.number,
+      block: blocks ? blockIndexes(blocks)[paragraph] + 1 : 1,
+      characters: text.length,
+    });
+  };
+
   return (
     <section
+      ref={panelRef}
+      onCopy={handleCopy}
       id={id}
       {...(isTabbed
         ? {
@@ -84,6 +127,7 @@ const Chapter = ({ chapter, isSelected, isTabbed, next, onNext }) => {
           ) : (
             <Prose
               key={index}
+              data-paragraph={index}
               text={paragraph}
               className={index === 0 ? DROP_CAP : ""}
             />
@@ -96,7 +140,21 @@ const Chapter = ({ chapter, isSelected, isTabbed, next, onNext }) => {
             <span className="sr-only">Next: </span>
             {chapterTitle(next)}
           </Button>
-          <Button to="/store" variant="secondary" data-testid="excerpt-buy">
+          <Button
+            to="/store"
+            variant="secondary"
+            data-testid="excerpt-buy"
+            onClick={() => {
+              track(EVENTS.EXCERPT_BUY_CLICK, {
+                chapter: chapter.number,
+                retailer: "direct",
+              });
+              track(EVENTS.RETAILER_CLICK, {
+                retailer: "direct",
+                placement: `excerpt_chapter_${chapter.number}`,
+              });
+            }}
+          >
             Buy the book
           </Button>
         </div>
@@ -163,7 +221,18 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
     const panel = document.getElementById(chapterId(chapters[next]));
     panel.focus({ preventScroll: true });
     panel.scrollIntoView({ block: "start", behavior: "instant" });
+    track(EVENTS.EXCERPT_NEXT_CLICK, {
+      from: chapters[selected].number,
+      to: chapters[next].number,
+    });
   };
+
+  const credit = useMemo(
+    () =>
+      copyCredit({ title, author: SITE_INFO.name, domain: SITE_INFO.domain }),
+    [title],
+  );
+  const lastChapter = chapters.at(-1);
 
   useEffect(() => {
     const previous = document.title;
@@ -204,6 +273,7 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
                   isTabbed={isTabbed}
                   next={chapters[index + 1]}
                   onNext={handleNext}
+                  credit={credit}
                 />
               ))}
             </article>
@@ -221,6 +291,13 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
               <RetailerLinks
                 retailers={book?.retailers}
                 directLabel="Buy the book"
+                placement={`excerpt_chapter_${lastChapter.number}`}
+                onRetailerClick={(retailer) =>
+                  track(EVENTS.EXCERPT_BUY_CLICK, {
+                    chapter: lastChapter.number,
+                    retailer,
+                  })
+                }
                 align="center"
                 className="mt-2 w-full"
               />

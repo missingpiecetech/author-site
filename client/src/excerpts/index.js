@@ -82,7 +82,8 @@ export const plainText = (text) =>
     .map((segment) => segment.text)
     .join("");
 
-const wordCount = (text) => plainText(text).split(/\s+/).filter(Boolean).length;
+export const wordCount = (text) =>
+  plainText(text).split(/\s+/).filter(Boolean).length;
 
 // Home's opening: whole paragraphs from the start of the first chapter until
 // at least this many words (one or two paragraphs of a typical opening), never

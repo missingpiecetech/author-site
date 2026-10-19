@@ -3,6 +3,8 @@ const SITE_INFO = {
   name: "Michael Vadney",
   tagline: "Author & Podcaster",
   location: "Fort Worth, Texas",
+  // The site's own domain, as written in the excerpt copy credit.
+  domain: "michaelvadney.com",
   emails: {
     business: "mjvadney@gmail.com",
     podcast: "AuthorAdjacent@gmail.com",

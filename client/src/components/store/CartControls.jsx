@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import useCart from "../../hooks/useCart";
 import Button from "../ui/Button";
+import { EVENTS, track } from "../../lib/analytics.js";
 
 const STEP =
   "flex h-11 w-11 items-center justify-center rounded-btn border text-lg transition-colors cursor-pointer";
@@ -25,6 +26,23 @@ const CartControls = ({
   const quantity =
     cartItems.find((item) => item.id === product.id)?.quantity || 0;
 
+  const changeQuantity = (next) => {
+    updateQuantity(product.id, next);
+    track(EVENTS.CART_QUANTITY_CHANGED, {
+      item_id: product.id,
+      quantity: Math.max(next, 0),
+      placement: "store",
+    });
+  };
+
+  const openCart = () => {
+    setCartOpen(true);
+    track(EVENTS.CART_OPENED, {
+      placement: "store",
+      item_count: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    });
+  };
+
   if (quantity === 0) {
     return (
       <Button
@@ -44,7 +62,7 @@ const CartControls = ({
       <button
         type="button"
         data-testid="qty-decrease"
-        onClick={() => updateQuantity(product.id, quantity - 1)}
+        onClick={() => changeQuantity(quantity - 1)}
         className={`${STEP} border-outline text-cream hover:border-accent hover:text-accent-hover`}
         aria-label={`Decrease quantity of ${product.title}`}
       >
@@ -59,7 +77,7 @@ const CartControls = ({
       <button
         type="button"
         data-testid="qty-increase"
-        onClick={() => updateQuantity(product.id, quantity + 1)}
+        onClick={() => changeQuantity(quantity + 1)}
         className={`${STEP} border-accent bg-accent text-ground hover:border-accent-hover hover:bg-accent-hover`}
         aria-label={`Increase quantity of ${product.title}`}
       >
@@ -67,7 +85,7 @@ const CartControls = ({
       </button>
       <button
         type="button"
-        onClick={() => setCartOpen(true)}
+        onClick={openCart}
         className={`${STEP} ml-1 border-outline text-accent hover:border-accent hover:text-accent-hover`}
         aria-label="Go to cart"
         title="Go to cart"

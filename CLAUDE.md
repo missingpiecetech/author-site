@@ -155,8 +155,9 @@ against the ground, so never show state with a border alone (the pressed pill us
   empty); the writing desk; then the book-tour image and Author Adjacent. No author-photo
   hero.
 - **Excerpt page** (`/books/crownfall/excerpt`, `ExcerptPage`, text from
-  `src/excerpts/crownfall.js`): a `PageIntro` whose eyebrow carries the count ("Read an
-  Excerpt · The first three chapters") over the title, with no lede; then one chapter at a
+  `src/excerpts/crownfall.js`): a `PageIntro` whose eyebrow is the count alone ("The first
+  three chapters"; "Read an Excerpt" only in the coming-soon state) over the title, with no
+  lede; then one chapter at a
   time behind `components/excerpt/ChapterTabs` (WAI-ARIA tabs: automatic activation, roving
   tabindex, Left/Right/Home/End; the selected tab is the gold fill, never a border alone;
   "Chapter 1: Kyndel" from `sm`, "Ch. 1" over "Kyndel" on phones). Each chapter keeps its
@@ -164,8 +165,7 @@ against the ground, so never show state with a border alone (the pressed pill us
   it; no hash is chapter 1) and tab changes `replaceState` it, so history gets no entries.
   Every chapter but the last ends in a primary button named for the next chapter's heading
   ("Chapter 2: Jelert", with a visually hidden "Next: " prefix) that shows the next tab,
-  focuses its panel and scrolls its top under the header (smooth only without reduced
-  motion), beside a secondary "Buy the book" (`/store`; stacked full width on phones).
+  focuses its panel and jumps (never smooth-scrolls) its top under the header, beside a secondary "Buy the book" (`/store`; stacked full width on phones).
   After the last chapter, and only then, the buy band ("Keep reading
   Crownfall" + `RetailerLinks`, no eyebrow) shows on `band`, a step lighter than `ground`.
 - **Writing desk** ("From the Writing Desk", `WritingDesk`): one `WorkProgress` row per entry
@@ -223,8 +223,18 @@ scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fil
   `Socials`, `ShoppingCart`.
 - `src/hooks/useHashScroll.js`: call it on pages with `#section` links (`/#crownfall`,
   `/books#<slug>`); the header skips scroll-to-top when the URL has a hash.
-- `src/SITE_INFO.js`: name, tagline, location, emails, press kit, newsletter form id and
+- `src/SITE_INFO.js`: name, tagline, location, domain, emails, press kit, newsletter form id and
   `shipping.usOnly` (the switch that shows `ShippingNotice`).
+
+## Analytics
+
+Minilytics, loaded only by production builds (`client/.env.production` +
+`client/vite/minilyticsPlugin.js`; dev and tests load nothing, branch previews track).
+Every event goes through `track()` and the `EVENTS` map in `src/lib/analytics.js`; excerpt
+reading depth lives in `src/lib/excerptReading.js`. **`docs/ANALYTICS.md`** has the rules
+and one row per event (where it fires, its properties): add a row with every new event.
+`node scripts/analytics-debug.mjs` shows what the real tracker sends from a production
+build.
 
 ## Repo Layout
 
@@ -240,6 +250,8 @@ author-site/
 └── client/                   # All app code lives here — run npm commands from this dir
     ├── index.html            # SPA shell; loads MailerLite snippet
     ├── vite.config.js        # Registers createSquareApiPlugin for local /api/square
+    ├── vite/minilyticsPlugin.js  # Adds the Minilytics scripts when PUBLIC_MINILYTICS_* are set
+    ├── .env.production       # PUBLIC_MINILYTICS_* (committed; nothing secret)
     ├── wrangler.toml         # Cloudflare Pages config (nodejs_compat)
     ├── .env.example          # SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_ENVIRONMENT
     ├── public/
@@ -262,10 +274,12 @@ author-site/
         ├── assets/               # Author photos, book covers, podcast logos
         ├── components/           # Layout, Navigation, Footer, ShoppingCart, ...
         │   └── ui/               # Section, Eyebrow, Button, FramedImage, PullQuote, ...
+        ├── lib/                  # analytics.js (track, EVENTS), excerptReading.js
         ├── pages/                # One file per route: / /books /podcast /about /store
         │                         #   /contact /checkout/success
         └── hooks/
             ├── useCart.js         # Zustand cart store (persisted)
+            ├── useExcerptReading.js # Excerpt reading depth on the selected chapter
             ├── useHashScroll.js   # Scroll to location.hash after render
             └── useSquare.js       # Fetches /api/square/* + maps catalog → products
 ```

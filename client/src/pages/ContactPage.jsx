@@ -25,6 +25,7 @@ const ContactPage = () => {
       <Section>
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
           <ContactChannel
+            channel="business"
             title="Business Inquiries"
             lede="Professional opportunities and collaborations"
             icon={<GiSuitcase />}
@@ -40,6 +41,7 @@ const ContactPage = () => {
             ]}
           />
           <ContactChannel
+            channel="podcast"
             title="Podcast Topics"
             lede="Ideas, feedback, and guest suggestions"
             icon={<GiOldMicrophone />}

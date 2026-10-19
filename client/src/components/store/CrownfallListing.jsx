@@ -12,6 +12,7 @@ import {
   isOptionAvailable,
   selectOption,
 } from "../../data/crownfallEditions";
+import { EVENTS, track } from "../../lib/analytics.js";
 
 const CROWNFALL = BOOKS.find((book) => book.slug === "crownfall");
 
@@ -60,8 +61,16 @@ const CrownfallListing = ({ editions, onAddToCart, onEnlarge }) => {
   const product = selection && editions[editionKey(selection)];
   if (!product) return null;
 
-  const pick = (axis, value) =>
-    setSelection((current) => selectOption(editions, current, axis, value));
+  const pick = (axis, value) => {
+    const next = selectOption(editions, selection, axis, value);
+    if (next === selection) return;
+    setSelection(next);
+    track(EVENTS.EDITION_SELECTED, {
+      axis,
+      format: next.format,
+      signed: next.signing === "signed",
+    });
+  };
 
   const amazon = CROWNFALL?.retailers?.amazon;
 
@@ -118,6 +127,12 @@ const CrownfallListing = ({ editions, onAddToCart, onEnlarge }) => {
               href={amazon}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                track(EVENTS.RETAILER_CLICK, {
+                  retailer: "amazon",
+                  placement: "store_ebook",
+                })
+              }
               className="text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
             >
               Amazon

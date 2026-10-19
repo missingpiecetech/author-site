@@ -5,6 +5,7 @@ import useSquare from "../hooks/useSquare";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Button from "./ui/Button";
+import { EVENTS, track } from "../lib/analytics.js";
 
 // Shopping-bag outline from the mockup header.
 export const CartIcon = ({ className = "" }) => (
@@ -38,6 +39,25 @@ const ShoppingCart = () => {
     0,
   );
 
+  const changeQuantity = (item, quantity) => {
+    updateQuantity(item.id, quantity);
+    track(EVENTS.CART_QUANTITY_CHANGED, {
+      item_id: item.id,
+      quantity: Math.max(quantity, 0),
+      placement: "cart",
+    });
+  };
+
+  const toggleCart = () => {
+    setOpen(!open);
+    if (!open) {
+      track(EVENTS.CART_OPENED, {
+        placement: "header",
+        item_count: totalItems(),
+      });
+    }
+  };
+
   const onCheckout = async () => {
     if (!cartItems.length || isCheckingOut) {
       return;
@@ -48,8 +68,18 @@ const ShoppingCart = () => {
 
     try {
       const checkoutUrl = await createCheckoutLink(cartItems);
+      track(EVENTS.CHECKOUT_STARTED, {
+        item_count: totalItems(),
+        subtotal_cents: cartItems.reduce(
+          (sum, item) => sum + Math.round(item.price * 100) * item.quantity,
+          0,
+        ),
+      });
       window.location.href = checkoutUrl;
     } catch (error) {
+      track(EVENTS.CHECKOUT_ERROR, {
+        reason: error instanceof TypeError ? "network" : "server",
+      });
       setCheckoutError(error.message || "Unable to start checkout.");
       setIsCheckingOut(false);
     }
@@ -134,7 +164,7 @@ const ShoppingCart = () => {
                               <button
                                 data-testid="qty-decrease"
                                 onClick={() =>
-                                  updateQuantity(item.id, item.quantity - 1)
+                                  changeQuantity(item, item.quantity - 1)
                                 }
                                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-btn border border-outline text-cream transition-colors hover:border-accent"
                                 aria-label={`Remove ${item.name} from cart`}
@@ -161,7 +191,7 @@ const ShoppingCart = () => {
                               <button
                                 data-testid="qty-increase"
                                 onClick={() =>
-                                  updateQuantity(item.id, item.quantity + 1)
+                                  changeQuantity(item, item.quantity + 1)
                                 }
                                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-btn border border-outline text-cream transition-colors hover:border-accent"
                                 aria-label={`Increase quantity of ${item.name}`}
@@ -208,7 +238,7 @@ const ShoppingCart = () => {
       )}
       <button
         data-testid="cart-toggle"
-        onClick={() => setOpen(!open)}
+        onClick={toggleCart}
         className={`hidden md:inline-flex relative h-11 w-11 rounded-btn border transition-colors duration-150 cursor-pointer items-center justify-center ${
           open
             ? "bg-accent text-ground border-accent"
