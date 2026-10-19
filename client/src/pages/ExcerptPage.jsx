@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { BOOKS } from "../BOOK_DATA";
 import Section from "../components/ui/Section";
 import PageIntro from "../components/ui/PageIntro";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 import Button from "../components/ui/Button";
 import { FiligreeDivider } from "../components/ui/Filigree";
 import RetailerLinks from "../components/RetailerLinks";
@@ -244,6 +245,7 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
   return (
     <div className="bg-ground">
       <PageIntro
+        background={BACKGROUNDS.city}
         eyebrow={chapters.length ? label : "Read an Excerpt"}
         title={title}
       />

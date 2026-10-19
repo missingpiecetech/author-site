@@ -29,7 +29,7 @@ const WRITING_DESK = [
     percent: 100,
   },
   {
-    title: "Tempest (working title)",
+    title: "Project: Tempest",
     type: "Short Story",
     status: "First draft",
     percent: 40,

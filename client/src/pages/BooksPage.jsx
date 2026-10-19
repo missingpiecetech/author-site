@@ -1,6 +1,7 @@
 import { BOOKS, BOOK_STATUS } from "../BOOK_DATA";
 import Section from "../components/ui/Section";
 import PageIntro from "../components/ui/PageIntro";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 import Eyebrow from "../components/ui/Eyebrow";
 import Button from "../components/ui/Button";
 import FramedImage from "../components/ui/FramedImage";
@@ -42,6 +43,7 @@ const BooksPage = () => {
     <div className="min-h-screen bg-ground">
       {/* Hero Section */}
       <PageIntro
+        background={BACKGROUNDS.characters}
         title="Books &"
         accent="Works"
         lede="Nobledark fantasy where the worlds are dark and the characters are hopeful."

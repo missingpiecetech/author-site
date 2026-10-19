@@ -6,6 +6,7 @@ import {
 } from "react-icons/gi";
 import Section from "../components/ui/Section";
 import PageIntro from "../components/ui/PageIntro";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 import ContactChannel from "../components/contact/ContactChannel";
 import SITE_INFO from "../SITE_INFO";
 
@@ -14,6 +15,7 @@ const ContactPage = () => {
     <div className="min-h-screen bg-ground">
       {/* Hero Section */}
       <PageIntro
+        background={BACKGROUNDS.cliffs}
         title="Get in"
         accent="Touch"
         lede="Whether it's business, podcast topics, or just to say hello—I'd love to hear from you"

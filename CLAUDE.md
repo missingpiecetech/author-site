@@ -186,13 +186,32 @@ against the ground, so never show state with a border alone (the pressed pill us
   `disable: () => matchMedia("(prefers-reduced-motion: reduce)").matches`; Tailwind animations
   use `motion-safe:`; no parallax under reduced motion. The e2e fails if any content is left
   at opacity 0 with reduced motion on.
+- **Background art** (Michael's paintings) goes behind short, large text and calls to
+  action, never behind body copy. Placements: every centred page title but Podcast's
+  (`PageIntro background`: Books `characters`, Store `skyline`, Contact `cliffs`, the
+  excerpt `city`, checkout success `harren`), the Home praise band (`cracks`) and the
+  site-wide newsletter (`crystal`). Podcast's title stays plain (it has a different feel).
+  **Keep washes light** (owner, Oct 2026: the earlier ones were "always too dark"): the
+  art carries a light wash over most of its area, and legibility comes from a darker pool
+  sized to the text instead: `PageIntro`'s default scrim is a radial pool around the title
+  block, each Home quote sits on its own soft radial pool over a 35% wash, and the
+  newsletter text sits in its `bg-ground/90` box over a 45% wash (heavier there so the
+  crystal does not run into the gold frame). `<Section background={BACKGROUNDS.name}
+scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fill
+  (`priority` loads it at once, for art at the top of a page; `fade` fades its foot into
+  `ground`). Art lives in `src/assets/backgrounds/` as two WebP widths made by
+  `node scripts/optimize-backgrounds.mjs <source-dir> <name>…` from
+  `<name>_background.png`; the full-size PNGs stay out of the repo. `index.js` registers
+  each with the object-position classes that keep its subject in view. `design-check`
+  fails text on art below WCAG contrast against the brightest rendered pixel next to its
+  letters.
 - Sections with horizontal entrance animations use `<Section clipX>` (`overflow-x-clip`).
 - Every layout must work at 390px with no horizontal scroll.
 - About will get an Instagram feed (separate work); there is no appearances list.
 
 ### Building blocks
 
-- `src/components/ui/`: `Section` (`band`, `clipX`, `spacing`),
+- `src/components/ui/`: `Section` (`band`, `clipX`, `spacing`, `background`, `scrim`),
   `FiligreeCorners` / `FiligreeDivider` (`Filigree.jsx`; artwork in `filigree/`), `Eyebrow`, `Button`
   (`variant` primary/secondary/pill, `size` lg/md/sm, `to`/`href`, `pressed`, `block`),
   `FramedImage` (`aspect`, `placeholder`, `filigree`), `PullQuote` (`quote`, `name`, `credit`),
@@ -282,7 +301,7 @@ Run from `client/`.
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
 each other or their frame's content, every ornament at the corners' scale, reduced-motion opacity,
-progress bars against their aria-valuenow, the Home scroll cue's geometry, and (with
+progress bars against their aria-valuenow, text contrast over background art, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`.
 
 ## Square API — Two Implementations, Same Routes
