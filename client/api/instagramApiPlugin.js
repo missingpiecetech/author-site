@@ -1,6 +1,6 @@
 // Vite dev-server twin of functions/api/instagram.js: GET /api/instagram
 // fetches the Behold feed through the same shared module and keeps it in
-// memory for an hour, so `npm run dev` spends Behold's allowance as sparingly
+// memory for 12 hours, so `npm run dev` spends Behold's allowance as sparingly
 // as production does.
 //
 // Test-only: when INSTAGRAM_FEED_FIXTURE names a Behold-shaped JSON file (the

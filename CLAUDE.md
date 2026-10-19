@@ -265,9 +265,9 @@ author-site/
     │   └── instagramFeed.js      # Behold feed URL, fetch + trim; used by both /api/instagram
     ├── api/
     │   ├── squareApiPlugin.js    # Vite dev-server middleware for /api/square/*
-    │   └── instagramApiPlugin.js # Dev twin of /api/instagram (1-hour in-memory cache)
+    │   └── instagramApiPlugin.js # Dev twin of /api/instagram (12-hour in-memory cache)
     ├── functions/
-    │   ├── api/instagram.js      # GET /api/instagram (prod; 1-hour edge cache)
+    │   ├── api/instagram.js      # GET /api/instagram (prod; 12-hour edge cache)
     │   └── api/square/           # Cloudflare Pages Functions (prod /api/square/*)
     │       ├── catalog.js        # GET  /api/square/catalog
     │       ├── checkout.js       # POST /api/square/checkout
@@ -319,12 +319,13 @@ refreshed daily, and **1,200 requests a month, counting every fetch of the feed 
 browsers never fetch it. `GET /api/instagram` fetches it server-side, trims it to the fields
 the site draws (`trimFeed`: username; each post's id, mediaType, mediaUrl, caption,
 prunedCaption, permalink, timestamp, `small`/`medium`/`large` sizes, and album children) and
-caches it for an hour: the Pages Function `client/functions/api/instagram.js` in the edge
+caches it for 12 hours (the edge cache is per data center, so each one refetches on its
+own; Behold only refreshes daily): the Pages Function `client/functions/api/instagram.js` in the edge
 Cache API (`caches.default`, keyed on the path so a query string cannot bypass it), its dev
 twin `client/api/instagramApiPlugin.js` in memory. Both import the shared module, so the URL
 and trim cannot drift. A Behold failure answers 502 with an error naming the cause and is not
 cached. A VIDEO post's `mediaUrl` is the signed, expiring video file on Instagram's CDN; the
-hourly refetch keeps it fresh.
+12-hour refetch keeps it fresh.
 
 ## Square API — Two Implementations, Same Routes
 
@@ -361,7 +362,7 @@ navigation or Square code.
   `checkoutOptions` drift apart. The one known drift (`squareMarketingOptIn` in dev only) is
   listed in the test.
 - **Instagram** (`tests/unit/instagram.test.js`): the trim against the fixture, and the
-  Pages Function's edge cache (one Behold fetch per hour, query strings share the entry)
+  Pages Function's edge cache (one Behold fetch per 12 hours, query strings share the entry)
   and 502, with `fetch` and `caches` mocked. `tests/e2e/instagram.e2e.test.js` drives Home
   at desktop and 390px: one tile per post at the fixture's `medium` size, the video viewer
   (`src`, poster, Instagram link), album slides and count, the phone caption's two-line

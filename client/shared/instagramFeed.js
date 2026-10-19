@@ -7,7 +7,9 @@
 // servers fetch it here and cache the result for FEED_CACHE_SECONDS.
 
 export const BEHOLD_FEED_URL = "https://feeds.behold.so/ZFyK3XHe1WgVNbaf3m47";
-export const FEED_CACHE_SECONDS = 60 * 60;
+// Twelve hours: the edge cache is per Cloudflare data center, so each one
+// visitors pass through refetches on its own; Behold only refreshes daily.
+export const FEED_CACHE_SECONDS = 12 * 60 * 60;
 
 const SIZE_NAMES = ["small", "medium", "large"];
 

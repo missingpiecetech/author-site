@@ -153,13 +153,13 @@ describe("GET /api/instagram (Pages Function)", () => {
     vi.unstubAllGlobals();
   });
 
-  it("fetches Behold once, then serves the edge cache for an hour", async () => {
+  it("fetches Behold once, then serves the edge cache for 12 hours", async () => {
     const first = await call();
     expect(first.status).toBe(200);
     expect(first.headers.get("Cache-Control")).toBe(
       `public, max-age=${FEED_CACHE_SECONDS}`,
     );
-    expect(FEED_CACHE_SECONDS).toBe(3600);
+    expect(FEED_CACHE_SECONDS).toBe(12 * 3600);
     expect(await first.json()).toEqual(trimFeed(FIXTURE));
 
     const second = await call("/api/instagram?bust=1");

@@ -1,5 +1,5 @@
 // GET /api/instagram: Michael's Instagram posts from Behold, trimmed to the
-// fields the site draws. Cached at the edge (Cache API) for an hour so visitors
+// fields the site draws. Cached at the edge (Cache API) for 12 hours so visitors
 // never spend Behold's monthly request allowance; see shared/instagramFeed.js.
 // The dev-server twin is api/instagramApiPlugin.js.
 
