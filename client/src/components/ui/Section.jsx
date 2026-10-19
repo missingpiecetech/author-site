@@ -17,10 +17,9 @@ const SPACING = {
  *   position }`), drawn decoratively behind the content and cropped to fill.
  *   It loads at the width the screen needs: lazily, or at once with
  *   `priority` (art at the top of a page).
- * - `scrim`: classes for the dark wash over the art that keeps the text
- *   legible (default `bg-ground/60`; a gradient works too).
- * - `fade`: also fades the art's lower half into `ground`, for a section
- *   followed by plain ground (page titles), so the art has no hard bottom edge.
+ * - Every background gets the same treatment (owner, Oct 2026): a 20% `ground`
+ *   wash over the whole art, and over its bottom quarter a fade to solid
+ *   `ground`, so it blends into the page below.
  */
 const Section = ({
   as = "section",
@@ -31,8 +30,6 @@ const Section = ({
   className = "",
   innerClassName = "",
   background,
-  scrim = "bg-ground/60",
-  fade = false,
   priority = false,
   children,
   ...rest
@@ -67,14 +64,12 @@ const Section = ({
           />
           <div
             aria-hidden="true"
-            className={`absolute inset-0 -z-10 ${scrim}`}
+            className="absolute inset-0 -z-10 bg-ground/20"
           />
-          {fade && (
-            <div
-              aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-linear-to-b from-transparent to-ground"
-            />
-          )}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 -z-10 h-1/4 bg-linear-to-b from-transparent to-ground"
+          />
         </>
       )}
       {contained ? (

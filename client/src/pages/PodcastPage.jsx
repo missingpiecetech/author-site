@@ -4,6 +4,7 @@ import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faYoutube, faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import authorAdjacentLogo from "../assets/logo_no_text.png";
 import PageIntro from "../components/ui/PageIntro";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
 import Section from "../components/ui/Section";
 import FramedImage from "../components/ui/FramedImage";
 import { EVENTS, track } from "../lib/analytics.js";
@@ -34,6 +35,7 @@ const PodcastPage = () => {
   return (
     <>
       <PageIntro
+        background={BACKGROUNDS.cracks}
         title="Author"
         accent="Adjacent"
         lede="A show about the journey from hobbyist writer to professional author"

@@ -9,10 +9,9 @@ import { FiligreeDivider } from "./Filigree";
  *
  * - `children`: anything extra under the lede (buttons, notes), above the
  *   divider.
- * - `background`, `scrim`: section art behind the title (see `Section`), with
- *   no wash by default (owner, Oct 2026: the dark pool hid the art). The art
- *   fades into the page at its foot, and the block gets more room below the
- *   divider so the fade does not start under it.
+ * - `background`: section art behind the title (see `Section` for its wash and
+ *   fade); the block gets more room below the divider so the fade does not
+ *   start under it.
  */
 const PageIntro = ({
   eyebrow,
@@ -21,7 +20,6 @@ const PageIntro = ({
   lede,
   className = "",
   background,
-  scrim = "",
   children,
   ...rest
 }) => (
@@ -29,8 +27,6 @@ const PageIntro = ({
     spacing="none"
     className={`pt-12 lg:pt-22 ${background ? "pb-16 lg:pb-24" : "pb-4 lg:pb-8"} ${className}`}
     background={background}
-    scrim={scrim}
-    fade
     priority
     innerClassName={`flex flex-col items-center gap-4 text-center lg:gap-5`}
     {...rest}
