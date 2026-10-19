@@ -5,6 +5,10 @@
 // inherited from the shell is dropped, and the SDK itself is replaced, so no
 // request can reach Square even if a .env.local with real credentials sits in
 // the checkout this runs from.
+//
+// Instagram: INSTAGRAM_FEED_FIXTURE points the /api/instagram dev middleware
+// at the committed instagram-fixture.json, so the suite never calls Behold
+// (whose free plan counts every request) and serves placeholder media locally.
 
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -18,6 +22,7 @@ const CLIENT_ROOT = resolve(here, "../../..");
 const VITE_BIN = join(CLIENT_ROOT, "node_modules/vite/bin/vite.js");
 const REGISTER = join(here, "register-square-stub.mjs");
 const CONFIG = resolve(here, "../vite.e2e.config.js");
+export const INSTAGRAM_FIXTURE = join(here, "instagram-fixture.json");
 
 export const DUMMY_SQUARE_ENV = {
   SQUARE_ACCESS_TOKEN: "e2e-dummy-token-not-a-credential",
@@ -95,6 +100,7 @@ export const startServer = async () => {
   );
   Object.assign(env, DUMMY_SQUARE_ENV, {
     SQUARE_STUB_LOG: logPath,
+    INSTAGRAM_FEED_FIXTURE: INSTAGRAM_FIXTURE,
     E2E_VITE_CACHE_DIR: join(scratch, "vite-cache"),
     BROWSER: "none",
   });
