@@ -208,8 +208,8 @@ against the ground, so never show state with a border alone (the pressed pill us
   site-wide newsletter (`crystal`). Podcast's title stays plain (it has a different feel).
   **Keep washes light** (owner, Oct 2026: the earlier ones were "always too dark"): the
   art carries a light wash over most of its area, and legibility comes from a darker pool
-  sized to the text instead: `PageIntro`'s default scrim is a radial pool around the title
-  block, each Home quote sits on its own soft radial pool over a 35% wash, and the
+  sized to the text instead. Page titles carry no wash at all (owner, Oct 2026: the pool
+  around the title hid the art), so `design-check` reports their contrast; each Home quote sits on its own soft radial pool over a 35% wash, and the
   newsletter text sits in its `bg-ground/90` box over a 45% wash (heavier there so the
   crystal does not run into the gold frame). `<Section background={BACKGROUNDS.name}
 scrim="…" fade priority>` draws the art as a decorative `<img>` cropped to fill

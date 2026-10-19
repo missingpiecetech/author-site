@@ -53,7 +53,7 @@ export const BOOKS = [
       {
         text: "Crownfall had me on the edge of my seat from the first page to the last. This is a masterclass in political fantasy that I couldn't put down!",
         name: "Greta Kelly",
-        credit: "author of The Queen of Day's and The Frozen Crown",
+        credit: "author of The Queen of Days and The Frozen Crown",
       },
       {
         text: "A compelling debut that needs to be on your TBR.",
