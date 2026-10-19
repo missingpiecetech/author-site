@@ -39,7 +39,7 @@ const Section = ({
 }) => {
   const Tag = as;
   const classes = [
-    "px-6 lg:px-20",
+    "px-6 lg:px-24 xl:px-28",
     SPACING[spacing] ?? SPACING.default,
     band && "bg-band",
     clipX && "overflow-x-clip",

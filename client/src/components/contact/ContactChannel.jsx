@@ -45,7 +45,7 @@ const ContactChannel = ({
     </RuleList>
 
     <div className="flex flex-col gap-4">
-      <h3 className="text-[1.75rem] leading-tight text-cream">{listTitle}</h3>
+      <h3 className="text-[1.5625rem] leading-tight text-cream">{listTitle}</h3>
       <ul className="flex flex-col gap-3">
         {items.map((item) => (
           <li key={item} className="flex items-start text-muted">

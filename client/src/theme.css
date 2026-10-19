@@ -18,19 +18,27 @@
   --font-body: "Spectral", Georgia, serif;
 
   /* Fluid sizes: 390px mockup -> 1440px mockup */
-  --text-display: clamp(3.25rem, 2.04rem + 4.95vw, 6.5rem);
+  --text-display: clamp(2.9375rem, 1.846rem + 4.48vw, 5.875rem);
   --text-display--line-height: 0.95;
-  --text-title: clamp(3rem, 2.07rem + 3.81vw, 5.5rem);
+  --text-title: clamp(2.6875rem, 1.852rem + 3.43vw, 4.9375rem);
   --text-title--line-height: 0.95;
-  --text-heading: clamp(2.375rem, 1.77rem + 2.48vw, 4rem);
+  --text-heading: clamp(2.125rem, 1.568rem + 2.29vw, 3.625rem);
   --text-heading--line-height: 1;
-  --text-hook: clamp(1.375rem, 1.14rem + 0.95vw, 2rem);
+  --text-hook: clamp(1.25rem, 1.041rem + 0.86vw, 1.8125rem);
   --text-hook--line-height: 1.3;
-  --text-quote: clamp(1.5rem, 1.175rem + 1.33vw, 2.375rem);
+  --text-quote: clamp(1.375rem, 1.096rem + 1.14vw, 2.125rem);
   --text-quote--line-height: 1.3;
-  --text-lede: 1.1875rem;
+  --text-lede: 1.0625rem;
   --text-lede--line-height: 1.65;
-  --text-eyebrow: clamp(0.75rem, 0.68rem + 0.29vw, 0.9375rem);
+  --text-eyebrow: clamp(0.6875rem, 0.618rem + 0.29vw, 0.875rem);
+
+  /* Tailwind's own steps above body size, a notch smaller (owner, Oct 2026:
+     the text felt "in-your-face"). text-base stays 16px. The nav bar uses
+     explicit sizes so this does not reach it. */
+  --text-lg: 1.0625rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.6875rem;
 
   --tracking-eyebrow: 0.22em;
   --radius-btn: 2px;

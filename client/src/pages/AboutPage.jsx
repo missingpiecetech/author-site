@@ -84,7 +84,7 @@ const AboutPage = () => {
           {STATS.map(({ label, value, detail }) => (
             <div key={label} className="flex flex-col gap-2.5">
               <Eyebrow as="dt">{label}</Eyebrow>
-              <dd className="font-display text-3xl font-semibold text-cream lg:text-[2rem]">
+              <dd className="font-display text-3xl font-semibold text-cream lg:text-[1.8125rem]">
                 {value}
               </dd>
               {detail && <dd className="text-base text-muted">{detail}</dd>}

@@ -10,7 +10,7 @@ const ProductCard = ({ product, onAddToCart, onEnlarge }) => (
   >
     <ProductGallery product={product} onEnlarge={onEnlarge} />
     <div className="flex items-baseline justify-between gap-4">
-      <h2 className="min-w-0 text-[1.75rem] leading-tight text-cream">
+      <h2 className="min-w-0 text-[1.5625rem] leading-tight text-cream">
         {product.title}
       </h2>
       <span className="shrink-0 text-lg text-muted">

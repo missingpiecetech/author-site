@@ -39,7 +39,7 @@ const Navigation = () => {
       >
         <Link
           to="/"
-          className="font-display text-2xl font-semibold tracking-[0.04em] whitespace-nowrap text-cream transition-colors hover:text-accent-hover lg:text-[1.875rem]"
+          className="font-display text-[1.5rem]/[2rem] font-semibold tracking-[0.04em] whitespace-nowrap text-cream transition-colors hover:text-accent-hover lg:text-[1.875rem]"
         >
           {SITE_INFO.name}
         </Link>
@@ -111,7 +111,7 @@ const Navigation = () => {
                   to={item.path}
                   aria-current={isActive(item.path) ? "page" : undefined}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`flex h-14 items-center justify-between border-b border-rule font-display text-2xl font-semibold transition-colors hover:text-accent-hover ${
+                  className={`flex h-14 items-center justify-between border-b border-rule font-display text-[1.5rem]/[2rem] font-semibold transition-colors hover:text-accent-hover ${
                     isActive(item.path) ? "text-accent" : "text-cream"
                   }`}
                 >
@@ -134,7 +134,7 @@ const Navigation = () => {
                     item_count: totalItems(),
                   });
                 }}
-                className="flex h-14 w-full cursor-pointer items-center gap-3 border-b border-rule font-display text-2xl font-semibold text-cream transition-colors hover:text-accent-hover"
+                className="flex h-14 w-full cursor-pointer items-center gap-3 border-b border-rule font-display text-[1.5rem]/[2rem] font-semibold text-cream transition-colors hover:text-accent-hover"
               >
                 <CartIcon className="h-5 w-5 text-accent" />
                 Cart ({totalItems()})

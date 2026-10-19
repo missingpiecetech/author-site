@@ -263,7 +263,7 @@ const ExcerptPage = ({ slug = "crownfall" }) => {
             )}
             <article
               data-testid="excerpt-text"
-              className="mx-auto max-w-[66ch] text-[1.125rem] leading-[1.8] text-muted lg:text-[1.25rem]"
+              className="mx-auto max-w-[66ch] text-[1.0625rem] leading-[1.8] text-muted lg:text-[1.125rem]"
             >
               {chapters.map((chapter, index) => (
                 <Chapter

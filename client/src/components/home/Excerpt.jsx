@@ -34,7 +34,7 @@ const Excerpt = ({ excerpt, to, ...rest }) => {
           <Prose
             key={index}
             text={paragraph}
-            className={`text-lg leading-[1.8] lg:text-[1.375rem] ${
+            className={`text-lg leading-[1.8] lg:text-[1.25rem] ${
               index === 0
                 ? "text-cream first-letter:float-left first-letter:pt-2 first-letter:pr-3.5 first-letter:font-display first-letter:text-[4.5rem] first-letter:leading-[0.8] first-letter:font-semibold first-letter:text-accent lg:first-letter:text-[6.5rem]"
                 : "text-muted"

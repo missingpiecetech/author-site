@@ -95,7 +95,7 @@ const CrownfallListing = ({ editions, onAddToCart, onEnlarge }) => {
       <div className="flex min-w-0 flex-col gap-6">
         {CROWNFALL?.status && <Eyebrow>{CROWNFALL.status}</Eyebrow>}
         <h2 className="text-heading text-cream">{product.title}</h2>
-        <span className="text-[1.625rem] text-cream">
+        <span className="text-[1.5rem] text-cream">
           ${product.price.toFixed(2)}
         </span>
 

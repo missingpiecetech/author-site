@@ -64,7 +64,7 @@ const ContactPage = () => {
         <div className="grid md:grid-cols-2">
           <div className="flex min-w-0 flex-col items-center gap-3 pb-10 text-center md:pr-12 md:pb-0">
             <GiExtraTime aria-hidden="true" className="text-3xl text-accent" />
-            <h3 className="text-[1.75rem] leading-tight text-cream">
+            <h3 className="text-[1.5625rem] leading-tight text-cream">
               Response Time
             </h3>
             <p className="text-lede text-muted">
@@ -78,7 +78,7 @@ const ContactPage = () => {
 
           <div className="flex min-w-0 flex-col items-center gap-3 border-t border-rule pt-10 text-center md:border-t-0 md:border-l md:pt-0 md:pl-12">
             <GiLightBulb aria-hidden="true" className="text-3xl text-accent" />
-            <h3 className="text-[1.75rem] leading-tight text-cream">
+            <h3 className="text-[1.5625rem] leading-tight text-cream">
               Best Practices
             </h3>
             <p className="text-lede text-muted">

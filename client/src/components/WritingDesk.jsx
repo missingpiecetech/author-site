@@ -28,14 +28,12 @@ export const WorkProgress = ({ title, type, status, percent }) => {
       <div className="flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:items-baseline lg:justify-between lg:gap-x-6">
         <span
           id={titleId}
-          className="text-base font-medium text-cream lg:font-display lg:text-[1.875rem] lg:leading-tight lg:font-semibold"
+          className="text-base font-medium text-cream lg:font-display lg:text-[1.6875rem] lg:leading-tight lg:font-semibold"
         >
           {title}
         </span>
         {detail && (
-          <span className="text-base text-muted lg:text-[1.0625rem]">
-            {detail}
-          </span>
+          <span className="text-base text-muted lg:text-base">{detail}</span>
         )}
       </div>
       {value !== null && (

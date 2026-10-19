@@ -41,7 +41,7 @@ const InstagramFeed = () => {
         </h2>
       </div>
 
-      <div className="columns-2 gap-3 lg:columns-3 lg:gap-4.5">
+      <div className="mx-auto w-4/5 columns-2 gap-3 lg:columns-3 lg:gap-4.5">
         {posts.map((post, index) => {
           const { medium } = post.sizes;
           const badge = BADGES[post.mediaType];
@@ -59,7 +59,7 @@ const InstagramFeed = () => {
               <img
                 src={medium.mediaUrl}
                 srcSet={postSrcSet(post.sizes)}
-                sizes="(min-width: 80rem) 400px, (min-width: 64rem) 30vw, 50vw"
+                sizes="(min-width: 80rem) 320px, (min-width: 64rem) 24vw, 40vw"
                 width={medium.width}
                 height={medium.height}
                 alt={postAlt(post)}
