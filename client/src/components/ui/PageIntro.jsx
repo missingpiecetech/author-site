@@ -42,7 +42,7 @@ const PageIntro = ({
         </>
       )}
     </h1>
-    {lede && <p className="max-w-3xl text-lede text-muted">{lede}</p>}
+    {lede && <p className="max-w-3xl text-lede text-cream">{lede}</p>}
     {children}
     <FiligreeDivider className="mt-2 text-accent lg:mt-3" />
   </Section>
