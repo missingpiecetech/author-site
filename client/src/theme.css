@@ -1,5 +1,55 @@
 @theme {
-  --color-primary: #ffffff;
-  --color-secondary: #2b9994;
-  --color-secondary-dark: #025e59;
+  /* Dark, bookish palette */
+  --color-ground: #121017;
+  --color-band: #17141d;
+  --color-well: #1c1922;
+  --color-surface: #25202c;
+  --color-rule: #2c2733;
+  --color-edge: #3a3342;
+  --color-outline: #4a4353;
+  --color-cream: #ece4d4;
+  --color-muted: #c9c0ae;
+  --color-subtle: #b3a996;
+  --color-accent: #cfae6b;
+  --color-accent-hover: #e6c98c;
+  --color-error: #f87171;
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Spectral", Georgia, serif;
+
+  /* Fluid sizes: 390px mockup -> 1440px mockup */
+  --text-display: clamp(2.9375rem, 1.846rem + 4.48vw, 5.875rem);
+  --text-display--line-height: 0.95;
+  --text-title: clamp(2.6875rem, 1.852rem + 3.43vw, 4.9375rem);
+  --text-title--line-height: 0.95;
+  --text-heading: clamp(2.125rem, 1.568rem + 2.29vw, 3.625rem);
+  --text-heading--line-height: 1;
+  --text-hook: clamp(1.25rem, 1.041rem + 0.86vw, 1.8125rem);
+  --text-hook--line-height: 1.3;
+  --text-quote: clamp(1.375rem, 1.096rem + 1.14vw, 2.125rem);
+  --text-quote--line-height: 1.3;
+  --text-lede: 1.0625rem;
+  --text-lede--line-height: 1.65;
+  --text-eyebrow: clamp(0.6875rem, 0.618rem + 0.29vw, 0.875rem);
+
+  /* Tailwind's own steps above body size, a notch smaller (owner, Oct 2026:
+     the text felt "in-your-face"). text-base stays 16px. The nav bar uses
+     explicit sizes so this does not reach it. */
+  --text-lg: 1.0625rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.6875rem;
+
+  --tracking-eyebrow: 0.22em;
+  --radius-btn: 2px;
+  --shadow-cover: 0 40px 80px rgb(0 0 0 / 0.55);
+}
+
+:root {
+  --header-h: 4.25rem; /* 68px */
+}
+@media (min-width: 64rem) {
+  :root {
+    --header-h: 6rem; /* 96px */
+  }
 }

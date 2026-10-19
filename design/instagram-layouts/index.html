@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Instagram Layouts</title>
+		<!-- Mockups of the Home Instagram section, built from Michael's live
+         Behold JSON feed. Every image keeps the shape Behold serves (4:5
+         photos, 9:16 and 2:3 video covers); nothing is cropped. Never ships. -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap"
+			rel="stylesheet" />
+		<style>
+			:root {
+				--ground: #121017;
+				--band: #17141d;
+				--well: #1c1922;
+				--surface: #25202c;
+				--rule: #2c2733;
+				--edge: #3a3342;
+				--outline: #4a4353;
+				--cream: #ece4d4;
+				--muted: #c9c0ae;
+				--subtle: #b3a996;
+				--accent: #cfae6b;
+				--accent-hover: #e6c98c;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--ground);
+				color: var(--muted);
+				font-family: Spectral, Georgia, serif;
+			}
+			a {
+				color: inherit;
+			}
+			.toolbar {
+				position: sticky;
+				top: 0;
+				z-index: 5;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				align-items: center;
+				padding: 12px 16px;
+				background: var(--well);
+				border-bottom: 1px solid var(--rule);
+				font-size: 14px;
+			}
+			.toolbar button {
+				font: inherit;
+				padding: 6px 12px;
+				border-radius: 2px;
+				border: 1px solid var(--outline);
+				background: transparent;
+				color: var(--cream);
+				cursor: pointer;
+			}
+			.toolbar button[aria-pressed='true'] {
+				background: var(--accent);
+				color: var(--ground);
+				border-color: var(--accent);
+			}
+			.option {
+				padding: 56px 16px 72px;
+				border-bottom: 1px solid var(--rule);
+			}
+			.option:nth-of-type(even) {
+				background: var(--band);
+			}
+			.label {
+				max-width: 1280px;
+				margin: 0 auto 32px;
+				font-size: 14px;
+				color: var(--subtle);
+			}
+			.label strong {
+				color: var(--accent);
+				letter-spacing: 0.18em;
+				text-transform: uppercase;
+				font-weight: 500;
+			}
+			.stage {
+				container-type: inline-size;
+				max-width: 1280px;
+				margin: 0 auto;
+				transition: max-width 0.2s;
+			}
+			body.phone .stage {
+				max-width: 390px;
+				outline: 1px dashed var(--edge);
+				outline-offset: 8px;
+			}
+			.head {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 12px;
+				text-align: center;
+				margin-bottom: 36px;
+			}
+			.eyebrow {
+				color: var(--accent);
+				text-transform: uppercase;
+				letter-spacing: 0.22em;
+				font-size: 13px;
+			}
+			h2 {
+				margin: 0;
+				font-family: 'Cormorant Garamond', Georgia, serif;
+				font-weight: 500;
+				font-size: clamp(2.375rem, 1.77rem + 2.48vw, 4rem);
+				line-height: 1;
+				color: var(--cream);
+			}
+			h2 span {
+				color: var(--accent);
+			}
+			.btn {
+				display: inline-block;
+				padding: 12px 22px;
+				border-radius: 2px;
+				background: var(--accent);
+				color: var(--ground);
+				text-decoration: none;
+				font-weight: 500;
+				font-size: 15px;
+			}
+			.btn.secondary {
+				background: transparent;
+				color: var(--cream);
+				border: 1px solid var(--outline);
+			}
+			.foot {
+				display: flex;
+				justify-content: center;
+				margin-top: 36px;
+			}
+
+			/* Shared media: native aspect, icon for video and albums */
+			.media {
+				position: relative;
+				display: block;
+				background: var(--surface);
+				overflow: hidden;
+			}
+			.media img {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+			.badge {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				width: 30px;
+				height: 30px;
+				display: grid;
+				place-items: center;
+				border-radius: 50%;
+				background: rgb(18 16 23 / 0.7);
+				color: var(--cream);
+				font-size: 13px;
+			}
+			.date {
+				font-size: 12px;
+				letter-spacing: 0.18em;
+				text-transform: uppercase;
+				color: var(--subtle);
+			}
+			.caption {
+				white-space: pre-line;
+				font-size: 16px;
+				line-height: 1.6;
+				color: var(--muted);
+				margin: 0;
+			}
+			.clamp {
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-line-clamp: 4;
+				overflow: hidden;
+			}
+			.more {
+				font: inherit;
+				font-size: 15px;
+				background: none;
+				border: none;
+				padding: 0;
+				color: var(--accent);
+				cursor: pointer;
+				text-decoration: underline;
+				text-underline-offset: 3px;
+				align-self: flex-start;
+			}
+
+			/* A: masonry, image only, caption on hover or in the dialog */
+			.masonry {
+				columns: 2;
+				column-gap: 12px;
+			}
+			@container (min-width: 700px) {
+				.masonry {
+					columns: 3;
+					column-gap: 18px;
+				}
+			}
+			.masonry > * {
+				break-inside: avoid;
+				margin-bottom: 12px;
+			}
+			@container (min-width: 700px) {
+				.masonry > * {
+					margin-bottom: 18px;
+				}
+			}
+			.tile {
+				position: relative;
+				display: block;
+				width: 100%;
+				padding: 0;
+				border: 0;
+				background: none;
+				cursor: pointer;
+				text-align: left;
+			}
+			.tile .hover {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				align-items: flex-end;
+				padding: 16px;
+				background: linear-gradient(to top, rgb(18 16 23 / 0.92), rgb(18 16 23 / 0.2) 60%, transparent);
+				opacity: 0;
+				transition: opacity 0.2s;
+				color: var(--cream);
+				font-size: 15px;
+				line-height: 1.5;
+			}
+			.tile:hover .hover,
+			.tile:focus-visible .hover {
+				opacity: 1;
+			}
+
+			/* B: caption cards in masonry */
+			.card {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				background: var(--well);
+				padding-bottom: 18px;
+			}
+			.card > :not(.media) {
+				margin: 0 18px;
+			}
+
+			/* C: one row of equal height, native widths, scrolls sideways */
+			.strip {
+				display: flex;
+				gap: 14px;
+				overflow-x: auto;
+				scroll-snap-type: x mandatory;
+				padding-bottom: 14px;
+			}
+			.strip > * {
+				flex: 0 0 auto;
+				scroll-snap-align: start;
+				height: 340px;
+			}
+			@container (max-width: 699px) {
+				.strip > * {
+					height: 300px;
+				}
+			}
+			.strip .tile {
+				width: auto;
+			}
+			.strip .tile .media,
+			.strip .media,
+			.strip img {
+				height: 100%;
+				width: auto;
+			}
+
+			/* D: featured, one post at a time with its full caption */
+			.feature {
+				display: grid;
+				gap: 24px;
+				align-items: center;
+			}
+			@container (min-width: 700px) {
+				.feature {
+					grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+					gap: 56px;
+				}
+			}
+			.feature .media {
+				max-width: 440px;
+				width: 100%;
+				justify-self: center;
+				border: 2px solid var(--accent);
+				padding: 12px;
+				background: var(--ground);
+			}
+			.feature .text {
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+			}
+			.feature .caption {
+				font-size: 17px;
+			}
+			.pager {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				margin-top: 8px;
+			}
+			.pager button {
+				font: inherit;
+				width: 44px;
+				height: 44px;
+				border-radius: 2px;
+				border: 1px solid var(--outline);
+				background: transparent;
+				color: var(--cream);
+				cursor: pointer;
+			}
+			.dots {
+				display: flex;
+				gap: 8px;
+			}
+			.dots span {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background: var(--edge);
+			}
+			.dots span.on {
+				background: var(--accent);
+			}
+
+			/* The "read the whole post" dialog used by A, B and C */
+			dialog {
+				width: min(920px, calc(100vw - 32px));
+				max-height: calc(100vh - 48px);
+				padding: 0;
+				border: 2px solid var(--accent);
+				background: var(--ground);
+				color: var(--muted);
+			}
+			dialog::backdrop {
+				background: rgb(0 0 0 / 0.75);
+			}
+			.dlg {
+				display: grid;
+				gap: 0;
+			}
+			@media (min-width: 760px) {
+				.dlg {
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+				}
+			}
+			.dlg .media {
+				background: #000;
+				display: grid;
+				place-items: center;
+			}
+			.dlg .media img {
+				max-height: 80vh;
+				width: auto;
+				max-width: 100%;
+			}
+			.dlg .text {
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+				padding: 28px;
+				overflow-y: auto;
+				max-height: 80vh;
+			}
+			.close {
+				align-self: flex-end;
+				font: inherit;
+				background: none;
+				border: 1px solid var(--outline);
+				color: var(--cream);
+				border-radius: 2px;
+				width: 36px;
+				height: 36px;
+				cursor: pointer;
+			}
+			.error {
+				color: #f87171;
+				padding: 24px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="toolbar" role="group" aria-label="Preview width">
+			<span>Preview width:</span>
+			<button type="button" data-width="desktop" aria-pressed="true">Desktop</button>
+			<button type="button" data-width="phone" aria-pressed="false">Phone (390px)</button>
+			<span style="color: var(--subtle)"
+				>Live posts from feeds.behold.so; images at Behold's own sizes, never cropped.</span
+			>
+		</div>
+
+		<main id="root"><p class="error" hidden id="error"></p></main>
+
+		<dialog id="post-dialog" aria-label="Instagram post"></dialog>
+
+		<script type="module">
+			const FEED = 'https://feeds.behold.so/ZFyK3XHe1WgVNbaf3m47';
+			const OPTIONS = [
+				{
+					id: 'a',
+					name: 'A · Masonry',
+					note: 'Images only, each at its own shape in staggered columns. Caption appears on hover; a click or tap opens the whole post. Common for mixed photo/video feeds (Feedspring, Elfsight).',
+					render: masonry
+				},
+				{
+					id: 'b',
+					name: 'B · Caption cards (masonry)',
+					note: 'Image, date and the first four lines of the caption; "Read the whole post" opens it in full. Spotlight\'s caption grid, in staggered columns so nothing is cropped.',
+					render: cards
+				},
+				{
+					id: 'c',
+					name: 'C · Row',
+					note: 'One row at equal height, each post at its own width, swiped or scrolled sideways. Click opens the whole post. Spotlight and PrestaShop row/strip layouts.',
+					render: strip
+				},
+				{
+					id: 'd',
+					name: 'D · Featured carousel',
+					note: 'One post at a time in a gold frame beside its full caption, with previous/next. No dialog needed: the whole text is always shown. Elfsight and Feedspring slider pattern.',
+					render: feature
+				}
+			];
+
+			const esc = (s) =>
+				String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+			const date = (iso) =>
+				new Date(iso).toLocaleDateString('en-US', {
+					month: 'long',
+					day: 'numeric',
+					year: 'numeric'
+				});
+			const badge = (p) =>
+				p.mediaType === 'VIDEO'
+					? '<span class="badge" aria-label="Video">&#9654;</span>'
+					: p.mediaType === 'CAROUSEL_ALBUM'
+						? '<span class="badge" aria-label="Several photos">&#10697;</span>'
+						: '';
+			const img = (p, size = 'medium') => {
+				const s = p.sizes[size];
+				return `<img src="${s.mediaUrl}" width="${s.width}" height="${s.height}" alt="${esc((p.prunedCaption || '').split('\n')[0])}" />`;
+			};
+			const media = (p, size) => `<span class="media">${img(p, size)}${badge(p)}</span>`;
+			const head = (feed) => `
+        <div class="head">
+          <span class="eyebrow">On Instagram</span>
+          <h2>Follow <span>Along</span></h2>
+        </div>`;
+			const foot = (feed) => `
+        <div class="foot"><a class="btn" href="https://www.instagram.com/${feed.username}/" target="_blank" rel="noopener">Follow @${esc(feed.username)}</a></div>`;
+			const first = (p) => esc((p.prunedCaption || '').split('\n').find((l) => l.trim()) ?? '');
+
+			function masonry(feed) {
+				return `<div class="masonry">${feed.posts
+					.map(
+						(p, i) => `
+          <button type="button" class="tile" data-open="${i}">
+            ${media(p)}
+            <span class="hover">${first(p)}</span>
+          </button>`
+					)
+					.join('')}</div>`;
+			}
+
+			function cards(feed) {
+				return `<div class="masonry">${feed.posts
+					.map(
+						(p, i) => `
+          <article class="card">
+            <a href="${p.permalink}" target="_blank" rel="noopener">${media(p)}</a>
+            <span class="date">${date(p.timestamp)}</span>
+            <p class="caption clamp">${esc(p.prunedCaption)}</p>
+            <button type="button" class="more" data-open="${i}">Read the whole post</button>
+          </article>`
+					)
+					.join('')}</div>`;
+			}
+
+			function strip(feed) {
+				return `<div class="strip">${feed.posts
+					.map(
+						(p, i) => `
+          <button type="button" class="tile" data-open="${i}" style="aspect-ratio: ${p.sizes.large.width} / ${p.sizes.large.height}">
+            ${media(p, 'large')}
+            <span class="hover">${first(p)}</span>
+          </button>`
+					)
+					.join('')}</div>`;
+			}
+
+			function feature(feed) {
+				return `<div class="feature" data-feature data-index="0"></div>`;
+			}
+			function drawFeature(el, feed) {
+				const i = Number(el.dataset.index);
+				const p = feed.posts[i];
+				el.innerHTML = `
+          <a href="${p.permalink}" target="_blank" rel="noopener">${media(p, 'large')}</a>
+          <div class="text">
+            <span class="date">${date(p.timestamp)}</span>
+            <p class="caption">${esc(p.prunedCaption)}</p>
+            <a class="btn secondary" style="align-self:flex-start" href="${p.permalink}" target="_blank" rel="noopener">View on Instagram</a>
+            <div class="pager">
+              <button type="button" data-step="-1" aria-label="Previous post">&#8249;</button>
+              <div class="dots">${feed.posts.map((_, j) => `<span class="${j === i ? 'on' : ''}"></span>`).join('')}</div>
+              <button type="button" data-step="1" aria-label="Next post">&#8250;</button>
+            </div>
+          </div>`;
+			}
+
+			function openPost(feed, i) {
+				const p = feed.posts[i];
+				const dialog = document.getElementById('post-dialog');
+				dialog.innerHTML = `
+          <div class="dlg">
+            <a href="${p.permalink}" target="_blank" rel="noopener">${media(p, 'large')}</a>
+            <div class="text">
+              <button type="button" class="close" aria-label="Close">&#10005;</button>
+              <span class="date">${date(p.timestamp)}</span>
+              <p class="caption">${esc(p.prunedCaption)}</p>
+              <a class="btn secondary" style="align-self:flex-start" href="${p.permalink}" target="_blank" rel="noopener">View on Instagram</a>
+            </div>
+          </div>`;
+				dialog.querySelector('.close').onclick = () => dialog.close();
+				dialog.showModal();
+			}
+
+			try {
+				const feed = await (await fetch(FEED)).json();
+				const root = document.getElementById('root');
+				for (const option of OPTIONS) {
+					const section = document.createElement('section');
+					section.className = 'option';
+					section.innerHTML = `
+            <p class="label"><strong>${option.name}</strong><br />${option.note}</p>
+            <div class="stage">${head(feed)}${option.render(feed)}${foot(feed)}</div>`;
+					root.append(section);
+				}
+				for (const el of document.querySelectorAll('[data-feature]')) {
+					drawFeature(el, feed);
+					el.addEventListener('click', (e) => {
+						const step = e.target.closest('[data-step]');
+						if (!step) return;
+						const n = feed.posts.length;
+						el.dataset.index = (Number(el.dataset.index) + Number(step.dataset.step) + n) % n;
+						drawFeature(el, feed);
+					});
+				}
+				root.addEventListener('click', (e) => {
+					const open = e.target.closest('[data-open]');
+					if (open) openPost(feed, Number(open.dataset.open));
+				});
+			} catch (err) {
+				const el = document.getElementById('error');
+				el.hidden = false;
+				el.textContent = `Could not load the feed: ${err.message}`;
+			}
+
+			for (const button of document.querySelectorAll('[data-width]')) {
+				button.addEventListener('click', () => {
+					document.body.classList.toggle('phone', button.dataset.width === 'phone');
+					for (const b of document.querySelectorAll('[data-width]')) {
+						b.setAttribute('aria-pressed', String(b === button));
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

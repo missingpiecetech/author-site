@@ -1,229 +1,139 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { BOOKS, BOOK_STATUS } from "../BOOK_DATA";
-import authorPic from "../assets/author-pic-square-close.jpeg";
+import { BOOKS } from "../BOOK_DATA";
 import authorAdjacentLogo from "../assets/logo_no_text.png";
-import crownfallBookTour from "../assets/crownfall-book-tour.jpeg";
+import Section from "../components/ui/Section";
+import Button from "../components/ui/Button";
+import FramedImage from "../components/ui/FramedImage";
+import PullQuote from "../components/ui/PullQuote";
+import { FiligreeDivider } from "../components/ui/Filigree";
+import BookHero from "../components/home/BookHero";
+import Excerpt from "../components/home/Excerpt";
+import WritingDesk from "../components/WritingDesk";
+import InstagramFeed from "../components/instagram/InstagramFeed";
+import { EXCERPTS, hasExcerptText } from "../excerpts/index.js";
+import useHashScroll from "../hooks/useHashScroll";
+import { EVENTS, track } from "../lib/analytics.js";
+import { BACKGROUNDS } from "../assets/backgrounds/index.js";
+
+const prefersReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const FEATURED = BOOKS.find((book) => book.slug === "crownfall");
+const EXCERPT = EXCERPTS[FEATURED?.slug];
+const HAS_EXCERPT = hasExcerptText(EXCERPT?.excerpt);
 
 const HomePage = () => {
-  const [scrollY, setScrollY] = useState(0);
+  useHashScroll();
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    AOS.init({ once: true, duration: 800 });
-    return () => window.removeEventListener("scroll", handleScroll);
+    AOS.init({ once: true, duration: 800, disable: prefersReducedMotion });
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section with Floating Circles */}
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        {/* Floating Circles */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-secondary/50 rounded-full" />
-          <div className="absolute bottom-40 left-1/10 w-40 h-40 bg-secondary/50 rounded-full" />
-          <div className="absolute top-40 right-1/4 w-24 h-24 bg-secondary/50 rounded-full" />
-          <div className="absolute bottom-20 right-10 w-28 h-28 bg-secondary/50 rounded-full" />
+    <div className="bg-ground">
+      {/* Book hero: Crownfall, as in the mockup */}
+      <Section
+        id={FEATURED?.slug}
+        clipX
+        spacing="none"
+        className="flex min-h-[calc(100svh-var(--header-h))] flex-col pt-10 pb-6 lg:pt-16 lg:pb-8"
+        innerClassName="flex w-full flex-1 flex-col"
+      >
+        <div className="flex flex-1 flex-col justify-center">
+          {FEATURED && <BookHero book={FEATURED} />}
         </div>
-        {/* Hero Content Side-by-Side */}
-        <div className="relative flex flex-row flex-wrap items-center justify-around md:text-left">
-          {/* Author Image */}
-          <div className="flex relative m-8 mt-40 mb-12 md:mt-8 md:m-24">
-            <img
-              src={authorPic}
-              alt="Michael Vadney"
-              className="w-80 h-80 rounded-full object-cover outline-10 outline-secondary z-25"
-            />
-            <div className="absolute -top-6 -left-6 w-24 h-24 bg-secondary-dark rounded-full" />
-            <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-secondary-dark rounded-full" />
-          </div>
-          {/* Author Text */}
-          <div
-            className="w-full md:w-1/2 flex-1 space-y-1 text-center px-6 md:px-0"
-            data-aos="fade-left"
-          >
-            <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-gray-900 leading-tight">
-              <span className="block animate-slide-in-left">
-                Michael Vadney
-              </span>
-            </h1>
-            <h5 className="text-3xl text-gray-700 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-300">
-              Author & Podcaster
-            </h5>
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fade-in-up delay-700">
-              <Link
-                to="/books"
-                className="bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
-              >
-                Explore My Books
-              </Link>
-              <Link
-                to="/podcast"
-                className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
-              >
-                Watch the Podcast
-              </Link>
-            </div>
+        {/* Scroll indicator: in flow at the foot of the hero, so it can never sit on the buttons */}
+        <div
+          aria-hidden="true"
+          data-testid="scroll-cue"
+          className="mx-auto mt-12 shrink-0 motion-safe:animate-bounce lg:mt-16"
+        >
+          <div className="flex h-10 w-6 justify-center rounded-full border-2 border-accent/30">
+            <div className="mt-2 h-3 w-1 rounded-full bg-accent/60" />
           </div>
         </div>
-        {/* Scroll Indicator - hidden on mobile */}
-        <div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-secondary/30 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-secondary/60 rounded-full mt-2"></div>
-          </div>
-        </div>
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-16 mb-32">
-        <section className="max-w-8xl mx-auto bg-gray-50 mt-8 md:mt-0">
-          <div className=" mx-auto px-8 lg:px-16">
-            <div className=" gap-16 items-center">
-              <div
-                className="bg-white rounded-3xl p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 animate-slide-in-right"
-                style={{ animationDelay: "0.4s" }}
-              >
-                <img
-                  src={crownfallBookTour}
-                  alt="Crownfall Book Tour"
-                  className="w-full h-auto rounded-2xl shadow-2xl object-cover"
+      {/* Praise: the existing quote band, in the mockup's big-quote style,
+          a divider between each pair of quotes, over the gold-cracks art */}
+      {FEATURED?.praise?.length > 0 && (
+        <Section
+          band
+          background={BACKGROUNDS.cracks}
+          spacing="none"
+          className="py-9 lg:py-16"
+          innerClassName="flex flex-col gap-4 lg:gap-8"
+        >
+          {FEATURED.praise.map((praise, index) => (
+            <Fragment key={praise.name}>
+              {index > 0 && <FiligreeDivider />}
+              <div data-aos="fade-up">
+                <PullQuote
+                  quote={praise.text}
+                  name={praise.name}
+                  credit={praise.credit}
+                  className="max-w-5xl"
                 />
               </div>
+            </Fragment>
+          ))}
+        </Section>
+      )}
+
+      {/* Read an excerpt: the opening of src/excerpts/crownfall.js, hidden
+          until it has text */}
+      {EXCERPT && <Excerpt excerpt={EXCERPT.excerpt} to={EXCERPT.path} />}
+
+      {/* From the writing desk: WRITING_DESK.js. A band after the excerpt, as
+          in the mockup; plain when it would sit against the quote band. */}
+      <WritingDesk band={HAS_EXCERPT} />
+
+      {/* Instagram: Michael's latest posts, via /api/instagram (Behold) */}
+      <InstagramFeed />
+
+      {/* Author Adjacent podcast */}
+      <Section>
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
+          <div className="flex animate-fade-in-up flex-col gap-6 text-center lg:text-left">
+            <h2 className="text-heading text-cream">
+              Author <span className="text-accent">Adjacent</span>
+            </h2>
+            <p className="text-lede text-cream">
+              Join the honest conversation about the writing journey from
+              hobbyist writer to professional author.
+            </p>
+            <p className="text-lede text-muted">
+              Every episode dives deep into the challenges, victories, and
+              everything in between on the path to becoming a published author.
+              Real talk, practical advice, and community support.
+            </p>
+            <div className="mt-2 flex flex-col justify-center gap-3.5 sm:flex-row lg:justify-start">
+              <Button to="/podcast">Learn more</Button>
+              <Button
+                href="https://youtube.com/@AuthorAdjacent"
+                variant="secondary"
+                onClick={() =>
+                  track(EVENTS.PODCAST_LINK_CLICK, {
+                    platform: "youtube",
+                    placement: "home",
+                  })
+                }
+              >
+                Watch on YouTube
+              </Button>
             </div>
           </div>
-        </section>
-
-        {/* Featured Books Section - Broader Horizontal Layout */}
-        <section className=" bg-gray-50">
-          <div className="max-w-full px-8 lg:px-16">
-            <div
-              className="text-center mb-20 animate-fade-in-up"
-              style={{ transform: `translateY(${scrollY * 0.1}px)` }}
-            >
-              <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                Latest <span className="text-secondary">Works</span>
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Worlds where hope and heroism endure amid darkness, sacrifice,
-                and moral complexity.
-              </p>
-            </div>
-
-            <div className="max-w-7xl mx-auto">
-              <div className="space-y-16">
-                {BOOKS.map((book, index) => (
-                  <div key={index} className="group animate-slide-in-left">
-                    <div className="bg-white rounded-3xl p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                      <div className="grid lg:grid-cols-5 gap-12 items-center">
-                        <div className="lg:col-span-1">
-                          {book.cover ? (
-                            <img
-                              src={book.cover}
-                              alt={book.title}
-                              className="w-48 h-72 mx-auto rounded-2xl shadow-2xl transform group-hover:rotate-3 transition-transform duration-500 object-cover"
-                            />
-                          ) : (
-                            <div className="w-48 h-72 mx-auto bg-gradient-to-br from-slate-700 via-gray-800 to-slate-900  rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-500 text-white text-6xl">
-                              {book.icon}
-                            </div>
-                          )}
-                        </div>
-                        <div className="lg:col-span-4 text-center lg:text-left space-y-6">
-                          <div className="space-y-4">
-                            <span className={`inline-block px-3 py-1 rounded-md text-sm font-medium tracking-wide uppercase ${book.status === BOOK_STATUS.PRE_ORDER ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
-                              {book.status}
-                            </span>
-                            <h3 className="text-4xl md:text-5xl font-bold text-gray-900">
-                              {book.title}
-                            </h3>
-                            <p className="text-xl text-gray-600 leading-relaxed max-w-3xl">
-                              {book.shortBlurb}
-                            </p>
-                          </div>
-                          {book.genres && (
-                            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                              {book.genres.map((genre) => (
-                                <span
-                                  key={genre}
-                                  className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm"
-                                >
-                                  {genre}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          <Link
-                            to={book.link}
-                            className="inline-flex items-center bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 group"
-                          >
-                            Learn More
-                            <span className="ml-3 transform group-hover:translate-x-1 transition-transform">
-                              →
-                            </span>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Author Adjacent Podcast Section */}
-        <section className=" bg-white pt-8">
-          <div className="max-w-full px-8 lg:px-16">
-            <div className="max-w-7xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
-                <div className="text-gray-900 animate-fade-in-up flex flex-col space-y-6">
-                  <h2 className="text-4xl md:text-6xl font-bold">
-                    Author <span className="text-secondary">Adjacent</span>
-                  </h2>
-                  <p className="text-xl text-gray-700 leading-relaxed text-center lg:text-left">
-                    Join the honest conversation about the writing journey from
-                    hobbyist writer to professional author.
-                  </p>
-                  <p className="text-gray-600 leading-relaxed text-lg text-center lg:text-left">
-                    Every episode dives deep into the challenges, victories, and
-                    everything in between on the path to becoming a published
-                    author. Real talk, practical advice, and community support.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                    <Link
-                      to="/podcast"
-                      className="bg-secondary hover:bg-secondary-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 text-center transform hover:scale-105 shadow-lg hover:shadow-xl"
-                    >
-                      Learn More
-                    </Link>
-                    <a
-                      href="https://youtube.com/@AuthorAdjacent"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 text-center transform hover:scale-105 shadow-lg hover:shadow-xl"
-                    >
-                      Watch on YouTube
-                    </a>
-                  </div>
-                </div>
-
-                <div className="relative animate-scale-in">
-                  <div className="aspect-square bg-white rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-500">
-                    <img
-                      src={authorAdjacentLogo}
-                      alt="Author Adjacent Podcast Cover"
-                      className="w-full h-full object-cover p-8"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
+          <FramedImage
+            src={authorAdjacentLogo}
+            alt="Author Adjacent Podcast Cover"
+            aspect="square"
+            className="mx-auto w-full max-w-md animate-scale-in"
+            imgClassName="bg-cream p-8"
+          />
+        </div>
+      </Section>
     </div>
   );
 };

@@ -1,20 +1,21 @@
 import { GiCrystalGrowth, GiClockwork } from "react-icons/gi";
 
-import crownfallCover from "/src/assets/crownfall_cover.jpg";
+import crownfallCover from "/src/assets/crownfall_cover_web.jpg";
 
 export const BOOK_STATUS = {
-  IN_DEVELOPMENT: "Worldbuilding",
+  IN_DEVELOPMENT: "Worldbuilding & outlining",
   OUTLINE_STAGE: "Outlining",
   WRITING_STAGE: "Writing",
   EDITING_STAGE: "Editing",
   COMING_SOON: "Coming Soon",
   PRE_ORDER: "Available for Pre-order",
-  RELEASED: "Out Now",
+  RELEASED: "Available Now",
 };
 
 export const BOOKS = [
   {
     id: 1,
+    slug: "crownfall",
     title: "Crownfall",
     subtitle: "Trust is the hardest Lesson",
     blurb: (
@@ -43,26 +44,29 @@ export const BOOKS = [
     ),
     shortBlurb:
       "Nearly a decade under the empire’s grip has left Burunt a troubled land, its unrest simmering beneath a fragile surface. In the fight for power, justice, and survival, everyone must decide: who they will become?",
-    quotes: [
-      <>
-        "An excellent debut novel. Crownfall brims with a captivating cast of
-        complex characters and a mesmerizing world of hope and darkness."
-        <br />
-        &mdash; Adrian M Gibson, award winning author of Mushroom Blues
-      </>,
-      <>
-        "Crownfall had me on the edge of my seat from the first page to the
-        last. This is a masterclass in political fantasy that I couldn't put
-        down!"
-        <br />
-        &mdash; Greta Kelly, author of The Queen of Day's and The Frozen Crown
-      </>,
-      <>
-        "A compelling debut that needs to be on your TBR."
-        <br />
-        &mdash; M.J. Kuhn, internationally bestselling author of Among Thieves
-      </>,
+    praise: [
+      {
+        text: "An excellent debut novel. Crownfall brims with a captivating cast of complex characters and a mesmerizing world of hope and darkness.",
+        name: "Adrian M Gibson",
+        credit: "award winning author of Mushroom Blues",
+      },
+      {
+        text: "Crownfall had me on the edge of my seat from the first page to the last. This is a masterclass in political fantasy that I couldn't put down!",
+        name: "Greta Kelly",
+        credit: "author of The Queen of Days and The Frozen Crown",
+      },
+      {
+        text: "A compelling debut that needs to be on your TBR.",
+        name: "M.J. Kuhn",
+        credit: "internationally bestselling author of Among Thieves",
+      },
     ],
+    retailers: {
+      amazon: "https://www.amazon.com/dp/1972175009",
+      goodreads: "https://www.goodreads.com/book/show/249506475-crownfall",
+    },
+    // Home hero eyebrow. Crownfall is a standalone, not part of a series.
+    heroEyebrow: "A standalone dark epic fantasy · Available now",
     release: "April 2026",
     status: BOOK_STATUS.RELEASED,
     genres: ["Nobledark Fantasy", "Action & Adventure", "Political Intrigue"],
@@ -72,13 +76,16 @@ export const BOOKS = [
   },
   {
     id: 2,
+    slug: "project-arcanist",
     // title: "Chrono-Stained",
     title: "Project: Arcanist",
     subtitle: "Claim your past. Change your future.",
-    quotes: [],
+    praise: [],
     release: "TBA",
     status: BOOK_STATUS.IN_DEVELOPMENT,
-    color: "bg-gray-600",
+    // Its own filigree style for every frame of this book (see
+    // components/ui/filigree/index.js); other books use the site's.
+    filigree: "artDeco",
     // genres: ["Time Travel", "Sci-Fantasy", "Action Adventure"],
     icon: <GiClockwork />,
     // blurb: (
@@ -114,6 +121,8 @@ export const BOOKS = [
     //     dangerous secrets at the highest levels of government.
     //   </>
     // ),
+    blurb:
+      "Two brothers defy time itself to save their mother, only to uncover a conspiracy that threatens everything. Fullmetal Alchemist Brotherhood meets The Licanius Trilogy. More details coming as development progresses.",
     shortBlurb:
       "Two brothers defy time itself to save their mother, only to uncover a conspiracy that threatens everything. Fullmetal Alchemist Brotherhood meets The Licanius Trilogy. More details coming as development progresses.",
     // "Two half brothers travel back in time to save their mother from a fatal accident only to discover that she never died. Snapped back to their present, the adventure begins to find their mother and to ask her where has she been this whole time.",
