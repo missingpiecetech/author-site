@@ -29,7 +29,7 @@ const PageIntro = ({
     background={background}
     priority
     fade
-    innerClassName={`flex flex-col items-center gap-4 text-center lg:gap-5`}
+    innerClassName={`flex flex-col items-center gap-2 text-center lg:gap-2.5`}
     {...rest}
   >
     {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
