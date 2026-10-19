@@ -208,7 +208,8 @@ background`: Books `characters`, Store `skyline`, Contact `cliffs`, the excerpt 
   site-wide newsletter (`crystal`). **Every background gets the same overlay** (owner, Oct
   2026): a 20% `ground` wash over the whole image, and over its bottom quarter a fade to
   solid `ground` so it blends into the page below. `Section` draws both; there is no
-  per-section scrim and no darker pool behind text (the owner found pools too dark). The
+  per-section scrim. **Never put a radial-gradient oval or dark pool behind text** (owner,
+  Oct 2026: "They DO NOT look good"). The
   newsletter text sits in its own `bg-ground/90` box. `<Section background={BACKGROUNDS.name}
 priority>` draws the art as a decorative `<img>` cropped to fill (`priority` loads it at
   once, for art at the top of a page). Art lives in `src/assets/backgrounds/` as two WebP
