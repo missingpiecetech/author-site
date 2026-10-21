@@ -13,7 +13,7 @@ const BookHero = ({ book, className = "", ...rest }) => {
 
   return (
     <article
-      className={`flex flex-col items-center gap-5.5 lg:flex-row lg:gap-16 xl:gap-24 ${className}`}
+      className={`flex flex-col items-center gap-10 lg:flex-row lg:gap-16 xl:gap-24 ${className}`}
       {...rest}
     >
       <FramedImage
