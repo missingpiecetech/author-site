@@ -135,7 +135,7 @@ const DESIGNS = [
 		file: 'nobledark-circle-header-2-over-art.png',
 		html: page(
 			260,
-			`<div class="art" style="background-image:url(${background('cracks')})"></div><div class="wash"></div><div class="fade"></div>
+			`<div class="art" style="background-image:url(${background('cracks')})"></div><div class="wash"></div><div class="wash" style="background: rgb(18 16 23 / 0.15)"></div><div class="fade"></div>
 			<div class="frame">${corners()}</div>
 			<div class="content optical shadowed">${eyebrow()}<div style="height:10px"></div>${title()}<div style="height:10px"></div>${divider()}</div>`,
 			`.shadowed .eyebrow, .shadowed h1 { text-shadow: 0 2px 8px #000000; }
