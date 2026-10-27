@@ -107,6 +107,9 @@ html, body { background: ${COLORS.ground}; }
 .art, .wash { position: absolute; inset: 0; }
 .art { background-size: cover; background-position: center; }
 .wash { background: rgb(18 16 23 / 0.2); }
+/* Bottom quarter fades to solid ground (under the frame, which draws on top), so the
+   image's foot matches an email body set to the ground color. */
+.fade { position: absolute; left: 0; right: 0; bottom: 0; height: 25%; background: linear-gradient(to bottom, rgb(18 16 23 / 0), ${COLORS.ground} 92%); }
 .frame { position: absolute; inset: ${FRAME_MARGIN}px; border: ${FRAME_BORDER_WIDTH}px solid ${COLORS.accent}; }
 .corner { position: absolute; width: ${CORNER_SIZE}px; height: ${CORNER_SIZE}px; overflow: visible; fill: ${COLORS.accent}; }
 .content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
@@ -132,7 +135,7 @@ const DESIGNS = [
 		file: 'nobledark-circle-header-2-over-art.png',
 		html: page(
 			260,
-			`<div class="art" style="background-image:url(${background('cracks')})"></div><div class="wash"></div>
+			`<div class="art" style="background-image:url(${background('cracks')})"></div><div class="wash"></div><div class="fade"></div>
 			<div class="frame">${corners()}</div>
 			<div class="content optical shadowed">${eyebrow()}<div style="height:10px"></div>${title()}<div style="height:10px"></div>${divider()}</div>`,
 			`.shadowed .eyebrow, .shadowed h1 { text-shadow: 0 2px 8px #000000; }
