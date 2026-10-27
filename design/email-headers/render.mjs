@@ -1,5 +1,5 @@
 /**
- * Renders the four "The Noble Dark Circle" email newsletter headers to PNG.
+ * Renders the four "The Nobledark Circle" email newsletter headers to PNG.
  *
  * Each header is an HTML/SVG template drawn at its 600px email display width
  * and captured by headless Puppeteer at deviceScaleFactor 2 (1200px wide PNGs),
@@ -17,7 +17,7 @@
  *   - the gold crystal icon from design/crystal-icon/crystal-icon-gold-wide.svg.
  *
  * Run from anywhere: node design/email-headers/render.mjs
- * Writes noble-dark-circle-header-<n>-<name>.png next to this file. Exits with
+ * Writes nobledark-circle-header-<n>-<name>.png next to this file. Exits with
  * an error after a hard timeout of 60 seconds.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -94,7 +94,7 @@ const corners = () =>
 const divider = () =>
 	`<svg class="divider" viewBox="0 0 240 48" xmlns="http://www.w3.org/2000/svg">${DIVIDER_ART}</svg>`;
 const eyebrow = () => `<p class="eyebrow">Michael Vadney</p>`;
-const title = () => `<h1>The Noble Dark <span class="gold">Circle</span></h1>`;
+const title = () => `<h1>The Nobledark <span class="gold">Circle</span></h1>`;
 
 // The frame sits far enough in that the part of each corner outside it stays on the canvas.
 const FRAME_MARGIN = Math.ceil(-cornerOffset) + 2;
@@ -121,7 +121,7 @@ ${extraCss}
 
 const DESIGNS = [
 	{
-		file: 'noble-dark-circle-header-1-framed.png',
+		file: 'nobledark-circle-header-1-framed.png',
 		html: page(
 			260,
 			`<div class="frame">${corners()}</div>
@@ -129,7 +129,7 @@ const DESIGNS = [
 		)
 	},
 	{
-		file: 'noble-dark-circle-header-2-over-art.png',
+		file: 'nobledark-circle-header-2-over-art.png',
 		html: page(
 			260,
 			`<div class="art" style="background-image:url(${background('cracks')})"></div><div class="wash"></div>
@@ -140,7 +140,7 @@ const DESIGNS = [
 		)
 	},
 	{
-		file: 'noble-dark-circle-header-3-crest.png',
+		file: 'nobledark-circle-header-3-crest.png',
 		html: page(
 			270,
 			`<div class="frame">${corners()}</div>
@@ -148,7 +148,7 @@ const DESIGNS = [
 		)
 	},
 	{
-		file: 'noble-dark-circle-header-4-minimal.png',
+		file: 'nobledark-circle-header-4-minimal.png',
 		html: page(
 			240,
 			`<div class="content optical">${eyebrow()}<div style="height:12px"></div>${title()}<div style="height:12px"></div>${divider()}</div>`
