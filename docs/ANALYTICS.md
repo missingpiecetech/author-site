@@ -1,6 +1,6 @@
 # Analytics events
 
-The site sends events to Minilytics (`https://analytics.missingpiecetech.com`, site
+The site sends events to Minilytics on its own tracker host (`https://a.michaelvadney.com`, site
 `michael_vadney_author`, strict privacy mode: no cookies or storage) through `track()` in
 `client/src/lib/analytics.js`. Every event name is a key of the `EVENTS` map in that file;
 call sites use `EVENTS.X`, never a string, so `grep -rn "EVENTS\." client/src` lists every
