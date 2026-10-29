@@ -16,9 +16,14 @@
 //   --upload-sandbox         upload the crops to the Square sandbox and point the
 //                            mirrored sandbox items (sandbox-catalog-map.json) at them;
 //                            needs SQUARE_SANDBOX_ACCESS_TOKEN
-//   --upload-production      not implemented: production writes need the owner's approval
+//   --upload-production      upload the crops to production Square and point the
+//                            matching production items at them (run at deploy, with
+//                            the owner's go-ahead). The original images stay in the
+//                            catalog, and each item's previous image_ids are written
+//                            to <out>/production-rollback.json first.
 //
-// Production is only read (catalog list and image downloads). Images without
+// Without --upload-production, production is only read (catalog list and image
+// downloads). Images without
 // transparency are left untouched and keep their mirrored sandbox copy.
 //
 // How a mockup is cropped:
@@ -59,11 +64,8 @@ const parseArgs = (argv) => {
     else if (arg === "--match") options.match = argv[++i];
     else if (arg === "--production-env") options.productionEnv = argv[++i];
     else if (arg === "--upload-sandbox") options.isUploadSandbox = true;
-    else if (arg === "--upload-production") {
-      throw new Error(
-        "--upload-production is not implemented: writing to the production Square catalog needs the owner's approval",
-      );
-    } else throw new Error(`Unknown option ${arg}`);
+    else if (arg === "--upload-production") options.isUploadProduction = true;
+    else throw new Error(`Unknown option ${arg}`);
   }
   return options;
 };
@@ -224,7 +226,7 @@ const cropToBook = (data, width, height) => {
   return { data: out, left, top, width: cropWidth, height: cropHeight };
 };
 
-const uploadSandboxImage = async (sbx, png, name) => {
+const uploadImage = async (request, png, name) => {
   const form = new FormData();
   form.append(
     "request",
@@ -238,7 +240,7 @@ const uploadSandboxImage = async (sbx, png, name) => {
     new Blob([png], { type: "image/png" }),
     `${name}.png`,
   );
-  const res = await sbx("/catalog/images", { method: "POST", body: form });
+  const res = await request("/catalog/images", { method: "POST", body: form });
   return res.image.id;
 };
 
@@ -258,12 +260,12 @@ const main = async () => {
     throw new Error("--upload-sandbox needs SQUARE_SANDBOX_ACCESS_TOKEN");
   }
 
-  // Production: GET only.
-  const prodGet = api(
+  // Production: GET only, unless --upload-production.
+  const production = api(
     "https://connect.squareup.com",
     env.VITE_SQUARE_ACCESS_TOKEN,
   );
-  const objects = await listAll(prodGet, "ITEM,IMAGE");
+  const objects = await listAll(production, "ITEM,IMAGE");
   const images = new Map(
     objects.filter((o) => o.type === "IMAGE").map((o) => [o.id, o]),
   );
@@ -328,6 +330,47 @@ const main = async () => {
     );
   }
 
+  if (options.isUploadProduction) {
+    // Record what each item points at now, so the swap can be undone by
+    // writing these image_ids back. The original images are not deleted.
+    const rollbackPath = path.join(options.out, "production-rollback.json");
+    await writeFile(
+      rollbackPath,
+      JSON.stringify(
+        Object.fromEntries(
+          items.map((item) => [
+            item.id,
+            { name: item.item_data.name, image_ids: item.item_data.image_ids },
+          ]),
+        ),
+        null,
+        2,
+      ) + "\n",
+    );
+    console.log(`previous image_ids saved to ${rollbackPath}`);
+    const productionIds = new Map();
+    for (const [imageId, png] of crops) {
+      const croppedId = await uploadImage(production, png, `crop-${imageId}`);
+      productionIds.set(imageId, croppedId);
+      console.log(`uploaded crop of ${imageId} → production ${croppedId}`);
+    }
+    for (const item of items) {
+      const { object } = await production(`/catalog/object/${item.id}`);
+      const imageIds = object.item_data.image_ids.map(
+        (imageId) => productionIds.get(imageId) ?? imageId,
+      );
+      if (imageIds.every((id, i) => id === object.item_data.image_ids[i])) {
+        continue;
+      }
+      object.item_data.image_ids = imageIds;
+      await production("/catalog/object", {
+        method: "POST",
+        body: JSON.stringify({ idempotency_key: randomUUID(), object }),
+      });
+      console.log(`${item.item_data.name}: ${imageIds.join(", ")}`);
+    }
+  }
+
   if (!options.isUploadSandbox) return;
 
   const sbx = api("https://connect.squareupsandbox.com", sandboxToken);
@@ -338,11 +381,7 @@ const main = async () => {
   for (const [imageId, png] of crops) {
     const sha256 = createHash("sha256").update(png).digest("hex");
     if (map.crops[imageId]?.sha256 === sha256) continue;
-    const sandboxImageId = await uploadSandboxImage(
-      sbx,
-      png,
-      `crop-${imageId}`,
-    );
+    const sandboxImageId = await uploadImage(sbx, png, `crop-${imageId}`);
     map.crops[imageId] = { sandboxImageId, sha256 };
     console.log(`uploaded crop of ${imageId} → sandbox ${sandboxImageId}`);
   }
