@@ -90,7 +90,7 @@ const waitForHttp = async (url, child, timeoutMs) => {
   throw new Error(`vite did not answer at ${url} within ${timeoutMs}ms`);
 };
 
-export const startServer = async () => {
+export const startServer = async ({ env: extraEnv = {} } = {}) => {
   const scratch = mkdtempSync(join(tmpdir(), "author-site-e2e-"));
   const logPath = join(scratch, "square-calls.jsonl");
   const port = await findFreePort();
@@ -103,6 +103,7 @@ export const startServer = async () => {
     INSTAGRAM_FEED_FIXTURE: INSTAGRAM_FIXTURE,
     E2E_VITE_CACHE_DIR: join(scratch, "vite-cache"),
     BROWSER: "none",
+    ...extraEnv,
   });
 
   const output = [];

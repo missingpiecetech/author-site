@@ -1,13 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { fetchJson } from "../lib/errors.js";
 
-const fetchInstagramFeed = async () => {
-  const response = await fetch("/api/instagram");
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.error || `Instagram feed failed (${response.status})`);
-  }
-  return response.json();
-};
+const fetchInstagramFeed = () => fetchJson("/api/instagram");
 
 /**
  * Michael's Instagram posts from /api/instagram (Behold, cached at the edge).

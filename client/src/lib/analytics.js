@@ -16,6 +16,8 @@
  * free text or search terms. docs/ANALYTICS.md lists each event, where it
  * fires and its properties.
  */
+import { reportError } from "./errors.js";
+
 export const EVENTS = Object.freeze({
   ADD_TO_CART: "add_to_cart",
   CART_OPENED: "cart_opened",
@@ -67,7 +69,7 @@ export const track = (name, data) => {
   try {
     window.minilytics?.track(name, data);
   } catch (error) {
-    console.error("analytics track failed:", name, error);
+    reportError(error, { code: "analytics_track_failed" });
   }
 };
 
@@ -76,6 +78,6 @@ export const startReplay = () => {
   try {
     window.minilytics?.startReplay?.(REPLAY_SETTINGS);
   } catch (error) {
-    console.error("analytics startReplay failed:", error);
+    reportError(error, { code: "analytics_replay_failed" });
   }
 };

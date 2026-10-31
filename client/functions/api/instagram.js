@@ -3,7 +3,9 @@
 // never spend Behold's monthly request allowance; see shared/instagramFeed.js.
 // The dev-server twin is api/instagramApiPlugin.js.
 
+import { FEED_FAILED } from "../../shared/errors.js";
 import { FEED_CACHE_SECONDS, fetchFeed } from "../../shared/instagramFeed.js";
+import { reportServerError } from "../../shared/serverErrors.js";
 
 const jsonResponse = (data, status, headers = {}) =>
   new Response(JSON.stringify(data), {
@@ -24,11 +26,15 @@ export async function onRequestGet(context) {
   try {
     feed = await fetchFeed(fetch);
   } catch (error) {
-    return jsonResponse(
-      { error: `Could not load the Instagram feed: ${error.message}` },
-      502,
-      { "Cache-Control": "no-store" },
-    );
+    console.error("Instagram feed error:", error);
+    reportServerError(error, {
+      request: context.request,
+      status: 502,
+      code: "behold_failed",
+    });
+    return jsonResponse({ error: FEED_FAILED }, 502, {
+      "Cache-Control": "no-store",
+    });
   }
 
   const response = jsonResponse(feed, 200, {

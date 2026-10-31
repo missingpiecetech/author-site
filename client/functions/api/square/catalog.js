@@ -1,4 +1,9 @@
 import { SquareClient, SquareEnvironment } from "square";
+import { CATALOG_FAILED, STORE_UNAVAILABLE } from "../../../shared/errors.js";
+import {
+  reportServerError,
+  reportSquareNotConfigured,
+} from "../../../shared/serverErrors.js";
 
 const resolveEnvironment = (value) =>
   (value || "").toLowerCase() === "production"
@@ -12,18 +17,13 @@ const jsonResponse = (data, status = 200) =>
   );
 
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { env, request } = context;
   const token = env.SQUARE_ACCESS_TOKEN || "";
   const locationId = env.SQUARE_LOCATION_ID || "";
 
   if (!token || !locationId) {
-    return jsonResponse(
-      {
-        error:
-          "Square is not configured. Set SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, and SQUARE_ENVIRONMENT.",
-      },
-      500,
-    );
+    reportSquareNotConfigured(request);
+    return jsonResponse({ error: STORE_UNAVAILABLE }, 500);
   }
 
   const client = new SquareClient({
@@ -41,9 +41,11 @@ export async function onRequestGet(context) {
     return jsonResponse({ objects });
   } catch (error) {
     console.error("Square catalog error:", error);
-    return jsonResponse(
-      { error: error?.message || "Square API error" },
-      500,
-    );
+    reportServerError(error, {
+      request,
+      status: 500,
+      code: "square_catalog_failed",
+    });
+    return jsonResponse({ error: CATALOG_FAILED }, 500);
   }
 }

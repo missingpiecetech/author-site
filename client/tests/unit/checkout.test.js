@@ -16,6 +16,7 @@
 
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { CHECKOUT_FAILED, STORE_UNAVAILABLE } from "../../shared/errors.js";
 
 const square = vi.hoisted(() => {
   const SquareEnvironment = {
@@ -258,7 +259,7 @@ describe.each(implementations)("checkout: %s", (_name, call) => {
       CART_BODY,
     );
     expect(status).toBe(500);
-    expect(body.error).toMatch(/not configured/i);
+    expect(body.error).toBe(STORE_UNAVAILABLE);
     expect(createCalls()).toHaveLength(0);
   });
 
@@ -268,11 +269,11 @@ describe.each(implementations)("checkout: %s", (_name, call) => {
       CART_BODY,
     );
     expect(status).toBe(500);
-    expect(body.error).toMatch(/not configured/i);
+    expect(body.error).toBe(STORE_UNAVAILABLE);
     expect(createCalls()).toHaveLength(0);
   });
 
-  it("returns 500 with the SDK's message when Square rejects the request", async () => {
+  it("returns 500 in plain words, with none of Square's text, when Square rejects the request", async () => {
     square.state.createImpl = () => {
       throw new Error("INVALID_REQUEST_ERROR: location not found");
     };
@@ -282,7 +283,7 @@ describe.each(implementations)("checkout: %s", (_name, call) => {
     const { status, body } = await call(ENV, CART_BODY);
     consoleError.mockRestore();
     expect(status).toBe(500);
-    expect(body.error).toBe("INVALID_REQUEST_ERROR: location not found");
+    expect(body.error).toBe(CHECKOUT_FAILED);
   });
 });
 

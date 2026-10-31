@@ -55,24 +55,15 @@ export const trimFeed = (feed) => {
   };
 };
 
-/** Fetches the Behold feed and trims it. Throws an Error naming the cause on failure. */
+/** Fetches the Behold feed and trims it. Failures throw the original error. */
 export const fetchFeed = async (fetchImpl = fetch) => {
-  let response;
-  try {
-    response = await fetchImpl(BEHOLD_FEED_URL, {
-      headers: { Accept: "application/json" },
-    });
-  } catch (error) {
-    throw new Error(`Behold feed request failed: ${error.message}`);
-  }
+  const response = await fetchImpl(BEHOLD_FEED_URL, {
+    headers: { Accept: "application/json" },
+  });
   if (!response.ok) {
-    throw new Error(`Behold feed answered HTTP ${response.status}`);
+    const error = new Error(`Behold feed answered HTTP ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
-  let feed;
-  try {
-    feed = await response.json();
-  } catch {
-    throw new Error("Behold feed returned invalid JSON");
-  }
-  return trimFeed(feed);
+  return trimFeed(await response.json());
 };

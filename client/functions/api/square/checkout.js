@@ -1,4 +1,9 @@
 import { SquareClient, SquareEnvironment } from "square";
+import { CHECKOUT_FAILED, STORE_UNAVAILABLE } from "../../../shared/errors.js";
+import {
+  reportServerError,
+  reportSquareNotConfigured,
+} from "../../../shared/serverErrors.js";
 
 const resolveEnvironment = (value) =>
   (value || "").toLowerCase() === "production"
@@ -20,13 +25,8 @@ export async function onRequestPost(context) {
   const locationId = env.SQUARE_LOCATION_ID || "";
 
   if (!token || !locationId) {
-    return jsonResponse(
-      {
-        error:
-          "Square is not configured. Set SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, and SQUARE_ENVIRONMENT.",
-      },
-      500,
-    );
+    reportSquareNotConfigured(request);
+    return jsonResponse({ error: STORE_UNAVAILABLE }, 500);
   }
 
   const client = new SquareClient({
@@ -72,9 +72,11 @@ export async function onRequestPost(context) {
     return jsonResponse({ paymentLink, url: paymentLink?.url || null });
   } catch (error) {
     console.error("Square checkout error:", error);
-    return jsonResponse(
-      { error: error?.message || "Square API error" },
-      500,
-    );
+    reportServerError(error, {
+      request,
+      status: 500,
+      code: "square_checkout_failed",
+    });
+    return jsonResponse({ error: CHECKOUT_FAILED }, 500);
   }
 }

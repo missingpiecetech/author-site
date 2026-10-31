@@ -9,6 +9,7 @@
 // serves plain placeholders at the requested width x height.
 
 import { readFileSync } from "node:fs";
+import { FEED_FAILED } from "../shared/errors.js";
 import {
   FEED_CACHE_SECONDS,
   fetchFeed,
@@ -61,9 +62,8 @@ export const createInstagramApiPlugin = (env) => {
         try {
           sendJson(res, 200, await loadFeed());
         } catch (error) {
-          sendJson(res, 502, {
-            error: `Could not load the Instagram feed: ${error.message}`,
-          });
+          console.error("Instagram feed error:", error);
+          sendJson(res, 502, { error: FEED_FAILED });
         }
       });
     },
