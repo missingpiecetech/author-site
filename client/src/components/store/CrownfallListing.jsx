@@ -78,7 +78,7 @@ const CrownfallListing = ({ editions, onAddToCart, onEnlarge }) => {
     <article
       data-testid="store-product"
       data-product-id={product.id}
-      className="grid items-start gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-24"
+      className="grid items-start gap-15 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10 lg:gap-24"
     >
       <div className="mx-auto w-full max-w-sm md:max-w-none">
         <ProductGallery
