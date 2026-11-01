@@ -20,10 +20,15 @@ export const FEED_FAILED = "We could not load the Instagram posts right now.";
 // No domain dot required: a JSON parse error quotes a clipped "reader@exa".
 const EMAIL = /[^\s"'<>:,]+@[^\s"'<>:,]*/g;
 const BEARER_TOKEN = /Bearer\s+[^\s"']+/gi;
+// V8's JSON parse errors quote the start of what they were given: a request body.
+const JSON_PARSE_QUOTE = /Unexpected token .*is not valid JSON/s;
 
 const scrubText = (text) =>
   typeof text === "string"
-    ? text.replace(EMAIL, "[email]").replace(BEARER_TOKEN, "Bearer [token]")
+    ? text
+        .replace(JSON_PARSE_QUOTE, "Body is not valid JSON")
+        .replace(EMAIL, "[email]")
+        .replace(BEARER_TOKEN, "Bearer [token]")
     : text;
 
 /**

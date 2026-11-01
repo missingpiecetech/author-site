@@ -58,6 +58,19 @@ describe("reportServerError", () => {
 });
 
 describe("what leaves for GlitchTip", () => {
+  it("removes the request body a JSON parse error quotes", () => {
+    const event = REPORTING_OPTIONS.beforeSend({
+      exception: {
+        values: [
+          {
+            value: `Unexpected token 'n', "not json qa"... is not valid JSON`,
+          },
+        ],
+      },
+    });
+    expect(event.exception.values[0].value).toBe("Body is not valid JSON");
+  });
+
   it("drops request data and users, and masks emails and tokens in messages", () => {
     const event = REPORTING_OPTIONS.beforeSend({
       user: { email: "reader@example.com", ip_address: "1.2.3.4" },
