@@ -364,6 +364,26 @@ Checkout always asks for a shipping address and adds a flat **$5.99 "Shipping"**
 client's `askForShippingAddress`/pickup flag is ignored. Changing or dropping the fee is a
 business decision, not a refactor.
 
+## Errors
+
+- **The source writes the sentence.** All user-facing sentences live in `client/shared/errors.js`,
+  shared by the browser, the Pages Functions and their dev twins. Users never see a status code,
+  an error code or library text.
+- **In the browser,** `fetchJson` (`src/lib/errors.js`) is the one place a failure enters our code:
+  it shows our API's `error` field unchanged, gives plain words to network failures and replies
+  from anything else, and reports to GlitchTip. Screens show `getUserMessage(error)` and nothing
+  else, so a bug's raw text cannot reach them.
+- **GlitchTip** (project `author-site`, DSN in `PUBLIC_GLITCHTIP_DSN`) gets the status, code, method,
+  URL, original error and failed field names. `scrubEvent` in `shared/errors.js` removes personal
+  data from every event. Dev and the tests have no DSN, so they report nothing.
+- **Pages Functions** call `reportServerError` (`shared/serverErrors.js`), which flushes through
+  `context.waitUntil`. The SDK's Pages plugin does not flush on its own, so an event captured without
+  that flush never arrives. A branch preview is the real check of this path.
+- **Cloudflare settings, made on the Pages project, not in `wrangler.toml`:** `@sentry/cloudflare`
+  imports `node:async_hooks`, so production and preview need the `nodejs_als` compatibility flag,
+  and `PUBLIC_GLITCHTIP_DSN` as an environment variable. `.env.production` only reaches the browser
+  build.
+
 ## Tests
 
 `client/tests/` locks the money path. Run `npm test` before any change to the store, cart,
@@ -379,6 +399,8 @@ navigation or Square code.
   at desktop and 390px: one tile per post at the fixture's `medium` size, the video viewer
   (`src`, poster, Instagram link), album slides and count, the phone caption's two-line
   clamp and expand, Escape/close returning focus to the tile, and nothing rendered on a 502.
+- **Errors** (`tests/e2e/errors.e2e.test.js`, `tests/unit/errors.test.js`): forces each store and
+  checkout failure, checks the screen shows plain words and catches what is sent to GlitchTip.
 - **E2E** (`tests/e2e/`): starts the real `vite` CLI on a free port with the `square` package
   swapped for an in-process stub (`support/register-square-stub.mjs`) — nothing reaches
   Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
@@ -448,7 +470,6 @@ navigation or Square code.
   the 10MB original — don't import it.
 - **Cart persistence:** localStorage key `author-site-cart`.
 - **`useSquare.getProducts()` caches the catalog in a `useRef`** for the hook's lifetime.
-- **`console.log(response)` in `useSquare.js`** is leftover debug output.
 - **Prices:** multiplied by 100 and cast to `BigInt` before sending to Square; non-numeric
   `item.price` throws.
 - **`StrictMode` is on** — expect double-invoked effects in dev.

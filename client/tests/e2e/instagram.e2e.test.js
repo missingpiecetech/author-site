@@ -82,7 +82,9 @@ const openHome = async (viewport, { feedStatus } = {}) => {
       request.respond({
         status: feedStatus,
         contentType: "application/json",
-        body: JSON.stringify({ error: "Behold feed answered HTTP 500" }),
+        body: JSON.stringify({
+          error: "We could not load the Instagram posts right now.",
+        }),
       });
       return;
     }
