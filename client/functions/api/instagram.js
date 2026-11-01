@@ -28,7 +28,7 @@ export async function onRequestGet(context) {
   } catch (error) {
     console.error("Instagram feed error:", error);
     reportServerError(error, {
-      request: context.request,
+      context,
       status: 502,
       code: "behold_failed",
     });

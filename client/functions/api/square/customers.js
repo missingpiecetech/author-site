@@ -21,7 +21,7 @@ export async function onRequestPost(context) {
   const token = env.SQUARE_ACCESS_TOKEN || "";
 
   if (!token) {
-    reportSquareNotConfigured(request);
+    reportSquareNotConfigured(context);
     return jsonResponse({ error: STORE_UNAVAILABLE }, 500);
   }
 
@@ -45,7 +45,7 @@ export async function onRequestPost(context) {
   } catch (error) {
     console.error("Square customer error:", error);
     reportServerError(error, {
-      request,
+      context,
       status: 500,
       code: "square_customer_failed",
     });

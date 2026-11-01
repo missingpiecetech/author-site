@@ -17,12 +17,12 @@ const jsonResponse = (data, status = 200) =>
   );
 
 export async function onRequestGet(context) {
-  const { env, request } = context;
+  const { env } = context;
   const token = env.SQUARE_ACCESS_TOKEN || "";
   const locationId = env.SQUARE_LOCATION_ID || "";
 
   if (!token || !locationId) {
-    reportSquareNotConfigured(request);
+    reportSquareNotConfigured(context);
     return jsonResponse({ error: STORE_UNAVAILABLE }, 500);
   }
 
@@ -42,7 +42,7 @@ export async function onRequestGet(context) {
   } catch (error) {
     console.error("Square catalog error:", error);
     reportServerError(error, {
-      request,
+      context,
       status: 500,
       code: "square_catalog_failed",
     });

@@ -105,7 +105,11 @@ const callPagesFunction = async (env, body) => {
     headers: { "Content-Type": "application/json", Origin: ORIGIN },
     body: JSON.stringify(body),
   });
-  const response = await onRequestPost({ env, request });
+  const response = await onRequestPost({
+    env,
+    request,
+    waitUntil: () => {},
+  });
   return { status: response.status, body: await response.json() };
 };
 

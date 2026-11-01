@@ -25,7 +25,7 @@ export async function onRequestPost(context) {
   const locationId = env.SQUARE_LOCATION_ID || "";
 
   if (!token || !locationId) {
-    reportSquareNotConfigured(request);
+    reportSquareNotConfigured(context);
     return jsonResponse({ error: STORE_UNAVAILABLE }, 500);
   }
 
@@ -73,7 +73,7 @@ export async function onRequestPost(context) {
   } catch (error) {
     console.error("Square checkout error:", error);
     reportServerError(error, {
-      request,
+      context,
       status: 500,
       code: "square_checkout_failed",
     });

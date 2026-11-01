@@ -11,6 +11,7 @@ const sentry = vi.hoisted(() => ({
 
 vi.mock("@sentry/cloudflare", () => ({
   captureException: sentry.captureException,
+  flush: () => Promise.resolve(true),
   withScope: (callback) => callback(sentry.scope),
 }));
 
@@ -20,6 +21,7 @@ describe("reportServerError", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("sends Square's status, code and field names with the original error", () => {
+    const waitUntil = vi.fn();
     const error = Object.assign(new Error("Status code: 400"), {
       statusCode: 400,
       errors: [
@@ -31,14 +33,19 @@ describe("reportServerError", () => {
       ],
     });
     reportServerError(error, {
-      request: new Request("https://site.test/api/square/checkout?token=abc", {
-        method: "POST",
-      }),
+      context: {
+        request: new Request(
+          "https://site.test/api/square/checkout?token=abc",
+          { method: "POST" },
+        ),
+        waitUntil,
+      },
       status: 500,
       code: "square_checkout_failed",
     });
 
     expect(sentry.captureException).toHaveBeenCalledWith(error);
+    expect(waitUntil).toHaveBeenCalledOnce();
     expect(sentry.scope.setContext).toHaveBeenCalledWith("failure", {
       status: 500,
       code: "INVALID_VALUE",
