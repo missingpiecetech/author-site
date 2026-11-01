@@ -17,7 +17,8 @@ export const CUSTOMER_FAILED =
   "We could not save your details. Please try again in a few minutes.";
 export const FEED_FAILED = "We could not load the Instagram posts right now.";
 
-const EMAIL = /[^\s"'<>:,]+@[^\s"'<>:,]+\.[^\s"'<>:,]+/g;
+// No domain dot required: a JSON parse error quotes a clipped "reader@exa".
+const EMAIL = /[^\s"'<>:,]+@[^\s"'<>:,]*/g;
 const BEARER_TOKEN = /Bearer\s+[^\s"']+/gi;
 
 const scrubText = (text) =>

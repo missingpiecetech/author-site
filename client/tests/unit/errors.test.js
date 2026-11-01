@@ -73,14 +73,14 @@ describe("what leaves for GlitchTip", () => {
         values: [
           {
             value:
-              'Body: {"detail":"reader@example.com is taken"} Bearer sq0abc123',
+              'Body: {"detail":"reader@example.com is taken"} Bearer sq0abc123 reader@exa',
           },
         ],
       },
     });
 
     expect(JSON.stringify(event)).not.toMatch(
-      /reader@example|sq0abc123|1\.2\.3\.4|session/,
+      /reader@exa|sq0abc123|1\.2\.3\.4|session/,
     );
     expect(event.request).toEqual({ url: "https://site.test/store" });
   });
