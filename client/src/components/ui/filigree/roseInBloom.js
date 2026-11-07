@@ -20,7 +20,13 @@
  * theirs.
  */
 export const CORNER_SIZE = 134;
-export const CORNER_VIEWBOX = "0 0 100 100";
+/*
+ * The 100-unit box less its empty top and left edge (no piece draws within
+ * 5.19 units of either), so a 390px-wide page with a framed box 24px from each side
+ * does not scroll sideways: the corner box reaches about 21px outside the
+ * frame instead of 28px. The artwork and its scale are unchanged.
+ */
+export const CORNER_VIEWBOX = "5 5 95 95";
 
 /*
  * Frame metrics, as in bramble.jsx: a 2px frame line whose corner is at

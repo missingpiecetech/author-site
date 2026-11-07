@@ -13,11 +13,14 @@ import { CORNER_SIZE as BASE_CORNER_SIZE, UNIT } from "./filigree/scale.js";
 // Each corner's position: offset from the padding edge by half the border,
 // plus the part of the box outside the frame line (the sample's
 // `--bw / -2 - --cs * --k`), and the flip that points its arms along the
-// frame's edges. Every corner is `size` px (the style's CORNER_SIZE),
-// whatever the frame's size, so only frame a box at least FRAME_MIN_SPAN ×
-// CORNER_SIZE tall and wide; on a smaller one the arms meet.
-const positions = (size, { FRAME_BORDER_WIDTH, FRAME_INSET }) => {
-  const offset = `${FRAME_BORDER_WIDTH / -2 - size * FRAME_INSET}px`;
+// frame's edges. Artwork is drawn `size` px per 100 units (the style's
+// CORNER_SIZE), whatever the frame's size, so only frame a box at least
+// FRAME_MIN_SPAN × CORNER_SIZE tall and wide; on a smaller one the arms meet.
+// A viewBox that starts past 0 (Rose in Bloom's) trims the empty edge of the
+// box; the frame corner stays at FRAME_INSET × 100 units.
+const positions = (size, viewBox, { FRAME_BORDER_WIDTH, FRAME_INSET }) => {
+  const [x] = viewBox.split(" ").map(Number);
+  const offset = `${FRAME_BORDER_WIDTH / -2 - (FRAME_INSET * 100 - x) * (size / 100)}px`;
   return [
     { top: offset, left: offset },
     { top: offset, right: offset, transform: "scaleX(-1)" },
@@ -64,6 +67,8 @@ export const FiligreeCorners = ({ filigree, className = "text-accent" }) => {
   const style = getFiligree(filigree);
   const { CORNER_VIEWBOX, CORNER_PIECES, CornerArt } = style;
   const size = style.CORNER_SIZE ?? BASE_CORNER_SIZE;
+  const [, , width] = CORNER_VIEWBOX.split(" ").map(Number);
+  const box = (width * size) / 100;
   const [picks] = useState(pickCorners);
   return (
     <span
@@ -72,7 +77,7 @@ export const FiligreeCorners = ({ filigree, className = "text-accent" }) => {
       data-filigree="corners"
       data-filigree-style={filigree ?? SITE_FILIGREE}
     >
-      {positions(size, style).map((position, i) => {
+      {positions(size, CORNER_VIEWBOX, style).map((position, i) => {
         const { index, mirror } = picks[i];
         const piece = CORNER_PIECES?.[Math.floor(index * CORNER_PIECES.length)];
         return (
@@ -80,7 +85,7 @@ export const FiligreeCorners = ({ filigree, className = "text-accent" }) => {
             key={i}
             viewBox={CORNER_VIEWBOX}
             focusable="false"
-            style={{ ...position, width: size, height: size }}
+            style={{ ...position, width: box, height: box }}
             className={`pointer-events-none absolute overflow-visible ${className}`}
           >
             {!piece ? (
