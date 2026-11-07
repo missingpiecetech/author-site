@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Thorned Corners</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Spectral:wght@400;500&display=swap"
+			rel="stylesheet" />
+		<style>
+			:root {
+				--ground: #121017;
+				--band: #17141d;
+				--well: #1c1922;
+				--surface: #25202c;
+				--rule: #2c2733;
+				--edge: #3a3342;
+				--cream: #ece4d4;
+				--muted: #c9c0ae;
+				--subtle: #b3a996;
+				--accent: #cfae6b;
+				--accent-hover: #e6c98c;
+				--corner: 112px;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--ground);
+				color: var(--muted);
+				font:
+					17px/1.6 Spectral,
+					Georgia,
+					serif;
+			}
+			main {
+				max-width: 1240px;
+				margin: 0 auto;
+				padding: 48px 24px 96px;
+			}
+			h1,
+			h2 {
+				font-family: 'Cormorant Garamond', serif;
+				color: var(--cream);
+				font-weight: 600;
+				line-height: 1.1;
+			}
+			h1 {
+				font-size: 46px;
+				margin: 0 0 8px;
+			}
+			h2 {
+				font-size: 32px;
+				margin: 0 0 4px;
+			}
+			.eyebrow {
+				color: var(--accent);
+				text-transform: uppercase;
+				letter-spacing: 0.22em;
+				font-size: 13px;
+				margin: 0 0 10px;
+			}
+			.lede {
+				max-width: 760px;
+				margin: 0 0 8px;
+			}
+			section {
+				border-top: 1px solid var(--rule);
+				padding: 48px 0;
+			}
+			section:nth-of-type(even) {
+				background: var(--band);
+				margin: 0 -24px;
+				padding: 48px 24px;
+			}
+			button {
+				font:
+					500 15px Spectral,
+					serif;
+				border-radius: 2px;
+				cursor: pointer;
+				padding: 10px 18px;
+				background: var(--accent);
+				color: var(--ground);
+				border: 0;
+			}
+			button:hover {
+				background: var(--accent-hover);
+			}
+			.toolbar {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				align-items: center;
+				margin: 20px 0 32px;
+			}
+			.seed {
+				color: var(--subtle);
+				font-size: 14px;
+			}
+
+			.variants {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+				gap: 20px;
+				margin-top: 24px;
+			}
+			.variant {
+				background: var(--well);
+				border: 1px solid var(--rule);
+				padding: 16px;
+				margin: 0;
+			}
+			.variant svg {
+				display: block;
+				width: 100%;
+				height: auto;
+				color: var(--accent);
+			}
+			.variant p {
+				margin: 8px 0 0;
+				font-size: 14px;
+				color: var(--subtle);
+			}
+
+			/* Frames match FramedImage: 2px line, 18px inset, 112px corners with 20% outside the line. */
+			.frames {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 72px 80px;
+				margin-top: 40px;
+				padding: 24px 28px;
+				align-items: flex-start;
+			}
+			.frame {
+				position: relative;
+				border: 2px solid var(--accent);
+				padding: 18px;
+			}
+			.frame svg.corner {
+				position: absolute;
+				width: var(--corner);
+				height: var(--corner);
+				overflow: visible;
+				color: var(--accent);
+				pointer-events: none;
+			}
+			.frame img {
+				display: block;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			.cover {
+				width: 300px;
+			}
+			.cover .inner {
+				aspect-ratio: 2/3;
+			}
+			.quote {
+				width: min(640px, 100%);
+			}
+			.quote .inner {
+				padding: 24px 40px;
+				text-align: center;
+			}
+			.quote blockquote {
+				margin: 0;
+				font:
+					italic 500 28px/1.3 'Cormorant Garamond',
+					serif;
+				color: var(--cream);
+			}
+			.quote cite {
+				display: block;
+				margin-top: 14px;
+				font: 13px Spectral;
+				letter-spacing: 0.2em;
+				text-transform: uppercase;
+				color: var(--subtle);
+				font-style: normal;
+			}
+			.notice {
+				width: 360px;
+			}
+			.notice .inner {
+				min-height: 160px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				background: var(--well);
+				padding: 24px;
+			}
+			.notice .inner p {
+				margin: 0;
+				color: var(--cream);
+			}
+			@media (max-width: 520px) {
+				main {
+					padding: 32px 16px 64px;
+				}
+				section:nth-of-type(even) {
+					margin: 0 -16px;
+					padding: 48px 16px;
+				}
+				.frames {
+					padding: 24px 22px;
+					gap: 56px;
+				}
+				.cover,
+				.notice {
+					width: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<p class="eyebrow">Filigree samples, round 3</p>
+			<h1>Thorned corners</h1>
+			<p class="lede">
+				Each corner piece is one solid shape with a single outline: a stem that bends around the corner in a smooth
+				curve, with thorns, leaves, buds and roses joined to it. Each family has six pieces. A frame picks one piece per
+				corner at random and may mirror it.
+			</p>
+			<div id="families"></div>
+		</main>
+
+		<script>
+			/* ---------- Seeded random numbers ---------- */
+			function mulberry32(seed) {
+				return function () {
+					seed |= 0;
+					seed = (seed + 0x6d2b79f5) | 0;
+					let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+					t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+					return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+				};
+			}
+			const range = (rng, a, b) => a + (b - a) * rng();
+
+			/* ---------- Vector helpers ---------- */
+			const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+			const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+			const mul = (a, k) => [a[0] * k, a[1] * k];
+			const len = (a) => Math.hypot(a[0], a[1]);
+			const unit = (a) => {
+				const l = len(a) || 1;
+				return [a[0] / l, a[1] / l];
+			};
+			const perp = (a) => [-a[1], a[0]];
+			const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+			const turn = (a, ang) => [
+				a[0] * Math.cos(ang) - a[1] * Math.sin(ang),
+				a[0] * Math.sin(ang) + a[1] * Math.cos(ang)
+			];
+			const fmt = (n) => +n.toFixed(2);
+			const pt = (p) => `${fmt(p[0])} ${fmt(p[1])}`;
+
+			/* Catmull-Rom spline through points, as cubic Bezier path data. */
+			function smoothPath(pts, closed = true) {
+				const n = pts.length;
+				const get = (i) => (closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))]);
+				let d = `M${pt(pts[0])}`;
+				const last = closed ? n : n - 1;
+				for (let i = 0; i < last; i++) {
+					const p0 = get(i - 1),
+						p1 = get(i),
+						p2 = get(i + 1),
+						p3 = get(i + 2);
+					const c1 = add(p1, mul(sub(p2, p0), 1 / 6));
+					const c2 = sub(p2, mul(sub(p3, p1), 1 / 6));
+					d += `C${pt(c1)} ${pt(c2)} ${pt(p2)}`;
+				}
+				return d + (closed ? 'Z' : '');
+			}
+
+			/* Dense points along a Catmull-Rom curve through control points. */
+			function sampleCurve(ctrl, perSegment = 24) {
+				const out = [];
+				const get = (i) => ctrl[Math.max(0, Math.min(ctrl.length - 1, i))];
+				for (let i = 0; i < ctrl.length - 1; i++) {
+					const p0 = get(i - 1),
+						p1 = get(i),
+						p2 = get(i + 1),
+						p3 = get(i + 2);
+					const c1 = add(p1, mul(sub(p2, p0), 1 / 6));
+					const c2 = sub(p2, mul(sub(p3, p1), 1 / 6));
+					for (let k = 0; k < perSegment; k++) {
+						const t = k / perSegment,
+							u = 1 - t;
+						out.push([
+							u * u * u * p1[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * p2[0],
+							u * u * u * p1[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * p2[1]
+						]);
+					}
+				}
+				out.push(ctrl[ctrl.length - 1]);
+				return out;
+			}
+
+			/* A centerline measured by arc length: at(s) for s in 0..1. */
+			class Centerline {
+				constructor(pts) {
+					this.pts = pts;
+					this.cum = [0];
+					for (let i = 1; i < pts.length; i++) this.cum.push(this.cum[i - 1] + len(sub(pts[i], pts[i - 1])));
+					this.total = this.cum[this.cum.length - 1];
+				}
+				at(s) {
+					const d = Math.max(0, Math.min(1, s)) * this.total;
+					let i = 1;
+					while (i < this.cum.length - 1 && this.cum[i] < d) i++;
+					const a = this.pts[i - 1],
+						b = this.pts[i];
+					const t = (d - this.cum[i - 1]) / (this.cum[i] - this.cum[i - 1] || 1);
+					const lo = this.pts[Math.max(0, i - 2)],
+						hi = this.pts[Math.min(this.pts.length - 1, i + 1)];
+					const tan = unit(sub(hi, lo));
+					return { p: lerp(a, b, t), tan, nrm: perp(tan) };
+				}
+				sOfIndex(i) {
+					return this.cum[i] / this.total;
+				}
+				nearest(q) {
+					let best = 0,
+						bestD = Infinity;
+					for (let k = 0; k <= 500; k++) {
+						const d = len(sub(this.at(k / 500).p, q));
+						if (d < bestD) {
+							bestD = d;
+							best = k / 500;
+						}
+					}
+					return best;
+				}
+			}
+
+			/* Append a tightening spiral to a point list, curling toward `side` of the travel direction. */
+			function withCurl(pts, side, r0, sweep) {
+				const P = pts[pts.length - 1];
+				const T = unit(sub(P, pts[pts.length - 4]));
+				const C = add(P, mul(perp(T), side * r0));
+				const v = sub(P, C);
+				const th0 = Math.atan2(v[1], v[0]);
+				const dir = Math.sign(-Math.sin(th0) * T[0] + Math.cos(th0) * T[1]) || 1;
+				const out = pts.slice();
+				const steps = Math.round(sweep * 10);
+				for (let k = 1; k <= steps; k++) {
+					const phi = (k / steps) * sweep;
+					const r = r0 * Math.exp(-0.3 * phi);
+					const th = th0 + dir * phi;
+					out.push([C[0] + r * Math.cos(th), C[1] + r * Math.sin(th)]);
+				}
+				return out;
+			}
+
+			/* ---------- Shapes: solid silhouettes, no cut lines ---------- */
+
+			/* Tapered stem along a centerline; widthAt(s) is the full width. */
+			function stemPath(line, widthAt, samples = 64) {
+				const left = [],
+					right = [];
+				for (let k = 0; k <= samples; k++) {
+					const s = k / samples;
+					const { p, nrm } = line.at(s);
+					const w = widthAt(s) / 2;
+					left.push(add(p, mul(nrm, w)));
+					right.push(sub(p, mul(nrm, w)));
+				}
+				return smoothPath(left.concat(right.reverse()));
+			}
+
+			/*
+			 * Thorn: a broad base rooted in the stem and a sharp tip that leans back
+			 * toward the stem's root (`grow` is +1 or -1: which way along the
+			 * centerline the stem grows).
+			 */
+			function thornPath(line, s, side, size, widthAt, lean, grow) {
+				const { p, tan, nrm } = line.at(s);
+				const T = mul(tan, grow);
+				const n = mul(nrm, side);
+				const base = add(p, mul(n, (widthAt(s) / 2) * 0.85));
+				const half = size * 0.42;
+				const back = sub(base, mul(T, half));
+				const front = add(base, mul(T, half));
+				const tip = add(add(base, mul(n, size)), mul(T, -size * lean));
+				const c1 = add(lerp(back, tip, 0.5), mul(T, size * 0.16));
+				const c2 = add(lerp(tip, front, 0.5), add(mul(n, -size * 0.3), mul(T, -size * 0.05)));
+				return `M${pt(back)}Q${pt(c1)} ${pt(tip)}Q${pt(c2)} ${pt(front)}Z`;
+			}
+
+			/* Leaf: one outline, pointed at the tip and the base. */
+			function leafPath(origin, dir, L, W, bend) {
+				const ang = Math.atan2(dir[1], dir[0]);
+				const place = (x, y) => add(origin, turn([x, y + bend * L * (x / L) ** 2], ang));
+				const tip = place(L, 0);
+				const start = place(0, 0);
+				return (
+					`M${pt(start)}C${pt(place(L * 0.28, -W * 1.25))} ${pt(place(L * 0.72, -W * 0.95))} ${pt(tip)}` +
+					`C${pt(place(L * 0.72, W * 0.85))} ${pt(place(L * 0.28, W * 1.1))} ${pt(start)}Z`
+				);
+			}
+
+			/* Closed rosebud: stalk, calyx cup and a round-tipped bud, all one shape, with two short sepals. */
+			function budPaths(base, dir, size) {
+				dir = unit(dir);
+				const n = perp(dir);
+				const at = (t, off) => add(add(base, mul(dir, t * size)), mul(n, off * size));
+				const out = [];
+				const B = 0.3;
+				const half = (u) => 0.26 * Math.sin(Math.PI * Math.pow(u, 0.72)) ** 0.8;
+				const bud = [];
+				for (let i = 0; i <= 18; i++) bud.push(at(B + (1 - B) * (i / 18), -half(i / 18)));
+				for (let i = 17; i >= 1; i--) bud.push(at(B + (1 - B) * (i / 18), half(i / 18)));
+				out.push(smoothPath(bud));
+				const cup = [];
+				for (let i = 0; i <= 12; i++) {
+					const a = Math.PI * (i / 12);
+					cup.push(at(0.36 - 0.2 * Math.sin(a), -0.22 * Math.cos(a)));
+				}
+				out.push(smoothPath(cup));
+				out.push(stemPath(new Centerline([at(-0.05, 0), at(0.08, 0), at(0.2, 0)]), () => size * 0.08, 6));
+				for (const side of [-1, 1]) {
+					const line = new Centerline(
+						sampleCurve([at(0.3, side * 0.18), at(0.46, side * 0.27), at(0.6, side * 0.32)], 10)
+					);
+					out.push(stemPath(line, (s) => 0.25 + size * 0.06 * (1 - s), 24));
+				}
+				return out;
+			}
+
+			/*
+			 * Open rose seen from the side, as one outline: a calyx with two sepals,
+			 * a cup of petals whose rim rises to three rounded petal tips, and the
+			 * two outer petals curling back at the sides. `flip` mirrors it.
+			 */
+			function bloomPaths(base, dir, size, flip = 1) {
+				dir = unit(dir);
+				const n = mul(perp(dir), flip);
+				const at = ([t, off]) => add(add(base, mul(dir, t * size)), mul(n, off * size));
+				const out = [];
+				out.push(stemPath(new Centerline([at([-0.05, 0]), at([0.1, 0]), at([0.22, 0])]), () => size * 0.07, 6));
+				const outline = [
+					[0.2, -0.1],
+					[0.3, -0.27],
+					[0.44, -0.38],
+					[0.6, -0.42],
+					[0.74, -0.42],
+					[0.84, -0.44],
+					[0.9, -0.47],
+					[0.94, -0.4],
+					[0.97, -0.3],
+					[1.02, -0.22],
+					[0.99, -0.12],
+					[0.93, -0.06],
+					[1.06, 0.04],
+					[0.97, 0.13],
+					[1.0, 0.23],
+					[0.95, 0.31],
+					[0.91, 0.39],
+					[0.87, 0.45],
+					[0.82, 0.42],
+					[0.73, 0.41],
+					[0.59, 0.41],
+					[0.44, 0.36],
+					[0.3, 0.25],
+					[0.2, 0.1]
+				].map(at);
+				out.push(smoothPath(outline));
+				for (const side of [-1, 1]) {
+					const line = new Centerline(
+						sampleCurve([at([0.24, side * 0.12]), at([0.21, side * 0.22]), at([0.15, side * 0.3])], 10)
+					);
+					out.push(stemPath(line, (t) => 0.2 + size * 0.06 * (1 - t), 20));
+				}
+				return out;
+			}
+
+			/*
+			 * Open rose facing forward, tipped slightly toward `dir`: a scalloped ring
+			 * of outer petals, with curved cuts spiraling in to show the petal layers
+			 * (the one place a shape has inner lines), and sepals showing behind it.
+			 */
+			function frontRosePaths(c, r, dir, rot) {
+				dir = unit(dir);
+				const n = perp(dir);
+				// Local polar point, squashed along `dir` so the face tips forward.
+				const at = (a, R, center = [0, 0]) => {
+					const x = center[0] + Math.cos(a) * R,
+						y = center[1] + Math.sin(a) * R;
+					return add(c, add(mul(dir, x * 0.82), mul(n, y)));
+				};
+				const out = [];
+				for (const a of [-0.75, 0, 0.75]) {
+					const d = turn(mul(dir, -1), a);
+					out.push(leafPath(add(c, mul(d, r * 0.5)), d, r * 0.68, r * 0.68 * 0.32, 0));
+				}
+				const outline = [];
+				for (let i = 0; i < 84; i++) {
+					const a = rot + (i / 84) * Math.PI * 2;
+					const lobe = Math.abs(Math.sin(((a - rot) * 7) / 2));
+					outline.push(at(a, r * (0.84 + 0.16 * lobe ** 0.5)));
+				}
+				let d = smoothPath(outline);
+				// Each cut is a thin crescent along part of a circle; they step inward and around.
+				const cut = (R, a0, sweep, center) => {
+					const inner = [],
+						outer = [];
+					for (let k = 0; k <= 14; k++) {
+						const a = a0 + (k / 14) * sweep;
+						const w = r * 0.07 * Math.sin(Math.PI * (k / 14)) + r * 0.008;
+						inner.push(at(a, R - w, center));
+						outer.unshift(at(a, R + w, center));
+					}
+					return smoothPath(inner.concat(outer));
+				};
+				d += cut(r * 0.56, rot + 0.5, 2.1, [0.06 * r, 0]);
+				d += cut(r * 0.4, rot + 2.6, 2.1, [-0.04 * r, 0.04 * r]);
+				d += cut(r * 0.22, rot + 4.7, 2.2, [-0.02 * r, -0.03 * r]);
+				// Marked so it is drawn even-odd: the cuts become openings.
+				out.push(`E:${d}`);
+				return out;
+			}
+
+			/* Wild rose: a scalloped five-petal silhouette with small points between the petals. */
+			function rosePaths(c, r, rot) {
+				const polar = (a, R) => add(c, [Math.cos(a) * R, Math.sin(a) * R]);
+				const outline = [];
+				for (let i = 0; i < 80; i++) {
+					const a = rot + (i / 80) * Math.PI * 2;
+					const lobe = Math.abs(Math.sin(((a - rot) * 5) / 2));
+					outline.push(polar(a, r * (0.6 + 0.4 * lobe ** 0.55)));
+				}
+				const out = [smoothPath(outline)];
+				for (let k = 0; k < 5; k++) {
+					const a = rot + (k / 5) * Math.PI * 2;
+					out.push(
+						smoothPath([
+							polar(a - 0.16, r * 0.62),
+							polar(a - 0.04, r * 0.85),
+							polar(a, r * 0.95),
+							polar(a + 0.04, r * 0.85),
+							polar(a + 0.16, r * 0.62)
+						])
+					);
+				}
+				return out;
+			}
+
+			/* ---------- Corner pieces ---------- */
+			/*
+			 * Coordinates follow the site's corner box: 100 x 100 with the frame line's
+			 * corner at (20, 20). One stem runs from the end of the left arm, bends
+			 * round the corner through BEND and runs out along the top, weaving across
+			 * the frame line. "Out" (toward y = 0 on the top, x = 0 on the left) is
+			 * away from the framed content.
+			 */
+			const BEND = [19.5, 19.5];
+			const OUTWARD = unit([-1, -1]);
+
+			function armCtrl(rng) {
+				return [
+					[27, range(rng, 17.5, 18.5)],
+					[41, range(rng, 19.5, 21)],
+					[57, range(rng, 16.5, 18)],
+					[73, range(rng, 19.5, 21)],
+					[range(rng, 87, 91), range(rng, 16, 17.5)]
+				];
+			}
+
+			function cornerShapes(fam, v) {
+				const rng = mulberry32(v.seed);
+				const out = [];
+				const top = armCtrl(rng);
+				const left = armCtrl(rng).map(([x, y]) => [y, x]);
+				const ctrl = left.slice().reverse().concat([BEND], top);
+				let pts = sampleCurve(ctrl, 22);
+
+				// Ends: a curl turns outward. The start end is curled by reversing the list.
+				let headCurl = 0;
+				if (v.start.ending === 'curl') {
+					const before = pts.length;
+					pts = withCurl(pts.slice().reverse(), 1, range(rng, 3, 3.8), range(rng, 4.4, 5.2)).reverse();
+					headCurl = pts.length - before;
+				}
+				const bodyEnd = pts.length - 1;
+				if (v.end.ending === 'curl') pts = withCurl(pts, -1, range(rng, 3, 3.8), range(rng, 4.4, 5.2));
+				const line = new Centerline(pts);
+				const sStart = line.sOfIndex(headCurl);
+				const sEnd = line.sOfIndex(bodyEnd);
+				const sBend = line.nearest(BEND);
+
+				const w0 = fam.stem,
+					w1 = 0.7;
+				const widthAt = (s) => {
+					const d = s < sBend ? (sBend - s) / sBend : (s - sBend) / (1 - sBend);
+					return w1 + (w0 - w1) * Math.pow(1 - d, 0.75);
+				};
+				out.push(stemPath(line, widthAt, 200));
+
+				// Positions along one arm (0 at the bend, 1 at the arm's end) as s on the whole stem.
+				const arms = [
+					{ opts: v.start, toS: (x) => sBend - x * (sBend - sStart), grow: -1 },
+					{ opts: v.end, toS: (x) => sBend + x * (sEnd - sBend), grow: 1 }
+				];
+				const taken = [sBend];
+
+				for (const arm of arms) {
+					const count = arm.opts.leaves ?? fam.leaves;
+					// Rose leaves alternate sides along the cane, each at its own angle.
+					let leafSide = rng() < 0.5 ? -1 : 1;
+					for (let i = 0; i < count; i++) {
+						const s = arm.toS(0.2 + (0.66 * (i + 0.5 + range(rng, -0.2, 0.2))) / count);
+						const { p, tan, nrm } = line.at(s);
+						const angle = range(rng, 0.35, 1.15);
+						const dir = unit(add(mul(tan, arm.grow * Math.cos(angle)), mul(nrm, -leafSide * Math.sin(angle))));
+						const L = range(rng, fam.leafLen[0], fam.leafLen[1]) * (leafSide === 1 ? 0.85 : 1);
+						out.push(stemPath(new Centerline([p, add(p, mul(dir, 0.9)), add(p, mul(dir, 1.8))]), () => 0.75, 6));
+						out.push(leafPath(add(p, mul(dir, 1.5)), dir, L, L * fam.leafWidth, range(rng, -0.12, 0.12)));
+						leafSide = -leafSide;
+						taken.push(s);
+					}
+					if (arm.opts.bud) {
+						const s = arm.toS(arm.opts.bud);
+						const { p, tan, nrm } = line.at(s);
+						const dir = unit(add(mul(tan, arm.grow * 0.6), mul(nrm, -1)));
+						out.push(...budPaths(p, dir, fam.budSize));
+						taken.push(s);
+					}
+					if (arm.opts.rose) {
+						const s = arm.toS(arm.opts.rose);
+						const { p, nrm } = line.at(s);
+						out.push(...rosePaths(add(p, mul(nrm, -fam.roseSize * 0.55)), fam.roseSize * 0.75, rng() * Math.PI));
+						taken.push(s);
+					}
+					if (arm.opts.front) {
+						const s = arm.toS(arm.opts.front);
+						const { p, nrm } = line.at(s);
+						const r = fam.bloomSize * 0.5;
+						out.push(...frontRosePaths(add(p, mul(nrm, -r * 0.75)), r, mul(nrm, -1), rng() * Math.PI));
+						taken.push(s);
+					}
+					if (arm.opts.bloom) {
+						const s = arm.toS(arm.opts.bloom);
+						const { p, tan, nrm } = line.at(s);
+						const dir = unit(add(mul(tan, arm.grow * 0.5), mul(nrm, -1)));
+						out.push(...bloomPaths(p, dir, fam.bloomSize * 0.8, rng() < 0.5 ? 1 : -1));
+						taken.push(s);
+					}
+					if (['bud', 'leaf', 'bloom'].includes(arm.opts.ending)) {
+						const s = arm.grow === 1 ? 1 : 0;
+						const { p, tan } = line.at(s);
+						const dir = add(mul(tan, arm.grow), mul(arm.grow === 1 ? [0, -1] : [-1, 0], 0.25));
+						if (arm.opts.ending === 'bud') out.push(...budPaths(sub(p, mul(unit(dir), 0.6)), dir, fam.budSize * 1.05));
+						else if (arm.opts.ending === 'bloom')
+							out.push(...bloomPaths(sub(p, mul(unit(dir), 0.6)), dir, fam.bloomSize * 0.85));
+						else {
+							const L = fam.leafLen[1] * 1.1;
+							out.push(leafPath(sub(p, mul(unit(dir), 0.4)), unit(dir), L, L * fam.leafWidth, 0.06));
+						}
+					}
+
+					// Thorns: evenly spaced in stem units, mostly on the outer side.
+					const gap = (u) => u / line.total;
+					let x = gap(range(rng, 5, 8));
+					let side = -1;
+					const armLen = Math.abs(arm.toS(1) - arm.toS(0));
+					while (x < armLen - gap(4)) {
+						const s = arm.toS(x / armLen);
+						if (!taken.some((t) => Math.abs(t - s) < gap(2.5))) {
+							const size = range(rng, fam.thorn[0], fam.thorn[1]) * (1 - 0.2 * (x / armLen));
+							out.push(thornPath(line, s, side, side === 1 ? size * 0.85 : size, widthAt, fam.lean, arm.grow));
+						}
+						side = rng() < fam.alternate ? -side : side;
+						x += gap(range(rng, fam.thornGap[0], fam.thornGap[1]));
+					}
+				}
+
+				// A thinner second stem that twines across the first, curled at both ends.
+				if (v.twin) {
+					const bendIndex = left.length;
+					const twinCtrl = ctrl
+						.map((c, i) => {
+							if (i === bendIndex) return add(c, [2.4, 2.4]);
+							const k = Math.abs(i - bendIndex);
+							const sgn = k % 2 ? -1 : 1;
+							return i > bendIndex ? [c[0], c[1] + sgn * 3.8] : [c[0] + sgn * 3.8, c[1]];
+						})
+						.slice(1, -1);
+					let tp = withCurl(sampleCurve(twinCtrl, 22).reverse(), 1, 2.6, 4.4).reverse();
+					tp = withCurl(tp, -1, 2.6, 4.4);
+					const tl = new Centerline(tp);
+					const tBend = tl.nearest(add(BEND, [2.4, 2.4]));
+					const tw = (s) => {
+						const d = s < tBend ? (tBend - s) / tBend : (s - tBend) / (1 - tBend);
+						return 0.35 + (fam.stem * 0.55 - 0.35) * Math.pow(1 - d, 0.8);
+					};
+					out.push(stemPath(tl, tw, 200));
+					for (const s of [0.2, 0.36, 0.64, 0.8]) {
+						out.push(thornPath(tl, s, s < 0.5 ? 1 : -1, fam.thorn[0] * 0.7, tw, fam.lean, s < tBend ? -1 : 1));
+					}
+				}
+
+				// The ornament on the outside of the bend.
+				// The ornament sits a little outside the bend, on a short stalk, so it clears the frame line.
+				const bendPoint = line.at(sBend).p;
+				const C = add(bendPoint, mul(OUTWARD, 2.2));
+				if (v.center !== 'plain') {
+					out.push(
+						stemPath(new Centerline([bendPoint, C, add(C, mul(OUTWARD, 2.6))]), (t) => fam.stem * (0.85 - 0.35 * t), 8)
+					);
+				}
+				if (v.center === 'bud') {
+					for (const sgn of [-1, 1]) {
+						const d = turn(OUTWARD, sgn * 1.5);
+						const L = fam.leafLen[1] * 0.8;
+						out.push(leafPath(add(C, mul(d, 0.6)), d, L, L * fam.leafWidth, -0.08 * sgn));
+					}
+					out.push(...budPaths(C, OUTWARD, fam.budSize * 1.35));
+				} else if (v.center === 'rose') {
+					for (const sgn of [-1, 1]) {
+						const d = turn(OUTWARD, sgn * 1.3);
+						const L = fam.leafLen[1];
+						out.push(leafPath(add(C, mul(d, 1.5)), d, L, L * fam.leafWidth, -0.08 * sgn));
+					}
+					out.push(...rosePaths(add(C, mul(OUTWARD, fam.roseSize * 0.55)), fam.roseSize, rng() * Math.PI));
+				} else if (v.center === 'front') {
+					for (const sgn of [-1, 1]) {
+						const d = turn(OUTWARD, sgn * 1.45);
+						const L = fam.leafLen[1] * 0.9;
+						out.push(leafPath(add(C, mul(d, 1.5)), d, L, L * fam.leafWidth, -0.08 * sgn));
+					}
+					const r = fam.bloomSize * 0.58;
+					out.push(...frontRosePaths(add(C, mul(OUTWARD, r * 0.55)), r, OUTWARD, rng() * Math.PI));
+				} else if (v.center === 'bloom') {
+					for (const sgn of [-1, 1]) {
+						const d = turn(OUTWARD, sgn * 1.4);
+						const L = fam.leafLen[1] * 0.9;
+						out.push(leafPath(add(C, mul(d, 1)), d, L, L * fam.leafWidth, -0.08 * sgn));
+					}
+					out.push(...bloomPaths(C, OUTWARD, fam.bloomSize, rng() < 0.5 ? 1 : -1));
+				} else if (v.center === 'bloomBud') {
+					out.push(...bloomPaths(C, turn(OUTWARD, -0.4), fam.bloomSize * 0.9));
+					out.push(...budPaths(C, turn(OUTWARD, 0.55), fam.budSize * 0.95));
+				} else if (v.center === 'budPair') {
+					out.push(...budPaths(C, turn(OUTWARD, -0.45), fam.budSize * 1.15));
+					out.push(...budPaths(C, turn(OUTWARD, 0.5), fam.budSize * 0.9));
+				} else if (v.center === 'leafFan') {
+					for (const [a, k] of [
+						[-0.75, 0.9],
+						[0, 1.1],
+						[0.75, 0.9]
+					]) {
+						const d = turn(OUTWARD, a);
+						const L = fam.leafLen[1] * k;
+						out.push(leafPath(add(C, mul(d, 0.6)), d, L, L * fam.leafWidth, 0.06 * Math.sign(a)));
+					}
+				}
+				return out;
+			}
+
+			/*
+			 * Straight piece: one horizontal vine 200 units long weaving across a frame
+			 * line at y = 20, thickest in the middle and curled at both ends. "center"
+			 * puts the family's flower (or a bud) in the middle on a short stalk;
+			 * "run" is the vine alone with a bud partway along.
+			 */
+			function straightShapes(fam, kind, seed) {
+				const rng = mulberry32(seed + FAMILIES.indexOf(fam) * 37);
+				const out = [];
+				const ctrl = [[8, range(rng, 17, 18.5)]];
+				for (let x = 30, k = 0; x <= 170; x += 23.3, k++)
+					ctrl.push([x, k % 2 ? range(rng, 16.5, 18) : range(rng, 20.5, 22)]);
+				ctrl.push([192, range(rng, 17, 18.5)]);
+				let pts = sampleCurve(ctrl, 22);
+				const before = pts.length;
+				pts = withCurl(pts.slice().reverse(), 1, 3.4, 4.8).reverse();
+				const head = pts.length - before;
+				const bodyEnd = pts.length - 1;
+				pts = withCurl(pts, -1, 3.4, 4.8);
+				const line = new Centerline(pts);
+				const sStart = line.sOfIndex(head),
+					sEnd = line.sOfIndex(bodyEnd);
+				const sMid = line.nearest([100, 19]);
+				const widthAt = (s) => {
+					const d = s < sMid ? (sMid - s) / sMid : (s - sMid) / (1 - sMid);
+					return 0.7 + (fam.stem - 0.7) * Math.pow(1 - d, 0.75);
+				};
+				out.push(stemPath(line, widthAt, 300));
+				const gap = (u) => u / line.total;
+				const taken = [sMid];
+				if (kind === 'run') {
+					const s = sMid + (rng() < 0.5 ? -1 : 1) * gap(range(rng, 30, 45));
+					const { p, tan, nrm } = line.at(s);
+					const grow = s < sMid ? -1 : 1;
+					out.push(...budPaths(p, unit(add(mul(tan, grow * 0.6), mul(nrm, -1))), fam.budSize));
+					taken.push(s);
+				}
+				// Leaves alternate sides along each half, growing away from the middle.
+				for (const half of [-1, 1]) {
+					const span = half === 1 ? sEnd - sMid : sMid - sStart;
+					const count = fam.leaves + 1;
+					let leafSide = rng() < 0.5 ? -1 : 1;
+					for (let i = 0; i < count; i++) {
+						const s = sMid + half * span * (0.14 + (0.72 * (i + 0.5 + range(rng, -0.2, 0.2))) / count);
+						if (taken.some((t) => Math.abs(t - s) < gap(6))) continue;
+						const { p, tan, nrm } = line.at(s);
+						const angle = range(rng, 0.35, 1.15);
+						const dir = unit(add(mul(tan, half * Math.cos(angle)), mul(nrm, -leafSide * Math.sin(angle))));
+						const L = range(rng, fam.leafLen[0], fam.leafLen[1]) * (leafSide === 1 ? 0.85 : 1);
+						out.push(stemPath(new Centerline([p, add(p, mul(dir, 0.9)), add(p, mul(dir, 1.8))]), () => 0.75, 6));
+						out.push(leafPath(add(p, mul(dir, 1.5)), dir, L, L * fam.leafWidth, range(rng, -0.12, 0.12)));
+						taken.push(s);
+						leafSide = -leafSide;
+					}
+					let x = gap(range(rng, 6, 9));
+					let side = -1;
+					while (x < span - gap(5)) {
+						const s = sMid + half * x;
+						if (!taken.some((t) => Math.abs(t - s) < gap(2.5))) {
+							const size = range(rng, fam.thorn[0], fam.thorn[1]) * (1 - 0.2 * (x / span));
+							out.push(thornPath(line, s, side, side === 1 ? size * 0.85 : size, widthAt, fam.lean, half));
+						}
+						side = rng() < fam.alternate ? -side : side;
+						x += gap(range(rng, fam.thornGap[0], fam.thornGap[1]));
+					}
+				}
+				if (fam.id === 'twinBriar') {
+					const twin = ctrl.map((c, i) => [c[0], c[1] + (i % 2 ? 3.8 : -3.8)]).slice(1, -1);
+					let tp = withCurl(sampleCurve(twin, 22).reverse(), 1, 2.6, 4.4).reverse();
+					tp = withCurl(tp, -1, 2.6, 4.4);
+					const tl = new Centerline(tp);
+					const tw = (s) => 0.4 + (fam.stem * 0.55 - 0.4) * Math.pow(1 - Math.abs(2 * s - 1), 0.8);
+					out.push(stemPath(tl, tw, 300));
+					for (const s of [0.2, 0.35, 0.65, 0.8])
+						out.push(thornPath(tl, s, s < 0.5 ? 1 : -1, fam.thorn[0] * 0.7, tw, fam.lean, s < 0.5 ? -1 : 1));
+				}
+				if (kind === 'center') {
+					const up = [0, -1];
+					const base = line.at(sMid).p;
+					const C = add(base, mul(up, 2.2));
+					out.push(stemPath(new Centerline([base, C, add(C, mul(up, 2.6))]), (t) => fam.stem * (0.85 - 0.35 * t), 8));
+					for (const sgn of [-1, 1]) {
+						const d = turn(up, sgn * 1.3);
+						const L = fam.leafLen[1] * 0.9;
+						out.push(leafPath(add(C, mul(d, 1.2)), d, L, L * fam.leafWidth, -0.08 * sgn));
+					}
+					if (fam.id === 'rosesInBloom') {
+						const r = fam.bloomSize * 0.58;
+						out.push(...frontRosePaths(add(C, mul(up, r * 0.55)), r, up, rng() * Math.PI));
+					} else if (fam.id === 'wildRose') {
+						out.push(...rosePaths(add(C, mul(up, fam.roseSize * 0.55)), fam.roseSize, rng() * Math.PI));
+					} else {
+						out.push(...budPaths(C, up, fam.budSize * 1.35));
+					}
+				}
+				return out;
+			}
+			const STRAIGHTS = [
+				{ kind: 'center', seed: 501, label: 'straight with center' },
+				{ kind: 'run', seed: 523, label: 'straight run' }
+			];
+
+			const cornerMarkup = (shapes) =>
+				`<g fill="currentColor">${shapes.map((d) => (d.startsWith('E:') ? `<path fill-rule="evenodd" d="${d.slice(2)}"/>` : `<path d="${d}"/>`)).join('')}</g>`;
+
+			/* ---------- Families ---------- */
+			const FAMILIES = [
+				{
+					id: 'rosesInBloom',
+					name: 'Rose in Bloom',
+					note: 'New: Clean Briar about 20 percent larger, with three leaves to an arm and open roses alongside the buds.',
+					corner: 134,
+					stem: 4,
+					thorn: [4.8, 6],
+					thornGap: [10, 13],
+					alternate: 0.4,
+					lean: 0.4,
+					leaves: 3,
+					leafLen: [8.5, 10],
+					leafWidth: 0.36,
+					budSize: 9.5,
+					bloomSize: 13,
+					roseSize: 7.5,
+					variants: [
+						{ seed: 301, center: 'front', start: { ending: 'curl' }, end: { ending: 'bud' } },
+						{ seed: 313, center: 'bud', start: { ending: 'curl' }, end: { ending: 'curl', front: 0.55 } },
+						{ seed: 327, center: 'bloomBud', start: { ending: 'leaf' }, end: { ending: 'curl' } },
+						{ seed: 331, center: 'bloom', start: { ending: 'curl', bud: 0.6 }, end: { ending: 'leaf' } },
+						{ seed: 347, center: 'leafFan', start: { ending: 'bud' }, end: { ending: 'curl' } },
+						{ seed: 359, center: 'front', start: { ending: 'curl', bloom: 0.55 }, end: { ending: 'curl', leaves: 4 } }
+					]
+				},
+				{
+					id: 'briar',
+					name: 'Clean Briar',
+					note: 'Closest to the current Thorned Bramble: one stem, a few thorns and leaves, a closed bud.',
+					stem: 4,
+					thorn: [4.8, 6],
+					thornGap: [10, 13],
+					alternate: 0.4,
+					lean: 0.4,
+					leaves: 2,
+					leafLen: [8, 9.5],
+					leafWidth: 0.34,
+					budSize: 9,
+					roseSize: 7,
+					variants: [
+						{ seed: 11, center: 'bud', start: { ending: 'curl' }, end: { ending: 'curl' } },
+						{ seed: 23, center: 'bud', start: { ending: 'curl' }, end: { ending: 'bud' } },
+						{ seed: 37, center: 'plain', start: { ending: 'leaf' }, end: { ending: 'curl', bud: 0.5 } },
+						{ seed: 41, center: 'budPair', start: { ending: 'curl', leaves: 3 }, end: { ending: 'curl', leaves: 1 } },
+						{ seed: 58, center: 'leafFan', start: { ending: 'curl' }, end: { ending: 'bud' } },
+						{ seed: 64, center: 'plain', start: { ending: 'curl', bud: 0.55 }, end: { ending: 'leaf' } }
+					]
+				},
+				{
+					id: 'wildRose',
+					name: 'Wild Rose',
+					note: 'The same stem in flower: small roses and buds.',
+					stem: 3.8,
+					thorn: [4.4, 5.4],
+					thornGap: [10, 13],
+					alternate: 0.45,
+					lean: 0.4,
+					leaves: 2,
+					leafLen: [7.5, 9],
+					leafWidth: 0.38,
+					budSize: 8.5,
+					roseSize: 7.5,
+					variants: [
+						{ seed: 101, center: 'rose', start: { ending: 'bud' }, end: { ending: 'curl', bud: 0.6 } },
+						{ seed: 113, center: 'bud', start: { ending: 'curl' }, end: { ending: 'curl', rose: 0.6 } },
+						{ seed: 127, center: 'rose', start: { ending: 'curl', bud: 0.5 }, end: { ending: 'leaf' } },
+						{ seed: 139, center: 'plain', start: { ending: 'bud' }, end: { ending: 'curl', rose: 0.5 } },
+						{ seed: 151, center: 'budPair', start: { ending: 'curl', rose: 0.58 }, end: { ending: 'bud' } },
+						{ seed: 163, center: 'rose', start: { ending: 'curl', leaves: 3 }, end: { ending: 'curl' } }
+					]
+				},
+				{
+					id: 'twinBriar',
+					name: 'Twin Briar',
+					note: 'Two stems twined around each other, no flowers; the darkest of the three.',
+					stem: 4,
+					thorn: [4.8, 6],
+					thornGap: [10, 13],
+					alternate: 0.4,
+					lean: 0.45,
+					leaves: 1,
+					leafLen: [7.5, 8.5],
+					leafWidth: 0.33,
+					budSize: 8.5,
+					roseSize: 7,
+					variants: [
+						{ seed: 201, twin: true, center: 'bud', start: { ending: 'curl' }, end: { ending: 'curl' } },
+						{ seed: 211, twin: true, center: 'leafFan', start: { ending: 'bud' }, end: { ending: 'curl' } },
+						{ seed: 223, twin: true, center: 'plain', start: { ending: 'curl' }, end: { ending: 'curl' } },
+						{ seed: 233, twin: true, center: 'bud', start: { ending: 'curl', leaves: 2 }, end: { ending: 'leaf' } },
+						{ seed: 241, twin: true, center: 'budPair', start: { ending: 'leaf' }, end: { ending: 'curl' } },
+						{ seed: 257, twin: true, center: 'plain', start: { ending: 'curl' }, end: { ending: 'bud' } }
+					]
+				}
+			];
+
+			/* ---------- Page ---------- */
+			const COVER = '../../client/src/assets/crownfall_cover_web.jpg';
+			const markupCache = new Map();
+			const variantMarkup = (fam, i) => {
+				const key = fam.id + i;
+				if (!markupCache.has(key)) markupCache.set(key, cornerMarkup(cornerShapes(fam, fam.variants[i])));
+				return markupCache.get(key);
+			};
+
+			// Where each corner sits on the frame, and the flip that points its arms along the frame's edges.
+			const OFFSET = 'calc(-1px - var(--corner) * .2)';
+			const SLOTS = [
+				{ pos: `top:${OFFSET};left:${OFFSET}`, flip: 'none' },
+				{ pos: `top:${OFFSET};right:${OFFSET}`, flip: 'scaleX(-1)' },
+				{ pos: `bottom:${OFFSET};left:${OFFSET}`, flip: 'scaleY(-1)' },
+				{ pos: `bottom:${OFFSET};right:${OFFSET}`, flip: 'scale(-1)' }
+			];
+
+			function cornersFor(fam, rng) {
+				return SLOTS.map((slot) => {
+					const i = Math.floor(rng() * fam.variants.length);
+					// Swapping x and y gives each piece a second, mirrored arrangement.
+					const swap = rng() < 0.5;
+					const art = variantMarkup(fam, i);
+					const inner = swap ? `<g transform="matrix(0 1 1 0 0 0)">${art}</g>` : art;
+					return `<svg class="corner" viewBox="0 0 100 100" aria-hidden="true" data-variant="${i + 1}${swap ? 'm' : ''}" style="${slot.pos};transform:${slot.flip}">${inner}</svg>`;
+				}).join('');
+			}
+
+			function framesMarkup(fam, seed) {
+				const rng = mulberry32(seed);
+				return `
+    <div class="frame cover"><div class="inner"><img src="${COVER}" alt="Crownfall cover"></div>${cornersFor(fam, rng)}</div>
+    <div class="frame quote"><div class="inner"><blockquote>"A crown is only a circle of metal until someone bleeds for it."</blockquote><cite>Sample pull quote</cite></div>${cornersFor(fam, rng)}</div>
+    <div class="frame notice"><div class="inner"><p>Available globally on Amazon.</p></div>${cornersFor(fam, rng)}</div>`;
+			}
+
+			const root = document.getElementById('families');
+			FAMILIES.forEach((fam, f) => {
+				const sec = document.createElement('section');
+				sec.id = fam.id;
+				if (fam.corner) sec.style.setProperty('--corner', `${fam.corner}px`);
+				sec.innerHTML = `
+    <p class="eyebrow">Family ${String.fromCharCode(65 + f)}</p>
+    <h2>${fam.name}</h2>
+    <p class="lede">${fam.note}</p>
+    <div class="toolbar"><button type="button" data-shuffle>Shuffle the frames</button><span class="seed"></span></div>
+    <div class="frames"></div>
+    <h2 style="font-size:24px;margin-top:40px">The six corner pieces</h2>
+    <div class="variants">${fam.variants
+			.map(
+				(v, i) =>
+					`<figure class="variant"><svg viewBox="-4 -4 104 104" aria-hidden="true"><path d="M20 104V20H104" fill="none" stroke="currentColor" stroke-width="1.2"/>${variantMarkup(fam, i)}</svg><p>${fam.name} ${i + 1}</p></figure>`
+			)
+			.join('')}</div>
+    <h2 style="font-size:24px;margin-top:40px">Straight pieces</h2>
+    <div class="variants" style="grid-template-columns:repeat(auto-fill,minmax(min(420px,100%),1fr))">${STRAIGHTS.map(
+			(st) =>
+				`<figure class="variant"><svg viewBox="-4 0 208 44" aria-hidden="true"><path d="M-4 20H204" fill="none" stroke="currentColor" stroke-width="1.2"/>${cornerMarkup(straightShapes(fam, st.kind, st.seed))}</svg><p>${fam.name}, ${st.label}</p></figure>`
+		).join('')}</div>`;
+				root.appendChild(sec);
+				let seed = 1000 + f * 17;
+				const frames = sec.querySelector('.frames');
+				const label = sec.querySelector('.seed');
+				const draw = () => {
+					frames.innerHTML = framesMarkup(fam, seed);
+					label.textContent = `Layout ${seed}`;
+				};
+				sec.querySelector('[data-shuffle]').addEventListener('click', () => {
+					seed = Math.floor(Math.random() * 1e6);
+					draw();
+				});
+				draw();
+			});
+		</script>
+	</body>
+</html>
