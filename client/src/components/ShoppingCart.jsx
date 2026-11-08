@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Button from "./ui/Button";
 import { EVENTS, track } from "../lib/analytics.js";
+import { getUserMessage } from "../lib/errors.js";
 
 // Shopping-bag outline from the mockup header.
 export const CartIcon = ({ className = "" }) => (
@@ -78,9 +79,9 @@ const ShoppingCart = () => {
       window.location.href = checkoutUrl;
     } catch (error) {
       track(EVENTS.CHECKOUT_ERROR, {
-        reason: error instanceof TypeError ? "network" : "server",
+        reason: error.cause instanceof TypeError ? "network" : "server",
       });
-      setCheckoutError(error.message || "Unable to start checkout.");
+      setCheckoutError(getUserMessage(error));
       setIsCheckingOut(false);
     }
   };

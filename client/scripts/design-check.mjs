@@ -292,8 +292,8 @@ const ornamentScales = (page) =>
       // checked on its own #chapter-N route): no size to measure.
       if (!ornament.checkVisibility()) return [];
       const svg = ornament.querySelector("svg");
-      const style = ornament.dataset.filigreeStyle ?? "bramble";
-      if (ornament.dataset.filigree === "divider" && style !== "bramble") {
+      const style = ornament.dataset.filigreeStyle;
+      if (ornament.dataset.filigree === "divider" && style === "artDeco") {
         return [];
       }
       const unit =
@@ -545,7 +545,7 @@ const main = async () => {
         for (const hit of collisions) fail(`${label}: ${hit}`);
         const scales = await ornamentScales(still.page);
         console.log(
-          `  ornament scale: ${[...new Set(scales.map((s) => s.unit.toFixed(3)))].join(", ") || "none"} px/unit (target ${UNIT})`,
+          `  ornament scale: ${[...new Set(scales.map((s) => `${s.style} ${s.kind} ${s.unit.toFixed(3)}`))].join(", ") || "none"} px/unit`,
         );
         for (const { kind, style, unit } of scales) {
           if (Math.abs(unit / UNIT - 1) > SCALE_TOLERANCE) {

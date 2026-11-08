@@ -1,20 +1,9 @@
 import { useCallback, useRef } from "react";
+import { CHECKOUT_FAILED } from "../../shared/errors.js";
+import { failWith, fetchJson } from "../lib/errors.js";
 
 const DEFAULT_API_BASE_URL = "/api/square";
 const DEFAULT_SUCCESS_PATH = "/checkout/success";
-
-const toError = async (response) => {
-  let message = `Request failed (${response.status})`;
-
-  try {
-    const data = await response.json();
-    message = data?.error || data?.message || message;
-  } catch {
-    message = response.statusText || message;
-  }
-
-  return new Error(message);
-};
 
 const mapCatalogProducts = (catalog = []) => {
   const imageById = new Map(
@@ -63,33 +52,14 @@ const useSquare = (options = {}) => {
   const productsRef = useRef([]);
 
   const request = useCallback(
-    async (path, init = {}) => {
-      const response = await fetch(`${apiBaseUrl}${path}`, {
+    (path, init = {}) =>
+      fetchJson(`${apiBaseUrl}${path}`, {
         headers: {
           "Content-Type": "application/json",
           ...(init.headers || {}),
         },
         ...init,
-      });
-      console.log(response)
-
-      if (!response.ok) {
-        throw await toError(response);
-      }
-
-      if (response.status === 204) {
-        return null;
-      }
-
-      const responseContentType = response.headers.get("content-type") || "";
-      if (!responseContentType.includes("application/json")) {
-        throw new Error(
-          `Square API returned a non-JSON response: ${response.status} ${response.statusText}`,
-        );
-      }
-
-      return response.json();
-    },
+      }),
     [apiBaseUrl],
   );
 
@@ -142,12 +112,16 @@ const useSquare = (options = {}) => {
       const checkoutUrl =
         data?.url || data?.checkoutUrl || data?.paymentLink?.url;
       if (!checkoutUrl) {
-        throw new Error("Failed to create checkout link.");
+        throw failWith(CHECKOUT_FAILED, {
+          method: "POST",
+          url: `${apiBaseUrl}/checkout`,
+          code: "checkout_url_missing",
+        });
       }
 
       return checkoutUrl;
     },
-    [request, successPath],
+    [apiBaseUrl, request, successPath],
   );
 
   const createCustomer = useCallback(

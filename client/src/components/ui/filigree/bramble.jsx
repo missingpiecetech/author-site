@@ -7,12 +7,15 @@
  *
  * Every filigree style module exports the same names, and `../Filigree.jsx`
  * imports exactly one module:
- *   - CornerArt:  top-left corner, drawn in a CORNER_VIEWBOX box;
+ *   - CornerArt:  top-left corner, drawn in a CORNER_VIEWBOX box (or
+ *                 CORNER_PIECES, several to pick from: see cleanBriar.js);
  *   - DividerArt: the divider ornament, drawn in a DIVIDER_VIEWBOX box,
  *                 sized by DIVIDER_ART (class names), or, without it, at
  *                 the corners' scale (scale.js);
  *   - Rule:       optional, the line either side of the divider ornament
  *                 (bramble has none: its ornament stands alone);
+ *   - CORNER_SIZE: optional, the corners' side in px; without it they are
+ *                 scale.js's CORNER_SIZE (bramble and Art Deco have none);
  *   - FRAME_*:    how corners sit on a frame (below).
  */
 

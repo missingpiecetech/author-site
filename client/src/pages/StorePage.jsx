@@ -10,6 +10,7 @@ import ProductCard from "../components/store/ProductCard";
 import Lightbox from "../components/store/Lightbox";
 import { editionForItem, partitionCatalog } from "../data/crownfallEditions";
 import { EVENTS, track } from "../lib/analytics.js";
+import { getUserMessage } from "../lib/errors.js";
 
 const StorePage = () => {
   const { addItem } = useCart();
@@ -33,7 +34,7 @@ const StorePage = () => {
         }
       } catch (fetchError) {
         if (isMounted) {
-          setError(fetchError.message || "Unable to load store products.");
+          setError(getUserMessage(fetchError));
         }
       } finally {
         if (isMounted) {
