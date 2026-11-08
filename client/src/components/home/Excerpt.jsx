@@ -23,9 +23,9 @@ const Excerpt = ({ excerpt, to, ...rest }) => {
       innerClassName="flex flex-col gap-8 lg:flex-row lg:gap-24"
       {...rest}
     >
-      <div className="flex shrink-0 flex-col gap-4 lg:w-110 lg:gap-6">
+      <div className="flex shrink-0 flex-col gap-2 lg:w-110">
         <Eyebrow>Read an Excerpt</Eyebrow>
-        <h2 id="excerpt-heading" className="text-heading text-cream">
+        <h2 id="excerpt-heading" className="trim-ascender text-heading text-cream">
           {chapterTitle(chapter)}
         </h2>
       </div>

@@ -31,6 +31,20 @@
   }
 }
 
+/* Eyebrow above a heading: trim each line's box to the letters so the gap
+   between them is the space you see. The eyebrow trims to its baseline. CSS can
+   trim a heading only to its capitals, and Cormorant's ascenders (f, l, h) rise
+   0.09em above them, so trim-ascender adds that back: the box then starts at
+   the tallest letters at every size. Browsers without text-box show a little
+   more space. */
+@utility trim-baseline {
+  text-box: trim-end cap alphabetic;
+}
+@utility trim-ascender {
+  text-box: trim-start cap alphabetic;
+  padding-top: 0.09em;
+}
+
 /* Text set on background art (owner's value). */
 @utility text-halo {
   text-shadow: 0 2px 8px #000000;

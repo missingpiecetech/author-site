@@ -73,9 +73,12 @@ const WritingDesk = ({ works = WRITING_DESK, ...rest }) => {
       innerClassName="flex flex-col gap-7 lg:flex-row lg:gap-24"
       {...rest}
     >
-      <div className="flex shrink-0 flex-col gap-4 lg:w-110 lg:gap-6">
+      <div className="flex shrink-0 flex-col gap-2 lg:w-110">
         <Eyebrow>From the Writing Desk</Eyebrow>
-        <h2 id="writing-desk-heading" className="text-heading text-cream">
+        <h2
+          id="writing-desk-heading"
+          className="trim-ascender text-heading text-cream"
+        >
           Stories in the Works
         </h2>
       </div>

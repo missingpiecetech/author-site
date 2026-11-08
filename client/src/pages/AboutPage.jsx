@@ -82,12 +82,14 @@ const AboutPage = () => {
       <Section band spacing="compact">
         <dl className="grid gap-8 sm:grid-cols-2 lg:gap-12">
           {STATS.map(({ label, value, detail }) => (
-            <div key={label} className="flex flex-col gap-2.5">
+            <div key={label} className="flex flex-col gap-2">
               <Eyebrow as="dt">{label}</Eyebrow>
-              <dd className="font-display text-3xl font-semibold text-cream lg:text-[1.8125rem]">
+              <dd className="trim-ascender font-display text-3xl font-semibold text-cream lg:text-[1.8125rem]">
                 {value}
               </dd>
-              {detail && <dd className="text-base text-muted">{detail}</dd>}
+              {detail && (
+                <dd className="mt-0.5 text-base text-muted">{detail}</dd>
+              )}
             </div>
           ))}
         </dl>
@@ -109,9 +111,9 @@ const AboutPage = () => {
       {/* Invite Michael */}
       <Section>
         <div className="grid gap-6 lg:grid-cols-[5fr_7fr] lg:items-end lg:gap-24">
-          <div className="flex flex-col gap-4 lg:gap-6">
+          <div className="flex flex-col gap-2">
             <Eyebrow>Press &amp; events</Eyebrow>
-            <h2 className="text-heading text-cream">Invite Michael</h2>
+            <h2 className="trim-ascender text-heading text-cream">Invite Michael</h2>
           </div>
           <div className="flex flex-col gap-6">
             <p className="text-lede text-muted">

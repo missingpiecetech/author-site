@@ -66,8 +66,12 @@ const BooksPage = () => {
                 className={`flex min-w-0 flex-col gap-7 lg:col-span-3 ${mirrored ? "lg:order-1" : ""}`}
               >
                 <div className="flex flex-col gap-4">
-                  <Eyebrow>{book.status}</Eyebrow>
-                  <h2 className="text-heading text-cream">{book.title}</h2>
+                  <div className="flex flex-col gap-2">
+                    <Eyebrow>{book.status}</Eyebrow>
+                    <h2 className="trim-ascender text-heading text-cream">
+                      {book.title}
+                    </h2>
+                  </div>
                   <p className="font-display text-hook italic font-medium text-cream">
                     {book.subtitle}
                   </p>
