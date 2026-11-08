@@ -32,7 +32,7 @@ const PageIntro = ({
     innerClassName={`flex flex-col items-center gap-2 text-center lg:gap-2.5`}
     {...rest}
   >
-    <div className="flex flex-col items-center gap-eyebrow">
+    <div className="flex flex-col items-center">
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
       <h1 className={`text-title text-cream ${eyebrow ? "trim-ascender" : ""}`}>
         {title}

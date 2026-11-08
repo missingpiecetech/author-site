@@ -24,7 +24,7 @@ const BookHero = ({ book, className = "", ...rest }) => {
         className="w-55 shrink-0 bg-ground animate-scale-in lg:w-80 xl:w-100"
       />
       <div className="flex max-w-180 min-w-0 flex-col items-center gap-5.5 text-center lg:items-start lg:gap-7 lg:text-left">
-        <div className="flex flex-col items-center gap-eyebrow lg:items-start">
+        <div className="flex flex-col items-center lg:items-start">
           <Eyebrow className="max-lg:tracking-[0.2em]">{eyebrow}</Eyebrow>
           <h1 className="trim-ascender text-display text-cream">
             {book.title}

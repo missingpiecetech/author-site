@@ -93,7 +93,7 @@ const CrownfallListing = ({ editions, onAddToCart, onEnlarge }) => {
       </div>
 
       <div className="flex min-w-0 flex-col gap-6">
-        <div className="flex flex-col gap-eyebrow">
+        <div className="flex flex-col">
           {CROWNFALL?.status && <Eyebrow>{CROWNFALL.status}</Eyebrow>}
           <h2 className="trim-ascender text-heading text-cream">
             {product.title}

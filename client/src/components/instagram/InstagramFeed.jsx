@@ -34,7 +34,7 @@ const InstagramFeed = () => {
 
   return (
     <Section data-testid="instagram-feed">
-      <div className="mb-9 flex flex-col items-center gap-eyebrow text-center lg:mb-12">
+      <div className="mb-9 flex flex-col items-center text-center lg:mb-12">
         <Eyebrow>Latest Updates</Eyebrow>
         <h2 className="trim-ascender text-heading text-cream">
           Follow <span className="text-accent">Along</span>
