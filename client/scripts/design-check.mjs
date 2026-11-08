@@ -4,10 +4,8 @@
 //   - horizontal scroll after 2.5s of live animation;
 //   - filigree ornaments whose painted parts overlap text in the same section;
 //   - filigree corners that run into each other or onto their frame's content;
-//   - filigree drawn at another scale than its style's (within 5%): every
-//     corner at its style's CORNER_SIZE / 100 px per artwork unit (UNIT, or
-//     Rose in Bloom's larger size), and every divider without its own size
-//     at UNIT;
+//   - filigree drawn at another scale than the corners' (UNIT px per artwork
+//     unit, within 5%): every corner, and every divider without its own size;
 //   - content left at opacity 0 with prefers-reduced-motion;
 //   - progress bars whose fill does not match aria-valuenow;
 //   - an excerpt reading column wider than 72ch of its own font;
@@ -28,10 +26,6 @@ import puppeteer from "puppeteer";
 import sharp from "sharp";
 import { startServer } from "../tests/e2e/support/server.js";
 import { UNIT } from "../src/components/ui/filigree/scale.js";
-import { CORNER_SIZE as ROSE_CORNER_SIZE } from "../src/components/ui/filigree/roseInBloom.js";
-
-// px per artwork unit each corner style is drawn at; the rest use UNIT.
-const CORNER_UNITS = { roseInBloom: ROSE_CORNER_SIZE / 100 };
 
 const ROUTES = [
   "/",
@@ -288,9 +282,8 @@ const cornerCollisions = (page) =>
     return [...new Set(hits)];
   });
 
-// Every ornament's px per viewBox unit, against its style's (see
-// CORNER_UNITS). Dividers of a style with its own divider size (Art Deco) are
-// left out.
+// Every ornament's px per viewBox unit, against the corners' UNIT. Dividers
+// of a style with its own divider size (Art Deco) are left out.
 const SCALE_TOLERANCE = 0.05;
 const ornamentScales = (page) =>
   page.evaluate(() =>
@@ -555,11 +548,9 @@ const main = async () => {
           `  ornament scale: ${[...new Set(scales.map((s) => `${s.style} ${s.kind} ${s.unit.toFixed(3)}`))].join(", ") || "none"} px/unit`,
         );
         for (const { kind, style, unit } of scales) {
-          const target =
-            kind === "corners" ? (CORNER_UNITS[style] ?? UNIT) : UNIT;
-          if (Math.abs(unit / target - 1) > SCALE_TOLERANCE) {
+          if (Math.abs(unit / UNIT - 1) > SCALE_TOLERANCE) {
             fail(
-              `${label}: ${style} ${kind} at ${unit.toFixed(3)} px/unit, not ${target}`,
+              `${label}: ${style} ${kind} at ${unit.toFixed(3)} px/unit, not ${UNIT}`,
             );
           }
         }

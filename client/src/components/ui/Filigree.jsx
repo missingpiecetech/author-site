@@ -16,7 +16,7 @@ import { CORNER_SIZE as BASE_CORNER_SIZE, UNIT } from "./filigree/scale.js";
 // frame's edges. Artwork is drawn `size` px per 100 units (the style's
 // CORNER_SIZE), whatever the frame's size, so only frame a box at least
 // FRAME_MIN_SPAN × CORNER_SIZE tall and wide; on a smaller one the arms meet.
-// A viewBox that starts past 0 (Rose in Bloom's) trims the empty edge of the
+// A viewBox that starts past 0 (Clean Briar's) trims the empty edge of the
 // box; the frame corner stays at FRAME_INSET × 100 units.
 const positions = (size, viewBox, { FRAME_BORDER_WIDTH, FRAME_INSET }) => {
   const [x] = viewBox.split(" ").map(Number);
@@ -56,7 +56,7 @@ const Piece = ({ paths }) =>
  * plain line runs between them.
  *
  * Corners are always the style's CORNER_SIZE px (or scale.js's). A style
- * with CORNER_PIECES (the site's Rose in Bloom) gets a random piece and a
+ * with CORNER_PIECES (the site's Clean Briar) gets a random piece and a
  * random diagonal mirror at each corner, chosen once when the frame mounts. Use them only on
  * single framed elements, never on repeating cards.
  *
@@ -107,7 +107,7 @@ export const FiligreeCorners = ({ filigree, className = "text-accent" }) => {
 /**
  * Ornamental section break: a centred ornament, with rules either side when
  * the style has them (Art Deco does; the bramble ornament, which the site's
- * Rose in Bloom also uses, stands alone). A style without DIVIDER_ART is
+ * Clean Briar also uses, stands alone). A style without DIVIDER_ART is
  * drawn at the bramble scale (UNIT px per viewBox unit, scale.js), so its
  * thorns and stems match the bramble corners' exactly.
  *

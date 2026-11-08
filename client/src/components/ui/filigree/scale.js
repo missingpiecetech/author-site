@@ -8,8 +8,8 @@
  * it renders at UNIT px per artwork unit; a divider drawn in the same units
  * renders at UNIT too (see bramble.jsx), including the site style's, which is
  * the bramble divider. 112px is where the sample #8 corners read well (the
- * sample's framed cover uses 104px). Rose in Bloom corners are larger, 134px
- * (see roseInBloom.js).
+ * sample's framed cover uses 104px). Clean Briar corners use the same
+ * 112px (see cleanBriar.js).
  */
 export const CORNER_SIZE = 112;
 export const UNIT = CORNER_SIZE / 100;

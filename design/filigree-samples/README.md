@@ -6,7 +6,7 @@ candidates (`1`–`12`). Each card shows the style on a framed Crownfall cover, 
 divider and the store's shipping notice, at the site's colours and fonts. Open it directly in
 a browser; it is not part of the app build and never ships with the site.
 
-The site's dividers use **#8, Thorned Bramble**. Its frame corners use **Rose in Bloom**
+The site's dividers use **#8, Thorned Bramble**. Its frame corners use **Clean Briar**
 (November 2026), a later briar family made with the generator in `../thorn-corners/` rather
 than a card on this sheet. Frames that belong only to **Project: Arcanist** use **#10, Art
 Deco Sunburst** (the book's cover frame on `/books`).
@@ -30,10 +30,10 @@ In `client/src/components/ui/`:
 - `Filigree.jsx` — `FiligreeCorners` and `FiligreeDivider`, the components every page uses.
   They contain no artwork.
 - `filigree/index.js` — names the site style (two marked lines: `export * from
-"./roseInBloom.js"` and `SITE_FILIGREE = "roseInBloom"`) and registers every style by name
-  in `FILIGREE_STYLES`, with `getFiligree(name)` to look one up. It gives Rose in Bloom the
+"./cleanBriar.js"` and `SITE_FILIGREE = "cleanBriar"`) and registers every style by name
+  in `FILIGREE_STYLES`, with `getFiligree(name)` to look one up. It gives Clean Briar the
   bramble divider.
-- `filigree/roseInBloom.js` — the Rose in Bloom corner pieces and metrics (site style; see
+- `filigree/cleanBriar.js` — the Clean Briar corner pieces and metrics (site style; see
   `../thorn-corners/README.md`).
 - `filigree/bramble.jsx` — the Thorned Bramble artwork and metrics (the site's divider).
 - `filigree/artDeco.jsx` — the Art Deco Sunburst artwork and metrics (#10, Project: Arcanist).

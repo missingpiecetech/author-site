@@ -5,8 +5,8 @@
 straight pieces, and shows each family on a framed Crownfall cover, a quote panel and a
 notice. Open it directly in a browser; it is not part of the app build and never ships.
 
-The site's corners are **Rose in Bloom** (family id `rosesInBloom`, chosen November 2026).
-Its six pieces are copied verbatim into `client/src/components/ui/filigree/roseInBloom.js`
+The site's corners are **Clean Briar** (family id `briar`, chosen November 2026).
+Its six pieces are copied verbatim into `client/src/components/ui/filigree/cleanBriar.js`
 as `CORNER_PIECES`.
 
 ## How the pieces are made
@@ -33,7 +33,7 @@ as `CORNER_PIECES`.
 2. In the browser console, print the pieces as the array the site uses:
 
    ```js
-   const fam = FAMILIES.find((f) => f.id === 'rosesInBloom');
+   const fam = FAMILIES.find((f) => f.id === 'briar');
    copy(
    	JSON.stringify(
    		fam.variants.map((v) => cornerShapes(fam, v)),
@@ -43,7 +43,7 @@ as `CORNER_PIECES`.
    );
    ```
 
-3. Paste the result over `CORNER_PIECES` in `roseInBloom.js`. If the corner size changes,
+3. Paste the result over `CORNER_PIECES` in `cleanBriar.js`. If the corner size changes,
    update the family's `corner` here and `CORNER_SIZE` there to match.
 4. From `client/`, run `node scripts/design-check.mjs` and check the frames on `/`, `/books`,
    `/store` and `/about` at 1440 and 390.

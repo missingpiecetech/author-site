@@ -8,7 +8,7 @@
  * Every filigree style module exports the same names, and `../Filigree.jsx`
  * imports exactly one module:
  *   - CornerArt:  top-left corner, drawn in a CORNER_VIEWBOX box (or
- *                 CORNER_PIECES, several to pick from: see roseInBloom.js);
+ *                 CORNER_PIECES, several to pick from: see cleanBriar.js);
  *   - DividerArt: the divider ornament, drawn in a DIVIDER_VIEWBOX box,
  *                 sized by DIVIDER_ART (class names), or, without it, at
  *                 the corners' scale (scale.js);
