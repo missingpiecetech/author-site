@@ -32,16 +32,18 @@ const PageIntro = ({
     innerClassName={`flex flex-col items-center gap-2 text-center lg:gap-2.5`}
     {...rest}
   >
-    {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-    <h1 className="text-title text-cream">
-      {title}
-      {accent && (
-        <>
-          {" "}
-          <span className="text-accent">{accent}</span>
-        </>
-      )}
-    </h1>
+    <div className="flex flex-col items-center">
+      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+      <h1 className={`text-title text-cream ${eyebrow ? "trim-ascender" : ""}`}>
+        {title}
+        {accent && (
+          <>
+            {" "}
+            <span className="text-accent">{accent}</span>
+          </>
+        )}
+      </h1>
+    </div>
     {lede && <p className="max-w-3xl text-lede text-muted">{lede}</p>}
     {children}
     <FiligreeDivider className="mt-2 text-accent lg:mt-3" />

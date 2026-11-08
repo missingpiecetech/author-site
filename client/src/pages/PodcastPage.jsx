@@ -43,7 +43,7 @@ const PodcastPage = () => {
 
       {/* About the podcast */}
       <Section>
-        <div className="grid items-center gap-10 lg:grid-cols-5 lg:gap-24">
+        <div className="grid items-center gap-15 lg:grid-cols-5 lg:gap-24">
           <div className="mx-auto w-full max-w-sm lg:col-span-2 lg:max-w-none">
             <FramedImage
               src={authorAdjacentLogo}
