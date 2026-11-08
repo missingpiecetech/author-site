@@ -141,6 +141,13 @@ host's answer. The host answers 403 to `127.0.0.1` until **Accept events from lo
 is on in the dashboard (Settings → Tracking); turn it off again afterwards. The deployed
 domain must be in **Allowed domains**.
 
+To see goals and steps stored without touching production, run Minilytics locally (its
+`deploy/Dockerfile`, a site created with `SiteRegistry::create` and `allow_localhost`) and
+start the dev server with `PUBLIC_MINILYTICS_HOST`, `_SITE_ID` and `_SITE_KEY` set in the
+shell: `vite.config.js` reads them from the environment too. The tracker drops automated
+browsers, so launch Puppeteer with `--disable-blink-features=AutomationControlled` and a
+desktop Chrome user agent.
+
 `npm run test:e2e` (`client/tests/e2e/analytics.e2e.test.js`) drives every event above
 with a stand-in `window.minilytics` and a test clock; the real tracker never loads in
 tests.
