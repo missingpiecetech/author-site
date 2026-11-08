@@ -9,11 +9,12 @@ import "@fontsource/spectral/500.css";
 import "@fontsource/spectral/400-italic.css";
 import "./index.css";
 import App from "./App.jsx";
-import { startReplay } from "./lib/analytics.js";
+import { listenForNewsletterSignup, startReplay } from "./lib/analytics.js";
 import { startErrorReporting } from "./lib/errors.js";
 
 startErrorReporting();
 startReplay();
+listenForNewsletterSignup();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
