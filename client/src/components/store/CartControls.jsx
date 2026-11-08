@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import useCart from "../../hooks/useCart";
+import { MAX_QUANTITY } from "../../../shared/checkout.js";
 import Button from "../ui/Button";
 import { EVENTS, track } from "../../lib/analytics.js";
 
@@ -78,7 +79,8 @@ const CartControls = ({
         type="button"
         data-testid="qty-increase"
         onClick={() => changeQuantity(quantity + 1)}
-        className={`${STEP} border-accent bg-accent text-ground hover:border-accent-hover hover:bg-accent-hover`}
+        disabled={quantity >= MAX_QUANTITY}
+        className={`${STEP} border-accent bg-accent text-ground hover:border-accent-hover hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40`}
         aria-label={`Increase quantity of ${product.title}`}
       >
         +
