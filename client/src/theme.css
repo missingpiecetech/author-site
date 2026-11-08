@@ -41,6 +41,7 @@
   --text-3xl: 1.6875rem;
 
   --tracking-eyebrow: 0.22em;
+  --spacing-eyebrow: 1em; /* eyebrow to its heading; em of the eyebrow, so it scales with it */
   --radius-btn: 2px;
   --shadow-cover: 0 40px 80px rgb(0 0 0 / 0.55);
 }

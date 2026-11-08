@@ -54,7 +54,7 @@ const BooksPage = () => {
         const mirrored = index % 2 === 1;
         return (
           <Section key={book.id} id={book.slug} band={mirrored}>
-            <div className="grid items-start gap-12 lg:grid-cols-5 lg:gap-24">
+            <div className="grid items-start gap-15 lg:grid-cols-5 lg:gap-24">
               <div
                 className={`mx-auto w-full max-w-xs min-w-0 sm:max-w-sm lg:col-span-2 lg:max-w-none ${mirrored ? "lg:order-2" : ""}`}
               >
@@ -66,8 +66,12 @@ const BooksPage = () => {
                 className={`flex min-w-0 flex-col gap-7 lg:col-span-3 ${mirrored ? "lg:order-1" : ""}`}
               >
                 <div className="flex flex-col gap-4">
-                  <Eyebrow>{book.status}</Eyebrow>
-                  <h2 className="text-heading text-cream">{book.title}</h2>
+                  <div className="flex flex-col">
+                    <Eyebrow>{book.status}</Eyebrow>
+                    <h2 className="trim-ascender text-heading text-cream">
+                      {book.title}
+                    </h2>
+                  </div>
                   <p className="font-display text-hook italic font-medium text-cream">
                     {book.subtitle}
                   </p>

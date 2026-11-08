@@ -95,7 +95,7 @@ const HomePage = () => {
 
       {/* Author Adjacent podcast */}
       <Section>
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
+        <div className="grid items-center gap-15 lg:grid-cols-2 lg:gap-24">
           <div className="flex animate-fade-in-up flex-col gap-6 text-center lg:text-left">
             <h2 className="text-heading text-cream">
               Author <span className="text-accent">Adjacent</span>
