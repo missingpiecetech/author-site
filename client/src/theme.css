@@ -41,6 +41,7 @@
   --text-3xl: 1.6875rem;
 
   --tracking-eyebrow: 0.22em;
+  --spacing-eyebrow: 0.75rem; /* eyebrow to its heading (gap-eyebrow) */
   --radius-btn: 2px;
   --shadow-cover: 0 40px 80px rgb(0 0 0 / 0.55);
 }
