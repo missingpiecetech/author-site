@@ -4,26 +4,27 @@
 //
 // The `square` SDK is mocked, so nothing here touches the network.
 //
-// Deliberately NOT asserted: that the client-supplied price, title or
-// redirectUrl are forwarded. Issue #4 makes the server stop trusting those, and
-// these tests must keep passing when it lands. What is locked is what the
-// customer is actually charged for shipping and what Square is asked to sell:
-// the $5.99 flat shipping fee, the shipping-address prompt, catalogObjectId and
-// quantity.
-//
-// If #4 makes the server look prices up in the catalog, extend the mock client
-// below with that catalog method; the assertions should not need to change.
+// What is locked: what the customer is charged (catalog prices, never the
+// client's; the $5.99 flat shipping fee), the shipping-address prompt, where
+// Square sends the buyer afterwards, and which carts are refused with HTTP 400.
+// The mock client's catalog.list serves CATALOG below.
 
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CHECKOUT_FAILED, STORE_UNAVAILABLE } from "../../shared/errors.js";
+import {
+  CART_EMPTY,
+  CHECKOUT_FAILED,
+  ITEM_UNAVAILABLE,
+  QUANTITY_INVALID,
+  STORE_UNAVAILABLE,
+} from "../../shared/errors.js";
 
 const square = vi.hoisted(() => {
   const SquareEnvironment = {
     Production: "https://connect.squareup.com",
     Sandbox: "https://connect.squareupsandbox.com",
   };
-  const state = { instances: [], createImpl: null };
+  const state = { instances: [], createImpl: null, catalog: [] };
 
   class SquareClient {
     constructor(options) {
@@ -33,7 +34,13 @@ const square = vi.hoisted(() => {
           create: vi.fn((request) => state.createImpl(request)),
         },
       };
-      this.catalog = { list: vi.fn() };
+      this.catalog = {
+        list: vi.fn(async () => ({
+          async *[Symbol.asyncIterator]() {
+            yield* state.catalog;
+          },
+        })),
+      };
       this.customers = { create: vi.fn() };
       state.instances.push(this);
     }
@@ -57,13 +64,48 @@ const SHIPPING_FEE = {
   charge: { amount: 599n, currency: "USD" },
 };
 
-const ENV = {
-  SQUARE_ACCESS_TOKEN: "test-token-not-real",
+const BASE_ENV = {
   SQUARE_LOCATION_ID: "LOC_TEST",
   SQUARE_ENVIRONMENT: "sandbox",
 };
 
 const ORIGIN = "http://localhost:5173";
+
+const catalogItem = (id, name, variationId, cents, extra = {}) => ({
+  type: "ITEM",
+  id,
+  isDeleted: false,
+  ...extra,
+  itemData: {
+    name,
+    variations: [
+      {
+        type: "ITEM_VARIATION",
+        id: variationId,
+        itemVariationData: {
+          itemId: id,
+          priceMoney: { amount: BigInt(cents), currency: "USD" },
+        },
+      },
+    ],
+  },
+});
+
+const CATALOG = [
+  catalogItem(
+    "ITEM_CROWNFALL",
+    "Crownfall - Signed Hardcover",
+    "VAR_CROWNFALL_SIGNED",
+    2999,
+  ),
+  catalogItem("ITEM_BOOKMARK", "Bookmark", "VAR_BOOKMARK", 400),
+  catalogItem("ITEM_GONE", "Retired print", "VAR_GONE", 1500, {
+    isDeleted: true,
+  }),
+];
+
+// Each test gets its own access token, so the catalog cache never carries over.
+let tokenCounter = 0;
 
 const CART_BODY = {
   items: [
@@ -99,11 +141,11 @@ const fakePaymentLinkResponse = (request) => ({
 
 // --- Adapters: drive each implementation the way its runtime does ----------
 
-const callPagesFunction = async (env, body) => {
-  const request = new Request(`${ORIGIN}/api/square/checkout`, {
+const callPagesFunction = async (env, body, origin = ORIGIN) => {
+  const request = new Request(`${origin}/api/square/checkout`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Origin: ORIGIN },
-    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json", Origin: origin },
+    body: typeof body === "string" ? body : JSON.stringify(body),
   });
   const response = await onRequestPost({
     env,
@@ -113,7 +155,7 @@ const callPagesFunction = async (env, body) => {
   return { status: response.status, body: await response.json() };
 };
 
-const callDevPlugin = async (env, body) => {
+const callDevPlugin = async (env, body, origin = ORIGIN) => {
   const plugin = createSquareApiPlugin(env);
   let handler;
   plugin.configureServer({
@@ -126,12 +168,14 @@ const callDevPlugin = async (env, body) => {
   });
 
   // connect strips the mount prefix, so the middleware sees "/checkout".
-  const req = Readable.from([Buffer.from(JSON.stringify(body))]);
+  const req = Readable.from([
+    Buffer.from(typeof body === "string" ? body : JSON.stringify(body)),
+  ]);
   req.method = "POST";
   req.url = "/checkout";
   req.headers = {
-    host: "localhost:5173",
-    origin: ORIGIN,
+    host: new URL(origin).host,
+    origin,
     "content-type": "application/json",
   };
 
@@ -164,9 +208,14 @@ const createCalls = () =>
     (client) => client.checkout.paymentLinks.create.mock.calls,
   );
 
+let ENV;
+
 beforeEach(() => {
   square.state.instances.length = 0;
   square.state.createImpl = (request) => fakePaymentLinkResponse(request);
+  square.state.catalog = CATALOG;
+  tokenCounter += 1;
+  ENV = { ...BASE_ENV, SQUARE_ACCESS_TOKEN: `test-token-${tokenCounter}` };
 });
 
 describe.each(implementations)("checkout: %s", (_name, call) => {
@@ -207,20 +256,114 @@ describe.each(implementations)("checkout: %s", (_name, call) => {
     });
   });
 
-  // Current behaviour, locked so a redesign does not change it by accident.
-  // Issue #4 may deliberately reject items without a variationId (HTTP 400);
-  // if it does, replace this test rather than weakening the others.
-  it("falls back to the item id when a cart item has no variation id", async () => {
+  it("charges catalog prices and names, ignoring the price and title the browser sent", async () => {
     await call(ENV, {
-      items: [{ itemId: "ITEM_ONLY", quantity: 3, title: "x", price: 1 }],
-      redirectUrl: `${ORIGIN}/checkout/success`,
+      items: [
+        {
+          itemId: "ITEM_CROWNFALL",
+          variationId: "VAR_CROWNFALL_SIGNED",
+          quantity: 1,
+          title: "Free book",
+          price: 0.01,
+        },
+      ],
     });
     const [[request]] = createCalls();
-    expect(request.order.lineItems[0]).toMatchObject({
-      catalogObjectId: "ITEM_ONLY",
-      quantity: "3",
-    });
+    expect(request.order.lineItems).toEqual([
+      {
+        catalogObjectId: "VAR_CROWNFALL_SIGNED",
+        quantity: "1",
+        name: "Crownfall - Signed Hardcover",
+        basePriceMoney: { amount: 2999n, currency: "USD" },
+      },
+    ]);
   });
+
+  it("sends the buyer back to the site that started checkout, never to a URL the browser chose", async () => {
+    await call(ENV, {
+      ...CART_BODY,
+      redirectUrl: "https://attacker.example/phish",
+    });
+    const [[request]] = createCalls();
+    expect(request.checkoutOptions.redirectUrl).toBe(
+      `${ORIGIN}/checkout/success`,
+    );
+  });
+
+  it("ignores a non-numeric price, since price is never read", async () => {
+    const { status } = await call(ENV, {
+      items: [{ variationId: "VAR_BOOKMARK", quantity: 1, price: "abc" }],
+    });
+    expect(status).toBe(200);
+  });
+
+  it("sends the buyer to michaelvadney.com when checkout starts on a site not on the allowlist", async () => {
+    await call(ENV, CART_BODY, "http://evil.example");
+    const [[request]] = createCalls();
+    expect(request.checkoutOptions.redirectUrl).toBe(
+      "https://michaelvadney.com/checkout/success",
+    );
+  });
+
+  it("caches the catalog: two checkouts within a minute list it once", async () => {
+    await call(ENV, CART_BODY);
+    await call(ENV, CART_BODY);
+    const listCalls = square.state.instances.flatMap(
+      (client) => client.catalog.list.mock.calls,
+    );
+    expect(listCalls).toHaveLength(1);
+  });
+
+  const refused = [
+    ["an empty item list", { items: [] }, CART_EMPTY],
+    ["no item list", {}, CART_EMPTY],
+    ["a body that is not JSON", "{not json", CART_EMPTY],
+    [
+      "an unknown variation",
+      { items: [{ variationId: "VAR_NOPE", quantity: 1 }] },
+      ITEM_UNAVAILABLE,
+    ],
+    [
+      "a deleted catalog item",
+      { items: [{ variationId: "VAR_GONE", quantity: 1 }] },
+      ITEM_UNAVAILABLE,
+    ],
+    [
+      "an item without a variation id",
+      { items: [{ itemId: "ITEM_BOOKMARK", quantity: 1 }] },
+      ITEM_UNAVAILABLE,
+    ],
+    [
+      "quantity 0",
+      { items: [{ variationId: "VAR_BOOKMARK", quantity: 0 }] },
+      QUANTITY_INVALID,
+    ],
+    [
+      "quantity 21",
+      { items: [{ variationId: "VAR_BOOKMARK", quantity: 21 }] },
+      QUANTITY_INVALID,
+    ],
+    [
+      "a fractional quantity",
+      { items: [{ variationId: "VAR_BOOKMARK", quantity: 1.5 }] },
+      QUANTITY_INVALID,
+    ],
+    [
+      "a quantity sent as text",
+      { items: [{ variationId: "VAR_BOOKMARK", quantity: "2" }] },
+      QUANTITY_INVALID,
+    ],
+  ];
+
+  it.each(refused)(
+    "answers %s with 400 and a plain sentence, without creating a link",
+    async (_label, body, sentence) => {
+      const { status, body: reply } = await call(ENV, body);
+      expect(status).toBe(400);
+      expect(reply.error).toBe(sentence);
+      expect(createCalls()).toHaveLength(0);
+    },
+  );
 
   it("sends a non-empty idempotency key that differs per request", async () => {
     await call(ENV, CART_BODY);
@@ -238,7 +381,7 @@ describe.each(implementations)("checkout: %s", (_name, call) => {
     await call(ENV, CART_BODY);
     const [client] = square.state.instances;
     expect(client.options).toMatchObject({
-      token: "test-token-not-real",
+      token: ENV.SQUARE_ACCESS_TOKEN,
       environment: square.SquareEnvironment.Sandbox,
     });
   });
@@ -299,11 +442,8 @@ describe("checkout: production and dev implementations stay in sync", () => {
     return request;
   };
 
-  // Keys that differ today. squareMarketingOptIn is set only by the dev
-  // middleware (reported as a bug; the dev server opts customers in to Square
-  // marketing, production does not). When the implementations are brought
-  // back in line, empty this list. Any NEW divergence fails this test.
-  const KNOWN_CHECKOUT_OPTIONS_DRIFT = ["squareMarketingOptIn"];
+  // Both build their request with shared/checkout.js; any divergence fails.
+  const KNOWN_CHECKOUT_OPTIONS_DRIFT = [];
 
   it("send the same checkoutOptions to Square", async () => {
     const prod = (await captureRequest(callPagesFunction)).checkoutOptions;

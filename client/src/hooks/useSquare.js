@@ -3,7 +3,6 @@ import { CHECKOUT_FAILED } from "../../shared/errors.js";
 import { failWith, fetchJson } from "../lib/errors.js";
 
 const DEFAULT_API_BASE_URL = "/api/square";
-const DEFAULT_SUCCESS_PATH = "/checkout/success";
 
 const mapCatalogProducts = (catalog = []) => {
   const imageById = new Map(
@@ -45,10 +44,7 @@ const mapCatalogProducts = (catalog = []) => {
 };
 
 const useSquare = (options = {}) => {
-  const {
-    apiBaseUrl = DEFAULT_API_BASE_URL,
-    successPath = DEFAULT_SUCCESS_PATH,
-  } = options;
+  const { apiBaseUrl = DEFAULT_API_BASE_URL } = options;
   const productsRef = useRef([]);
 
   const request = useCallback(
@@ -91,17 +87,11 @@ const useSquare = (options = {}) => {
 
   const createCheckoutLink = useCallback(
     async (items) => {
-      const redirectUrl = `${window.location.origin}${successPath}`;
-
       const payload = {
         items: items.map((item) => ({
-          itemId: item.id,
           variationId: item.variationId,
           quantity: item.quantity,
-          title: item.title || item.name,
-          price: item.price,
         })),
-        redirectUrl,
       };
 
       const data = await request("/checkout", {
@@ -121,7 +111,7 @@ const useSquare = (options = {}) => {
 
       return checkoutUrl;
     },
-    [apiBaseUrl, request, successPath],
+    [apiBaseUrl, request],
   );
 
   const createCustomer = useCallback(
