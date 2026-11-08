@@ -11,6 +11,7 @@ import {
   trimFeed,
 } from "../../shared/instagramFeed.js";
 import { onRequestGet } from "../../functions/api/instagram.js";
+import { FEED_FAILED } from "../../shared/errors.js";
 
 const FIXTURE = JSON.parse(
   readFileSync(
@@ -105,7 +106,7 @@ describe("fetchFeed", () => {
     expect(feed).toEqual(trimFeed(FIXTURE));
   });
 
-  it("names the cause when Behold fails", async () => {
+  it("throws the original error when Behold fails", async () => {
     await expect(fetchFeed(async () => jsonReply({}, 503))).rejects.toThrow(
       "Behold feed answered HTTP 503",
     );
@@ -113,10 +114,10 @@ describe("fetchFeed", () => {
       fetchFeed(async () => {
         throw new Error("getaddrinfo ENOTFOUND");
       }),
-    ).rejects.toThrow("Behold feed request failed: getaddrinfo ENOTFOUND");
+    ).rejects.toThrow("getaddrinfo ENOTFOUND");
     await expect(
       fetchFeed(async () => new Response("<html>", { status: 200 })),
-    ).rejects.toThrow("Behold feed returned invalid JSON");
+    ).rejects.toThrow(SyntaxError);
   });
 });
 
@@ -171,13 +172,11 @@ describe("GET /api/instagram (Pages Function)", () => {
     ]);
   });
 
-  it("answers 502 naming the cause when Behold fails, and caches nothing", async () => {
+  it("answers 502 in plain words when Behold fails, and caches nothing", async () => {
     fetchMock.mockImplementation(async () => jsonReply({}, 500));
     const response = await call();
     expect(response.status).toBe(502);
-    expect((await response.json()).error).toMatch(
-      /Instagram feed.*Behold feed answered HTTP 500/,
-    );
+    expect((await response.json()).error).toBe(FEED_FAILED);
     expect(store.size).toBe(0);
 
     fetchMock.mockImplementation(async () => jsonReply(FIXTURE));

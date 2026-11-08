@@ -1,5 +1,12 @@
 import { Buffer } from "node:buffer";
 import { SquareClient, SquareEnvironment } from "square";
+import {
+  CATALOG_FAILED,
+  CHECKOUT_FAILED,
+  CUSTOMER_FAILED,
+  SERVER_FAILED,
+  STORE_UNAVAILABLE,
+} from "../shared/errors.js";
 
 const readJsonBody = async (req) => {
   const chunks = [];
@@ -18,6 +25,14 @@ const readJsonBody = async (req) => {
     return {};
   }
 };
+
+const ROUTE_FAILED = {
+  "/catalog": CATALOG_FAILED,
+  "/checkout": CHECKOUT_FAILED,
+  "/customers": CUSTOMER_FAILED,
+};
+
+const routePath = (req) => (req.url || "").split("?")[0];
 
 const sendJson = (res, statusCode, payload) => {
   res.statusCode = statusCode;
@@ -62,15 +77,15 @@ export const createSquareApiPlugin = (env) => {
     configureServer(server) {
       server.middlewares.use("/api/square", async (req, res) => {
         if (!squareClient || !locationId) {
-          sendJson(res, 500, {
-            error:
-              "Square is not configured. Set SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, and SQUARE_ENVIRONMENT in the project root env file.",
-          });
+          console.error(
+            "Square is not configured. Set SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, and SQUARE_ENVIRONMENT in the project root env file.",
+          );
+          sendJson(res, 500, { error: STORE_UNAVAILABLE });
           return;
         }
 
         try {
-          const path = (req.url || "").split("?")[0];
+          const path = routePath(req);
 
           if (req.method === "GET" && path === "/catalog") {
             const page = await squareClient.catalog.list({
@@ -151,7 +166,10 @@ export const createSquareApiPlugin = (env) => {
 
           sendJson(res, 404, { error: "Not found" });
         } catch (error) {
-          sendJson(res, 500, { error: error?.message || "Square API error" });
+          console.error("Square API error:", error);
+          sendJson(res, 500, {
+            error: ROUTE_FAILED[routePath(req)] || SERVER_FAILED,
+          });
         }
       });
     },
