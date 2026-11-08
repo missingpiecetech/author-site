@@ -6,9 +6,10 @@ candidates (`1`–`12`). Each card shows the style on a framed Crownfall cover, 
 divider and the store's shipping notice, at the site's colours and fonts. Open it directly in
 a browser; it is not part of the app build and never ships with the site.
 
-**The owner chose #8, Thorned Bramble (October 2026)** for the site: it is used everywhere
-filigree appears, except on frames that belong only to **Project: Arcanist**, which use
-**#10, Art Deco Sunburst** (the book's cover frame on `/books`).
+The site's dividers use **#8, Thorned Bramble**. Its frame corners use **Clean Briar**
+(November 2026), a later briar family made with the generator in `../thorn-corners/` rather
+than a card on this sheet. Frames that belong only to **Project: Arcanist** use **#10, Art
+Deco Sunburst** (the book's cover frame on `/books`).
 
 ## How the file is built
 
@@ -28,10 +29,13 @@ In `client/src/components/ui/`:
 
 - `Filigree.jsx` — `FiligreeCorners` and `FiligreeDivider`, the components every page uses.
   They contain no artwork.
-- `filigree/index.js` — names the site style (two marked lines: `export * from "./bramble"`
-  and `SITE_FILIGREE = "bramble"`) and registers every ported style by name in
-  `FILIGREE_STYLES`, with `getFiligree(name)` to look one up.
-- `filigree/bramble.jsx` — the Thorned Bramble artwork and metrics (site style).
+- `filigree/index.js` — names the site style (two marked lines: `export * from
+"./cleanBriar.js"` and `SITE_FILIGREE = "cleanBriar"`) and registers every style by name
+  in `FILIGREE_STYLES`, with `getFiligree(name)` to look one up. It gives Clean Briar the
+  bramble divider.
+- `filigree/cleanBriar.js` — the Clean Briar corner pieces and metrics (site style; see
+  `../thorn-corners/README.md`).
+- `filigree/bramble.jsx` — the Thorned Bramble artwork and metrics (the site's divider).
 - `filigree/artDeco.jsx` — the Art Deco Sunburst artwork and metrics (#10, Project: Arcanist).
 
 ## Giving one item its own style
@@ -67,8 +71,9 @@ To switch to style _N_:
      style; ids are document-global and every corner renders the art again.
 3. Import the new module in `filigree/index.js`, add it to `FILIGREE_STYLES`, and change both
    marked site-style lines to it.
-4. Check the sizes in `Filigree.jsx` (`SIZES`, the corner box per size) still suit the new
-   corner: bigger or more inward-reaching corners may need smaller boxes or more padding in
+4. Check the corner size still suits the new corner (`CORNER_SIZE` in the style module, or
+   `filigree/scale.js`'s 112px when it sets none): bigger or more inward-reaching corners
+   need bigger framed boxes (`FRAME_MIN_SPAN` corner sizes) or more padding in
    `FramedImage` and the panels.
 5. From `client/`, run `node scripts/design-check.mjs --shots <dir>` (ornament/text
    overlap, horizontal scroll at 1440 and 390) and compare the shots with card _N_.

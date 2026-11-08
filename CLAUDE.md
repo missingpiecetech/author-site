@@ -84,30 +84,38 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Page titles:** `PageIntro` is always centred (eyebrow, title, lede, then the divider
   in flow under them); the thorny divider only works under a centred title. About's title
   sits beside the portrait, left-aligned, so it gets no divider.
-- **Filigree, not plain gold boxes.** The site style is **#8 Thorned Bramble** (owner's
-  choice, Oct 2026): tapering briar stems crossing at each corner around a closed bud, with
-  hooked thorns; bold, solid `currentColor` fills. **Project: Arcanist's own frames use #10
+- **Filigree, not plain gold boxes.** The site's corners are **Clean Briar** (owner's
+  choice, Nov 2026): a thorned briar stem along each edge with a few leaves and closed buds,
+  the closest briar family to the original Thorned Bramble; solid `currentColor` fills. There are six corner pieces;
+  each frame picks one per corner at random, and mirrors it across the diagonal half the
+  time, once when it mounts (stable across re-renders, new on each page load). The site's
+  divider is still the **#8 Thorned Bramble** ornament. **Project: Arcanist's own frames use #10
   Art Deco Sunburst** (stepped bars, lozenges, a sunburst fan; 3px frame line) — today that
   is its cover frame on `/books`. Inline SVG only, no image files or icon fonts.
   - `src/components/ui/Filigree.jsx`: `FiligreeCorners` (parent `relative`) and
     `FiligreeDivider`. Both `aria-hidden`, `pointer-events-none`, and take `filigree` (a
     style name; default the site style). No artwork lives here.
-  - **One scale for every thorn** (owner, Oct 2026): `src/components/ui/filigree/scale.js`
-    sets `CORNER_SIZE` (112px, at every viewport and on every frame; corners never scale
-    with the box) and `UNIT` (1.12px per artwork unit). The bramble divider has no size of
-    its own, so it is drawn at `UNIT` too (269×54px): stems and thorns are the same size
-    in corners and dividers everywhere. Never resize an ornament with classes
-    (`[&_svg]:…`, `max-w-*` on a divider); `design-check` fails any corner or bramble
-    divider more than 5% off `UNIT`.
-  - `src/components/ui/filigree/bramble.jsx`: the artwork (ported verbatim from symbols
-    `c8`/`d8` of the samples, the divider without the sample's rule lines) and its
-    metrics: `FRAME_BORDER` (`border-2`) and the inset (a fifth of the corner box sits
-    outside the frame line).
+  - **Fixed ornament sizes:** corners are a fixed size at every viewport and on every
+    frame; they never scale with the box. A style may set its own `CORNER_SIZE`; Clean
+    Briar's is 112px, the same as `src/components/ui/filigree/scale.js`'s `CORNER_SIZE`
+    (112px), which bramble and Art Deco use, and `UNIT` (1.12px per
+    artwork unit). The bramble divider has no size of its own, so it is drawn at `UNIT`
+    (269×54px). Never resize an ornament with classes (`[&_svg]:…`, `max-w-*` on a
+    divider); `design-check` fails any corner or bramble divider more than 5% off `UNIT`.
+  - `src/components/ui/filigree/cleanBriar.js`: the site's corners, the six pieces as path
+    data (`CORNER_PIECES`; a path starting `E:` would be filled even-odd) copied verbatim from the
+    generator's export (`design/thorn-corners/`, whose README says how to regenerate them),
+    plus `CORNER_SIZE` (112) and the frame metrics: `FRAME_BORDER` (`border-2`) and the
+    inset (a fifth of the corner box sits outside the frame line). Plain JS with no JSX;
+    `filigree/index.js` gives it the bramble divider.
+  - `src/components/ui/filigree/bramble.jsx`: Thorned Bramble (symbols `c8`/`d8` of the
+    samples, the divider without the sample's rule lines). Its divider is the site's; its
+    corners are no longer used by default.
   - `src/components/ui/filigree/artDeco.jsx`: Art Deco Sunburst (symbols `c10`/`d10`,
     `border-3`), same exports plus its own divider size (`DIVIDER_ART`) and the solid
     3px `Rule` either side, both unchanged.
   - `src/components/ui/filigree/index.js` names the site style (two marked lines) and
-    registers styles by name in `FILIGREE_STYLES` (`bramble`, `artDeco`); `getFiligree(name)`
+    registers styles by name in `FILIGREE_STYLES` (`cleanBriar`, `bramble`, `artDeco`); `getFiligree(name)`
     returns one, falling back to the site style. Import it as `filigree/index.js`
     (explicitly — on macOS `./filigree` can resolve to `Filigree.jsx`).
   - **One item, its own style:** pass `filigree="artDeco"` to `FramedImage` /
@@ -116,9 +124,9 @@ against the ground, so never show state with a border alone (the pressed pill us
     `BOOK_DATA` (`filigree: "artDeco"` on Project: Arcanist), which `BooksPage`'s
     `BookCover` passes through. Never change the site style to style one item.
   - Every box carrying corners uses `${FRAME_BORDER}` plus a colour (`border-accent`, or
-    `border-edge` on panels). A fifth of the 112px corner (23px) reaches outside the box,
-    so keep that much room. A framed box must be at least 1.6 corner sizes (180px) tall
-    and wide or the arms on one edge meet; a box smaller than that gets no corners.
+    `border-edge` on panels). About 17px of the corner box reaches outside the box, so keep
+    that much room. A framed box must be at least 1.6 corner sizes (about 180px) tall and wide or the arms on one edge meet; a box smaller than that gets no
+    corners.
   - **No filigree on repeating cards** (owner, Oct 2026: "it is just too much"). Corners go
     only on single framed elements: `FramedImage`, the store gallery frame, the newsletter
     box and the checkout-success panel. Tiles, stats and icon boxes that repeat (Podcast
@@ -129,7 +137,9 @@ against the ground, so never show state with a border alone (the pressed pill us
   - **Notices have no filigree:** `ShippingNotice` is a plain `well` panel with the gold
     warning icon, no frame line and no corners.
   - **Other styles:** `design/filigree-samples/index.html` (repo root, never shipped) holds
-    all thirteen candidates; its README gives the steps to port one and switch to it.
+    the thirteen original candidates; its README gives the steps to port one and switch to
+    it. `design/thorn-corners/index.html` is the generator for Clean Briar and its sibling
+    briar families.
 - **Buttons:** near-square (`rounded-btn`, 2px), heights 54/48/44. Primary = gold fill;
   secondary = transparent with an `outline` border; toggle pills use `aria-pressed` and the
   gold fill when pressed. Labels in sentence case.
@@ -255,7 +265,7 @@ build.
 
 Everything lives under `client/`. The repo root only has the README, DEPLOYMENT.md, `.nvmrc`,
 `.gitignore`, `.prettierignore` and `design/` (reference material that never ships: the
-filigree samples, the Instagram layout mockups).
+filigree samples, the thorn-corner generator, the Instagram layout mockups).
 
 ```
 author-site/
@@ -319,7 +329,7 @@ Run from `client/`.
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
-each other or their frame's content, every ornament at the corners' scale, reduced-motion opacity,
+each other or their frame's content, every ornament at its style's scale, reduced-motion opacity,
 progress bars against their aria-valuenow, text contrast over background art, the Home scroll cue's geometry, and (with
 `--shots`) the element screenshots listed in its `SHOTS`.
 
