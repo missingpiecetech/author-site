@@ -452,7 +452,8 @@ navigation or Square code.
   `excerpt-buy` (the "Buy the book" beside it), `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`; Home's Instagram section:
   `instagram-feed` (the section), `instagram-tile` (each), `instagram-viewer` (the dialog),
   `instagram-caption`, `instagram-link`, `instagram-video`, `instagram-close`,
-  `instagram-album-slide`, `instagram-album-count`, `instagram-album-next`.
+  `instagram-album-slide`, `instagram-album-count`, `instagram-album-next`; `error-page` (the
+  not-found page and the page a render failure shows).
   The excerpt e2e walks the tabs and checks every paragraph and italic of every chapter.
 
 ## Conventions

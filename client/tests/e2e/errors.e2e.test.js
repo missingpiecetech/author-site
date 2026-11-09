@@ -155,3 +155,36 @@ describe("checkout fails", () => {
     await page.close();
   });
 });
+
+describe("error pages", () => {
+  const pageText = async (page) => {
+    const errorPage = await page.waitForSelector(byTestId("error-page"));
+    return errorPage.evaluate((node) => node.textContent);
+  };
+
+  it("a missing page says so in words", async () => {
+    const { page } = await openPage("/none", null);
+    await page.goto(`${server.baseUrl}/no-such-page`, { waitUntil: "load" });
+    const text = await pageText(page);
+    expect(text).toContain("We could not find that page.");
+    expect(text).not.toMatch(TECHNICAL_TEXT);
+    await page.close();
+  });
+
+  it("a page that fails to render shows plain words and is reported", async () => {
+    // Vite serves each page as its own module; this one throws when it renders.
+    const { page, reports } = await openPage("/src/pages/AboutPage.jsx", {
+      status: 200,
+      contentType: "text/javascript",
+      body: 'export default function AboutPage() { throw new Error("forced render failure"); }',
+    });
+    await page.goto(`${server.baseUrl}/about`, { waitUntil: "load" });
+    const text = await pageText(page);
+    expect(text).toContain(SERVER_FAILED);
+    expect(text).not.toMatch(TECHNICAL_TEXT);
+    expect(text).not.toContain("forced render failure");
+    const report = await waitForReport(reports, /"render_failed"/);
+    expect(report).toContain("forced render failure");
+    await page.close();
+  });
+});
