@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { MAX_QUANTITY } from "../../shared/checkout.js";
 
 const useCart = create(
   persist(
@@ -13,7 +14,9 @@ const useCart = create(
           if (existingItem) {
             return {
               cartItems: state.cartItems.map((i) =>
-                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
+                i.id === item.id
+                  ? { ...i, quantity: Math.min(i.quantity + 1, MAX_QUANTITY) }
+                  : i,
               ),
             };
           } else {
@@ -34,7 +37,9 @@ const useCart = create(
         } else {
           set((state) => ({
             cartItems: state.cartItems.map((item) =>
-              item.id === itemId ? { ...item, quantity: newQuantity } : item,
+              item.id === itemId
+                ? { ...item, quantity: Math.min(newQuantity, MAX_QUANTITY) }
+                : item,
             ),
           }));
         }

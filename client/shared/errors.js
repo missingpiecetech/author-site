@@ -13,6 +13,13 @@ export const CATALOG_FAILED =
   "We could not load the store. Please try again in a few minutes.";
 export const CHECKOUT_FAILED =
   "We could not start checkout, and you have not been charged. Please try again in a few minutes.";
+export const ITEM_UNAVAILABLE =
+  "One of the items in your cart is no longer available. Please remove it and try again.";
+// 20 is MAX_QUANTITY in shared/checkout.js.
+export const QUANTITY_INVALID =
+  "You can order up to 20 of each item. Please lower the quantity and try again.";
+export const CART_EMPTY =
+  "Your cart is empty. Add an item before checking out.";
 export const CUSTOMER_FAILED =
   "We could not save your details. Please try again in a few minutes.";
 export const FEED_FAILED = "We could not load the Instagram posts right now.";

@@ -268,17 +268,16 @@ const checkoutFlow = async (kind, lines) => {
     STUB_CHECKOUT_HOST,
   );
 
-  // Browser -> server request.
-  expect(checkoutBodies).toHaveLength(1);
-  expect(checkoutBodies[0].items).toHaveLength(lines.length);
-  lines.forEach(({ product, quantity }, i) => {
-    expect(checkoutBodies[0].items[i]).toMatchObject({
-      itemId: product.itemId,
-      variationId: product.variationId,
-      quantity,
-      price: Number(product.cents) / 100,
-    });
-  });
+  // Browser -> server request: only what to buy; price, name and the return
+  // address are the server's to decide.
+  expect(checkoutBodies).toEqual([
+    {
+      items: lines.map(({ product, quantity }) => ({
+        variationId: product.variationId,
+        quantity,
+      })),
+    },
+  ]);
 
   // Server -> Square request, as captured by the stub.
   const creates = server
@@ -295,9 +294,13 @@ const checkoutFlow = async (kind, lines) => {
     expect(request.order.lineItems[i]).toMatchObject({
       catalogObjectId: product.variationId,
       quantity: String(quantity),
+      name: product.name,
       basePriceMoney: { amount: product.cents, currency: "USD" },
     });
   });
+  expect(request.checkoutOptions.redirectUrl).toBe(
+    `${server.baseUrl}/checkout/success`,
+  );
   expect(request.idempotencyKey).toEqual(expect.any(String));
 
   // The browser landed on exactly the URL Square returned.
@@ -328,6 +331,58 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
 
   it("mobile 390px: grid product via the mobile menu cart", () =>
     checkoutFlow("mobile", [{ product: PRINT, quantity: 1 }]));
+
+  it("the cart stops at 20 of one item", async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    const card = await page.waitForSelector(storeProduct(PRINT.itemId));
+    await (await card.waitForSelector(byTestId("add-to-cart"))).click();
+    const increase = await card.waitForSelector(byTestId("qty-increase"));
+    for (let q = 1; q < 25; q += 1) {
+      await increase.evaluate((button) => button.click());
+    }
+    await waitForText(
+      page,
+      `${storeProduct(PRINT.itemId)} ${byTestId("qty-value")}`,
+      "20",
+    );
+    expect(await increase.evaluate((button) => button.disabled)).toBe(true);
+  });
+
+  it("a request with a tampered price and return address is charged the catalog price and returns to the site", async () => {
+    const { page } = await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    const reply = await page.evaluate(
+      async (product) => {
+        const response = await fetch("/api/square/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: [{ ...product, quantity: 1, title: "Free", price: 0.01 }],
+            redirectUrl: "https://attacker.example/",
+          }),
+        });
+        return { status: response.status };
+      },
+      { itemId: CROWNFALL.itemId, variationId: CROWNFALL.variationId },
+    );
+    expect(reply.status).toBe(200);
+    const { request } = server
+      .calls()
+      .filter((c) => c.type === "paymentLinks.create")
+      .at(-1);
+    expect(request.order.lineItems).toEqual([
+      {
+        catalogObjectId: CROWNFALL.variationId,
+        quantity: "1",
+        name: CROWNFALL.name,
+        basePriceMoney: { amount: CROWNFALL.cents, currency: "USD" },
+      },
+    ]);
+    expect(request.checkoutOptions.redirectUrl).toBe(
+      `${server.baseUrl}/checkout/success`,
+    );
+  });
 
   it("the server built its Square client from the dummy sandbox env, never real credentials", () => {
     const clients = server.calls().filter((c) => c.type === "client");

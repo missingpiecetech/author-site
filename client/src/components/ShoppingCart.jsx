@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import useCart from "../hooks/useCart";
 import useSquare from "../hooks/useSquare";
+import { MAX_QUANTITY } from "../../shared/checkout.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Button from "./ui/Button";
@@ -194,7 +195,8 @@ const ShoppingCart = () => {
                                 onClick={() =>
                                   changeQuantity(item, item.quantity + 1)
                                 }
-                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-btn border border-outline text-cream transition-colors hover:border-accent"
+                                disabled={item.quantity >= MAX_QUANTITY}
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-btn border border-outline text-cream transition-colors hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
                                 aria-label={`Increase quantity of ${item.name}`}
                               >
                                 +
