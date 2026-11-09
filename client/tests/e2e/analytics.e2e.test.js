@@ -354,14 +354,16 @@ describe("analytics: excerpt reading depth", () => {
   });
 
   it("an idle reader stops building time once the idle window runs out", async () => {
-    // On a phone the screen holds fewer words than block 1 needs time for:
-    // a still reader is credited the idle window and no more.
-    const { page, named, waitForEvent } = await openExcerpt(MOBILE);
+    // On a short phone the screen holds fewer words than block 1 needs time
+    // for: a still reader is credited the idle window and no more. At 844px
+    // the screen holds enough words that the idle window outlasts block 1.
+    const phone = { ...MOBILE, height: 600 };
+    const { page, named, waitForEvent } = await openExcerpt(phone);
     await waitForEvent("excerpt_chapter_view");
     const offsets = await paragraphOffsets(page);
     const block = BLOCKS[0][0];
     const target = block.first + 2;
-    await scrollTo(page, centreOn(offsets[target], MOBILE));
+    await scrollTo(page, centreOn(offsets[target], phone));
     const visibleWords = await page.evaluate(() => {
       let total = 0;
       for (const p of document.querySelectorAll("[data-paragraph]")) {
@@ -381,7 +383,7 @@ describe("analytics: excerpt reading depth", () => {
     );
 
     await page.evaluate(() => window.__advanceClock(30 * 60_000));
-    await scrollTo(page, centreOn(offsets[target], MOBILE) + 5);
+    await scrollTo(page, centreOn(offsets[target], phone) + 5);
     await settle(page);
     expect(named("excerpt_block_read")).toEqual([]);
 
