@@ -367,10 +367,18 @@ Routes:
 Both implementations serialize BigInts as strings. The client (`useSquare.js`) expects the
 dev-server shape — when adding fields, update both files together.
 
+Checkout's Square request is built once, in `client/shared/checkout.js`
+(`buildPaymentLinkRequest`), which both implementations import. The browser sends only
+`{ items: [{ variationId, quantity }] }`: name and price come from the Square catalog
+(cached a minute), quantity must be a whole number from 1 to `MAX_QUANTITY` (20, also the
+cart's cap), and the success URL is the request origin when it is on the allowlist
+(michaelvadney.com, `*.author-site.pages.dev`, localhost), else michaelvadney.com. A refused
+cart is HTTP 400 with a sentence from `shared/errors.js`.
+
 ### Shipping fee — do not remove
 
 Checkout always asks for a shipping address and adds a flat **$5.99 "Shipping"** fee
-(`checkoutOptions.shippingFee`, `599` cents USD) server-side in both implementations. The
+(`checkoutOptions.shippingFee`, `599` cents USD) server-side in `shared/checkout.js`. The
 client's `askForShippingAddress`/pickup flag is ignored. Changing or dropping the fee is a
 business decision, not a refactor.
 
@@ -401,8 +409,7 @@ navigation or Square code.
 
 - **Unit** (`tests/unit/`): asserts the exact `paymentLinks.create` call in both Square
   implementations (shipping fee, address prompt, line items) and fails if their
-  `checkoutOptions` drift apart. The one known drift (`squareMarketingOptIn` in dev only) is
-  listed in the test.
+  `checkoutOptions` drift apart.
 - **Instagram** (`tests/unit/instagram.test.js`): the trim against the fixture, and the
   Pages Function's edge cache (one Behold fetch per 12 hours, query strings share the entry)
   and 502, with `fetch` and `caches` mocked. `tests/e2e/instagram.e2e.test.js` drives Home
@@ -445,7 +452,8 @@ navigation or Square code.
   `excerpt-buy` (the "Buy the book" beside it), `excerpt-end`, `excerpt-text`, `excerpt-coming-soon`, and Home's `excerpt-keep-reading`; Home's Instagram section:
   `instagram-feed` (the section), `instagram-tile` (each), `instagram-viewer` (the dialog),
   `instagram-caption`, `instagram-link`, `instagram-video`, `instagram-close`,
-  `instagram-album-slide`, `instagram-album-count`, `instagram-album-next`.
+  `instagram-album-slide`, `instagram-album-count`, `instagram-album-next`; `error-page` (the
+  not-found page and the page a render failure shows).
   The excerpt e2e walks the tabs and checks every paragraph and italic of every chapter.
 
 ## Conventions
@@ -480,6 +488,5 @@ navigation or Square code.
   the 10MB original — don't import it.
 - **Cart persistence:** localStorage key `author-site-cart`.
 - **`useSquare.getProducts()` caches the catalog in a `useRef`** for the hook's lifetime.
-- **Prices:** multiplied by 100 and cast to `BigInt` before sending to Square; non-numeric
-  `item.price` throws.
+- **Prices:** never taken from the browser; checkout reads them from the Square catalog.
 - **`StrictMode` is on** — expect double-invoked effects in dev.

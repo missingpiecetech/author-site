@@ -22,7 +22,7 @@ import {
   readingMs,
   splitIntoBlocks,
 } from "../../src/lib/excerptReading.js";
-import { REPLAY_SETTINGS } from "../../src/lib/analytics.js";
+import { GOALS_AND_STEPS, REPLAY_SETTINGS } from "../../src/lib/analytics.js";
 
 const EXCERPT = EXCERPTS.crownfall;
 const CHAPTERS = readableChapters(EXCERPT.excerpt);
@@ -67,8 +67,13 @@ afterEach(async () => {
  * window.minilytics records every call into `events`. Requests to any other
  * host get an empty 200 (MailerLite, Amazon, ...) so nothing leaves the
  * machine; `checkoutStatus` makes /api/square/checkout fail with that status.
+ * `foreignPages` maps a foreign URL to the HTML it answers with. The goal and
+ * step marks track() merges in are recorded as `marks`, apart from `data`.
  */
-const openPage = async (viewport, { tracker = true, checkoutStatus } = {}) => {
+const openPage = async (
+  viewport,
+  { tracker = true, checkoutStatus, foreignPages = {} } = {},
+) => {
   context = await browser.createBrowserContext();
   const page = await context.newPage();
   await page.setViewport(viewport);
@@ -96,6 +101,14 @@ const openPage = async (viewport, { tracker = true, checkoutStatus } = {}) => {
       return;
     }
     if (url.hostname !== STUB_CHECKOUT_HOST) foreignRequests.push(url.href);
+    if (foreignPages[url.href]) {
+      request.respond({
+        status: 200,
+        contentType: "text/html",
+        body: foreignPages[url.href],
+      });
+      return;
+    }
     request.respond({
       status: 200,
       contentType:
@@ -107,12 +120,17 @@ const openPage = async (viewport, { tracker = true, checkoutStatus } = {}) => {
   });
 
   if (tracker) {
-    await page.exposeFunction("__recordAnalytics", (name, data) => {
-      events.push({ name, data });
+    await page.exposeFunction("__recordAnalytics", (name, data, marks) => {
+      events.push({ name, data, marks: marks ?? null });
     });
     await page.evaluateOnNewDocument(() => {
       window.minilytics = {
-        track: (name, data) => window.__recordAnalytics(name, data ?? null),
+        track: (name, data) => {
+          if (!data) return window.__recordAnalytics(name, null);
+          const { goal, step, ...rest } = data;
+          const marks = goal || step ? { goal, step } : null;
+          return window.__recordAnalytics(name, rest, marks);
+        },
         startReplay: (settings) =>
           window.__recordAnalytics("startReplay", settings),
       };
@@ -129,6 +147,8 @@ const openPage = async (viewport, { tracker = true, checkoutStatus } = {}) => {
 
   const named = (name) =>
     events.filter((e) => e.name === name).map((e) => e.data);
+  const marksOf = (name) =>
+    events.filter((e) => e.name === name).map((e) => e.marks);
   const waitForEvent = async (name, match = () => true) => {
     const deadline = Date.now() + 10_000;
     while (Date.now() < deadline) {
@@ -140,7 +160,15 @@ const openPage = async (viewport, { tracker = true, checkoutStatus } = {}) => {
       `no ${name} event; saw ${JSON.stringify(events.map((e) => e.name))}`,
     );
   };
-  return { page, events, errors, foreignRequests, named, waitForEvent };
+  return {
+    page,
+    events,
+    errors,
+    foreignRequests,
+    named,
+    marksOf,
+    waitForEvent,
+  };
 };
 
 // Lets queued exposeFunction calls arrive.
@@ -219,7 +247,7 @@ describe("analytics: tracker start-up", () => {
 
 describe("analytics: excerpt reading depth", () => {
   it("steady reading at 250 words a minute reads every block and completes the chapter", async () => {
-    const { page, named, waitForEvent } = await openExcerpt(DESKTOP);
+    const { page, named, marksOf, waitForEvent } = await openExcerpt(DESKTOP);
     await waitForEvent("excerpt_chapter_view");
     const chapter = CHAPTERS[0];
     const offsets = await paragraphOffsets(page);
@@ -247,6 +275,15 @@ describe("analytics: excerpt reading depth", () => {
       expect(read.seconds).toBeGreaterThan(0);
     }
     expect(named("excerpt_chapter_complete")).toEqual([{ chapter: 1 }]);
+    expect(marksOf("excerpt_chapter_view")).toEqual([
+      GOALS_AND_STEPS.excerpt_chapter_view,
+    ]);
+    expect(marksOf("excerpt_chapter_complete")).toEqual([
+      GOALS_AND_STEPS.excerpt_chapter_complete,
+    ]);
+    expect(
+      new Set(marksOf("excerpt_block_read").map((m) => JSON.stringify(m))),
+    ).toEqual(new Set([JSON.stringify(null)]));
     expect(named("excerpt_skim")).toEqual([]);
   });
 
@@ -317,14 +354,16 @@ describe("analytics: excerpt reading depth", () => {
   });
 
   it("an idle reader stops building time once the idle window runs out", async () => {
-    // On a phone the screen holds fewer words than block 1 needs time for:
-    // a still reader is credited the idle window and no more.
-    const { page, named, waitForEvent } = await openExcerpt(MOBILE);
+    // On a short phone the screen holds fewer words than block 1 needs time
+    // for: a still reader is credited the idle window and no more. At 844px
+    // the screen holds enough words that the idle window outlasts block 1.
+    const phone = { ...MOBILE, height: 600 };
+    const { page, named, waitForEvent } = await openExcerpt(phone);
     await waitForEvent("excerpt_chapter_view");
     const offsets = await paragraphOffsets(page);
     const block = BLOCKS[0][0];
     const target = block.first + 2;
-    await scrollTo(page, centreOn(offsets[target], MOBILE));
+    await scrollTo(page, centreOn(offsets[target], phone));
     const visibleWords = await page.evaluate(() => {
       let total = 0;
       for (const p of document.querySelectorAll("[data-paragraph]")) {
@@ -344,7 +383,7 @@ describe("analytics: excerpt reading depth", () => {
     );
 
     await page.evaluate(() => window.__advanceClock(30 * 60_000));
-    await scrollTo(page, centreOn(offsets[target], MOBILE) + 5);
+    await scrollTo(page, centreOn(offsets[target], phone) + 5);
     await settle(page);
     expect(named("excerpt_block_read")).toEqual([]);
 
@@ -462,7 +501,7 @@ describe("analytics: excerpt reading depth", () => {
 
 describe("analytics: store and checkout", () => {
   it("edition, add to cart, quantity, cart open and checkout fire after each succeeds", async () => {
-    const { page, named, waitForEvent } = await openPage(DESKTOP);
+    const { page, named, marksOf, waitForEvent } = await openPage(DESKTOP);
     const createsBefore = server
       .calls()
       .filter((c) => c.type === "paymentLinks.create").length;
@@ -512,6 +551,13 @@ describe("analytics: store and checkout", () => {
       { item_count: 2, subtotal_cents: Number(PAPERBACK_UNSIGNED.cents) * 2 },
     ]);
     expect(named("checkout_error")).toEqual([]);
+    expect(marksOf("add_to_cart")).toEqual([
+      { step: { label: "Added to cart" } },
+    ]);
+    expect(marksOf("checkout_started")).toEqual([
+      { step: { label: "Checkout started" } },
+    ]);
+    expect(marksOf("cart_opened")).toEqual([null]);
     // The payment link existed before the event was sent.
     expect(
       server.calls().filter((c) => c.type === "paymentLinks.create"),
@@ -585,7 +631,7 @@ describe("analytics: links, newsletter and cart placements", () => {
   };
 
   it("retailer, podcast, social, press kit, contact and newsletter clicks send their placements", async () => {
-    const { page, named } = await openPage(DESKTOP);
+    const { page, named, marksOf } = await openPage(DESKTOP);
     await keepOnSite(page);
     await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
 
@@ -644,6 +690,13 @@ describe("analytics: links, newsletter and cart placements", () => {
       { channel: "business" },
       { channel: "podcast" },
     ]);
+    expect(
+      new Set(marksOf("retailer_click").map((m) => JSON.stringify(m))),
+    ).toEqual(new Set([JSON.stringify(GOALS_AND_STEPS.retailer_click)]));
+    expect(
+      new Set(marksOf("newsletter_opened").map((m) => JSON.stringify(m))),
+    ).toEqual(new Set([JSON.stringify(GOALS_AND_STEPS.newsletter_opened)]));
+    expect(marksOf("social_link_click")).toEqual([null, null]);
   });
 
   it("the cart panel's quantity buttons and the mobile menu's Cart and Join send their placements", async () => {
@@ -684,6 +737,76 @@ describe("analytics: links, newsletter and cart placements", () => {
       { item_id: PAPERBACK_UNSIGNED.itemId, quantity: 0, placement: "cart" },
     ]);
     expect(named("newsletter_opened")).toEqual([{ placement: "mobile_menu" }]);
+  });
+});
+
+describe("analytics: goals", () => {
+  const SIGNUP_FRAME = "https://assets.mailerlite.com/test/signup";
+  const FAKE_FRAME = "https://not-mailerlite.test/signup";
+  const POST_SUCCESS =
+    '<script>parent.postMessage("mlWebformSubmitSuccess-555535", "*")</script>';
+
+  const addFrame = (page, src) =>
+    page.evaluate(
+      (url) =>
+        new Promise((resolve) => {
+          const frame = document.createElement("iframe");
+          frame.onload = resolve;
+          frame.src = url;
+          document.body.append(frame);
+        }),
+      src,
+    );
+
+  it("a MailerLite signup success sends newsletter_signup; the same message from another origin does not", async () => {
+    const { page, named, marksOf, waitForEvent } = await openPage(DESKTOP, {
+      foreignPages: {
+        [SIGNUP_FRAME]: POST_SUCCESS,
+        [FAKE_FRAME]: POST_SUCCESS,
+      },
+    });
+    await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
+    await page.waitForSelector("main > *");
+
+    await addFrame(page, FAKE_FRAME);
+    await settle(page);
+    expect(named("newsletter_signup")).toEqual([]);
+
+    await addFrame(page, SIGNUP_FRAME);
+    await waitForEvent("newsletter_signup");
+    expect(named("newsletter_signup")).toEqual([{}]);
+    expect(marksOf("newsletter_signup")).toEqual([
+      { goal: { label: "Newsletter signup", count: "once" } },
+    ]);
+  });
+
+  it("Square's redirect with orderId sends order_placed once, drops the query, and a plain visit sends nothing", async () => {
+    const { page, events, named, marksOf, waitForEvent } =
+      await openPage(DESKTOP);
+    await page.goto(`${server.baseUrl}/checkout/success`, {
+      waitUntil: "load",
+    });
+    await page.waitForSelector("main > *");
+    await settle(page);
+    expect(named("order_placed")).toEqual([]);
+
+    await page.goto(
+      `${server.baseUrl}/checkout/success?checkoutId=c1&orderId=order-123&transactionId=t1`,
+      { waitUntil: "load" },
+    );
+    await waitForEvent("order_placed");
+    await page.waitForFunction(() => location.search === "");
+    expect(new URL(page.url()).pathname).toBe("/checkout/success");
+
+    await page.reload({ waitUntil: "load" });
+    await page.waitForSelector("main > *");
+    await settle(page);
+
+    expect(named("order_placed")).toEqual([{}]);
+    expect(marksOf("order_placed")).toEqual([
+      { goal: { label: "Order placed", count: "every" } },
+    ]);
+    expect(JSON.stringify(events)).not.toContain("order-123");
   });
 });
 

@@ -1,5 +1,6 @@
 import { Buffer } from "node:buffer";
 import { SquareClient, SquareEnvironment } from "square";
+import { buildPaymentLinkRequest } from "../shared/checkout.js";
 import {
   CATALOG_FAILED,
   CHECKOUT_FAILED,
@@ -101,37 +102,23 @@ export const createSquareApiPlugin = (env) => {
 
           if (req.method === "POST" && path === "/checkout") {
             const body = await readJsonBody(req);
-            const items = Array.isArray(body.items) ? body.items : [];
-
-            const lineItems = items.map((item) => ({
-              catalogObjectId: item.variationId || item.itemId,
-              quantity: String(item.quantity),
-              name: item.title,
-              basePriceMoney: {
-                amount: BigInt(Math.round(Number(item.price || 0) * 100)),
-                currency: "USD",
-              },
-            }));
+            const { error, request: paymentLinkRequest } =
+              await buildPaymentLinkRequest(squareClient, {
+                locationId,
+                cacheKey:
+                  env.SQUARE_ACCESS_TOKEN || env.VITE_SQUARE_ACCESS_TOKEN,
+                origin: `http://${req.headers.host}`,
+                body,
+              });
+            if (error) {
+              sendJson(res, 400, { error });
+              return;
+            }
 
             const paymentLinkResponse =
-              await squareClient.checkout.paymentLinks.create({
-                idempotencyKey: `checkout-${Date.now()}-${Math.random()
-                  .toString(36)
-                  .slice(2, 11)}`,
-                order: {
-                  locationId,
-                  lineItems,
-                },
-                checkoutOptions: {
-                  redirectUrl: body.redirectUrl,
-                  askForShippingAddress: true,
-                  shippingFee: {
-                    name: "Shipping",
-                    charge: { amount: BigInt(599), currency: "USD" },
-                  },
-                  squareMarketingOptIn: true,
-                },
-              });
+              await squareClient.checkout.paymentLinks.create(
+                paymentLinkRequest,
+              );
 
             const paymentLink =
               paymentLinkResponse?.paymentLink ||

@@ -1,4 +1,5 @@
 import { SquareClient, SquareEnvironment } from "square";
+import { buildPaymentLinkRequest } from "../../../shared/checkout.js";
 import { CHECKOUT_FAILED, STORE_UNAVAILABLE } from "../../../shared/errors.js";
 import {
   reportServerError,
@@ -35,34 +36,19 @@ export async function onRequestPost(context) {
   });
 
   try {
-    const body = await request.json();
-    const items = Array.isArray(body.items) ? body.items : [];
-
-    const lineItems = items.map((item) => ({
-      catalogObjectId: item.variationId || item.itemId,
-      quantity: String(item.quantity),
-      name: item.title,
-      basePriceMoney: {
-        amount: BigInt(Math.round(Number(item.price || 0) * 100)),
-        currency: "USD",
-      },
-    }));
-
-    const paymentLinkResponse = await client.checkout.paymentLinks.create({
-      idempotencyKey: `checkout-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-      order: {
+    // A body that is not JSON is an empty cart, not a server failure.
+    const body = await request.json().catch(() => ({}));
+    const { error, request: paymentLinkRequest } =
+      await buildPaymentLinkRequest(client, {
         locationId,
-        lineItems,
-      },
-      checkoutOptions: {
-        redirectUrl: body.redirectUrl,
-        askForShippingAddress: true,
-        shippingFee: {
-          name: "Shipping",
-          charge: { amount: BigInt(599), currency: "USD" },
-        },
-      },
-    });
+        cacheKey: token,
+        origin: new URL(request.url).origin,
+        body,
+      });
+    if (error) return jsonResponse({ error }, 400);
+
+    const paymentLinkResponse =
+      await client.checkout.paymentLinks.create(paymentLinkRequest);
 
     const paymentLink =
       paymentLinkResponse?.paymentLink ||

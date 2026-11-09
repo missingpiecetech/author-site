@@ -39,7 +39,34 @@ export const EVENTS = Object.freeze({
   EXCERPT_NEXT_CLICK: "excerpt_next_click",
   EXCERPT_BUY_CLICK: "excerpt_buy_click",
   EXCERPT_COPY: "excerpt_copy",
+  NEWSLETTER_SIGNUP: "newsletter_signup",
+  ORDER_PLACED: "order_placed",
 });
+
+/**
+ * Goals and funnel steps, merged into an event's data by track(). Minilytics
+ * builds its Goals page from these marks; nothing is set up in its dashboard.
+ * A goal is an outcome the site exists for; a step is something a visitor
+ * does on the way to one. docs/ANALYTICS.md explains each choice.
+ */
+export const GOALS_AND_STEPS = Object.freeze({
+  [EVENTS.NEWSLETTER_SIGNUP]: {
+    goal: { label: "Newsletter signup", count: "once" },
+  },
+  [EVENTS.ORDER_PLACED]: { goal: { label: "Order placed", count: "every" } },
+  [EVENTS.ADD_TO_CART]: { step: { label: "Added to cart" } },
+  [EVENTS.CHECKOUT_STARTED]: { step: { label: "Checkout started" } },
+  [EVENTS.NEWSLETTER_OPENED]: { step: { label: "Newsletter form opened" } },
+  [EVENTS.EXCERPT_CHAPTER_VIEW]: { step: { label: "Excerpt opened" } },
+  [EVENTS.EXCERPT_CHAPTER_COMPLETE]: {
+    step: { label: "Excerpt chapter finished" },
+  },
+  [EVENTS.RETAILER_CLICK]: { step: { label: "Retailer link clicked" } },
+});
+
+// Origin of the MailerLite form iframes; the newsletter popup posts
+// "mlWebformSubmitSuccess-<form id>" from it once a signup succeeded.
+const MAILERLITE_ORIGIN = "https://assets.mailerlite.com";
 
 /**
  * Session replay settings: every visit is eligible, a recording is kept after
@@ -67,7 +94,8 @@ export const REPLAY_SETTINGS = {
  */
 export const track = (name, data) => {
   try {
-    window.minilytics?.track(name, data);
+    const marks = GOALS_AND_STEPS[name];
+    window.minilytics?.track(name, marks ? { ...data, ...marks } : data);
   } catch (error) {
     reportError(error, { code: "analytics_track_failed" });
   }
@@ -80,4 +108,20 @@ export const startReplay = () => {
   } catch (error) {
     reportError(error, { code: "analytics_replay_failed" });
   }
+};
+
+/**
+ * Sends newsletter_signup when a MailerLite form on the page reports a
+ * successful signup. Call once, at app start.
+ */
+export const listenForNewsletterSignup = () => {
+  window.addEventListener("message", (event) => {
+    if (
+      event.origin === MAILERLITE_ORIGIN &&
+      typeof event.data === "string" &&
+      event.data.startsWith("mlWebformSubmitSuccess-")
+    ) {
+      track(EVENTS.NEWSLETTER_SIGNUP);
+    }
+  });
 };

@@ -95,14 +95,42 @@ recorder does not capture.
 | `excerpt_next_click`       | A chapter's Next chapter button                                                                                                                                                                                            | `from`, `to` (chapter numbers)                                                                                                                    |
 | `excerpt_buy_click`        | The Buy the book button at the end of chapters 1 and 2, and the buy band after the last chapter (both also send `retailer_click`)                                                                                          | `chapter`, `retailer` (`direct`, `amazon`, `goodreads`)                                                                                           |
 | `excerpt_copy`             | Copying text from a chapter; the clipboard's plain and HTML text get "Excerpt from Crownfall by Michael Vadney, michaelvadney.com" appended, and copying is never blocked                                                  | `chapter`, `block` (where the selection starts), `characters` (copied, without the credit)                                                        |
+| `newsletter_signup`        | `main.jsx` `listenForNewsletterSignup()`: the MailerLite popup iframe (`https://assets.mailerlite.com`) posted `mlWebformSubmitSuccess-<form id>` to the page, which it does only after a signup succeeded                 | none                                                                                                                                              |
+| `order_placed`             | `pages/CheckoutSuccessPage.jsx`, on load when Square's redirect added `orderId`; the page then drops the query from the URL so a reload does not send it again                                                             | none (the order id is never sent)                                                                                                                 |
+
+## Goals and funnel steps
+
+`GOALS_AND_STEPS` in `client/src/lib/analytics.js` marks events as goals or steps, and
+`track()` merges the mark into the event's data (the Minilytics contract, "Mark goals and
+funnel steps" in `docs/tracking/README.md` in `minilytics`). Nothing is set up in the
+dashboard; a change applies to events sent from then on. A goal's "How they got here" is
+built from the steps the same visit did before it.
+
+| Event                      | Mark | Label                    | Count   |
+| -------------------------- | ---- | ------------------------ | ------- |
+| `newsletter_signup`        | goal | Newsletter signup        | `once`  |
+| `order_placed`             | goal | Order placed             | `every` |
+| `add_to_cart`              | step | Added to cart            |         |
+| `checkout_started`         | step | Checkout started         |         |
+| `newsletter_opened`        | step | Newsletter form opened   |         |
+| `excerpt_chapter_view`     | step | Excerpt opened           |         |
+| `excerpt_chapter_complete` | step | Excerpt chapter finished |         |
+| `retailer_click`           | step | Retailer link clicked    |         |
+
+A goal is an outcome the site exists for, never a click; a step comes before a goal in the
+same visit and shows intent. Cart and quantity changes, edition pills and social,
+podcast, contact and press-kit clicks stay unmarked: none of them leads to a goal.
 
 ## Not instrumented
 
 - Sign-up, login, logout and identify: the site has no accounts.
 - Outbound links in general: the tracker's own `outbound_click` already covers every link
   to another host; the events above add the site's own placement and enum values.
-- A purchase-completed event: `/checkout/success` can be opened without paying, so a visit
-  there is not proof of a purchase.
+- A purchase confirmed by Square: `order_placed` trusts the `orderId` in Square's redirect
+  without looking the order up, so a hand-typed `/checkout/success?orderId=x` counts.
+  Looking it up would add a route to both Square implementations for an analytics count.
+- Sales at Amazon or Goodreads: they happen off the site, so they show only as the
+  `retailer_click` step.
 
 ## Checking it
 
@@ -112,6 +140,13 @@ excerpt, the store and checkout with the real tracker, printing each event sent 
 host's answer. The host answers 403 to `127.0.0.1` until **Accept events from localhost**
 is on in the dashboard (Settings → Tracking); turn it off again afterwards. The deployed
 domain must be in **Allowed domains**.
+
+To see goals and steps stored without touching production, run Minilytics locally (its
+`deploy/Dockerfile`, a site created with `SiteRegistry::create` and `allow_localhost`) and
+start the dev server with `PUBLIC_MINILYTICS_HOST`, `_SITE_ID` and `_SITE_KEY` set in the
+shell: `vite.config.js` reads them from the environment too. The tracker drops automated
+browsers, so launch Puppeteer with `--disable-blink-features=AutomationControlled` and a
+desktop Chrome user agent.
 
 `npm run test:e2e` (`client/tests/e2e/analytics.e2e.test.js`) drives every event above
 with a stand-in `window.minilytics` and a test clock; the real tracker never loads in
