@@ -281,3 +281,10 @@
     opacity: 0;
   }
 }
+
+/* Phones: iOS and Android bounce the whole page at its top and bottom and
+   carry the sticky header with the bounce, so it moved while a screen
+   scrolled. */
+html {
+  overscroll-behavior: none;
+}
