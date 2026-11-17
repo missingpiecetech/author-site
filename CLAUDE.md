@@ -275,20 +275,16 @@ author-site/
 ├── DEPLOYMENT.md             # Cloudflare Pages setup walkthrough
 └── client/                   # All app code lives here — run npm commands from this dir
     ├── index.html            # SPA shell; loads MailerLite snippet
-    ├── vite.config.js        # Registers the Square and Instagram dev middleware, Minilytics and the wiki shim
-    ├── vite/
-    │   ├── minilyticsPlugin.js   # Adds the Minilytics scripts when PUBLIC_MINILYTICS_* are set
-    │   └── wikiDevPlugin.js      # Dev only: serves public/wiki/index.html at /wiki/
-    ├── .env.production       # PUBLIC_MINILYTICS_*, PUBLIC_GLITCHTIP_DSN (committed; nothing secret)
+    ├── vite.config.js        # Registers the Square, Instagram and wiki dev middleware
+    ├── vite/wikiDevPlugin.js  # Dev-only: serves public/wiki/index.html at /wiki/ (prod/preview do this natively)
+    ├── vite/minilyticsPlugin.js  # Adds the Minilytics scripts when PUBLIC_MINILYTICS_* are set
+    ├── .env.production       # PUBLIC_MINILYTICS_* (committed; nothing secret)
     ├── wrangler.toml         # Cloudflare Pages config (nodejs_compat)
     ├── .env.example          # SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_ENVIRONMENT
     ├── public/
     │   ├── _redirects        # "/* /index.html 200" — SPA routing on Cloudflare
-    │   └── wiki/index.html   # The Codex (Crownfall wiki), built by `npm run build:wiki`; committed
-    ├── wiki/                 # Wiki source: build.py, template.html, articles.json,
-    │                         #   did-you-know.json, README.md (not shipped)
-    ├── scripts/              # design-check, analytics-debug, optimize-backgrounds,
-    │                         #   crop-catalog-images, sync-sandbox-catalog (+ sandbox-catalog-map.json)
+    │   └── wiki/index.html   # Built "Codex" wiki, served at /wiki/ (opens in a new tab from nav/footer)
+    ├── wiki/                  # Crownfall wiki source + build.py; built by `npm run build:wiki`, not shipped itself
     ├── shared/
     │   ├── checkout.js           # buildPaymentLinkRequest, used by both checkout implementations
     │   ├── errors.js             # User-facing error sentences, scrubEvent
@@ -332,16 +328,16 @@ author-site/
 
 Run from `client/`.
 
-| Command              | Purpose                                                                                                                                                      |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`        | Vite dev server (default http://localhost:5173)                                                                                                              |
-| `npm run build`      | Production build to `client/dist/`                                                                                                                           |
-| `npm run build:wiki` | `python3 wiki/build.py`: rebuilds `public/wiki/index.html` from `wiki/` (commit the result)                                                                  |
-| `npm test`           | Unit, then e2e                                                                                                                                               |
-| `npm run test:unit`  | Vitest: both checkout implementations (Square SDK mocked); Instagram trim and edge cache; errors; excerpt reading depth; Minilytics tags                     |
-| `npm run test:e2e`   | Puppeteer: /store → cart → checkout, Home Instagram viewer, errors, analytics events, the excerpt walk, desktop + 390px, no horizontal scroll on every route |
-| `npm run preview`    | Serve the production build locally                                                                                                                           |
-| `npm run lint`       | ESLint                                                                                                                                                       |
+| Command              | Purpose                                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`        | Vite dev server (default http://localhost:5173)                                                                                                |
+| `npm run build`      | Production build to `client/dist/`                                                                                                             |
+| `npm run build:wiki` | Rebuild the "Codex" wiki into `public/wiki/index.html` from `wiki/` sources (needs Python 3); commit the artifact. Not run by `npm run build`. |
+| `npm test`           | Unit, then e2e                                                                                                                                 |
+| `npm run test:unit`  | Vitest: both checkout implementations (Square SDK mocked); Instagram trim and edge cache                                                       |
+| `npm run test:e2e`   | Puppeteer: /store → cart → checkout, Home Instagram viewer, desktop + 390px, no horizontal scroll on every route                               |
+| `npm run preview`    | Serve the production build locally                                                                                                             |
+| `npm run lint`       | ESLint                                                                                                                                         |
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
