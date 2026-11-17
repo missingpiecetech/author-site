@@ -214,7 +214,7 @@ against the ground, so never show state with a border alone (the pressed pill us
 - **Background art** (Michael's paintings) goes behind short, large text and calls to
   action, never behind body copy. Placements: every centred page title (`PageIntro
 background`: Books `characters`, Store `skyline`, Contact `cliffs`, the excerpt `city`,
-  checkout success `harren`, Podcast `cracks`), the Home praise band (`cracks`) and the
+  checkout success `harren`, Podcast `cracks`, the not-found and error page `cracks`), the Home praise band (`cracks`) and the
   site-wide newsletter (`crystal`). **Every background gets a 20% `ground` wash** over the whole
   image (owner, Oct 2026), and its text a `text-halo` (`index.css`: `0 2px 8px #000000`); page titles alone also fade their bottom quarter to solid
   `ground` (`Section fade`) so they blend into the page below. there is no
@@ -263,9 +263,10 @@ build.
 
 ## Repo Layout
 
-Everything lives under `client/`. The repo root only has the README, DEPLOYMENT.md, `.nvmrc`,
-`.gitignore`, `.prettierignore` and `design/` (reference material that never ships: the
-filigree samples, the thorn-corner generator, the Instagram layout mockups).
+Everything lives under `client/`. The repo root only has the README, DEPLOYMENT.md, CLAUDE.md,
+`.nvmrc`, `.gitignore`, `.prettierignore`, `docs/` (`ANALYTICS.md`) and `design/` (reference
+material that never ships: the filigree samples, the thorn-corner generator, the Instagram
+layout mockups).
 
 ```
 author-site/
@@ -274,19 +275,30 @@ author-site/
 ├── DEPLOYMENT.md             # Cloudflare Pages setup walkthrough
 └── client/                   # All app code lives here — run npm commands from this dir
     ├── index.html            # SPA shell; loads MailerLite snippet
-    ├── vite.config.js        # Registers the Square and Instagram dev middleware
-    ├── vite/minilyticsPlugin.js  # Adds the Minilytics scripts when PUBLIC_MINILYTICS_* are set
-    ├── .env.production       # PUBLIC_MINILYTICS_* (committed; nothing secret)
+    ├── vite.config.js        # Registers the Square and Instagram dev middleware, Minilytics and the wiki shim
+    ├── vite/
+    │   ├── minilyticsPlugin.js   # Adds the Minilytics scripts when PUBLIC_MINILYTICS_* are set
+    │   └── wikiDevPlugin.js      # Dev only: serves public/wiki/index.html at /wiki/
+    ├── .env.production       # PUBLIC_MINILYTICS_*, PUBLIC_GLITCHTIP_DSN (committed; nothing secret)
     ├── wrangler.toml         # Cloudflare Pages config (nodejs_compat)
     ├── .env.example          # SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_ENVIRONMENT
     ├── public/
-    │   └── _redirects        # "/* /index.html 200" — SPA routing on Cloudflare
+    │   ├── _redirects        # "/* /index.html 200" — SPA routing on Cloudflare
+    │   └── wiki/index.html   # The Codex (Crownfall wiki), built by `npm run build:wiki`; committed
+    ├── wiki/                 # Wiki source: build.py, template.html, articles.json,
+    │                         #   did-you-know.json, README.md (not shipped)
+    ├── scripts/              # design-check, analytics-debug, optimize-backgrounds,
+    │                         #   crop-catalog-images, sync-sandbox-catalog (+ sandbox-catalog-map.json)
     ├── shared/
-    │   └── instagramFeed.js      # Behold feed URL, fetch + trim; used by both /api/instagram
+    │   ├── checkout.js           # buildPaymentLinkRequest, used by both checkout implementations
+    │   ├── errors.js             # User-facing error sentences, scrubEvent
+    │   ├── instagramFeed.js      # Behold feed URL, fetch + trim; used by both /api/instagram
+    │   └── serverErrors.js       # reportServerError for Pages Functions
     ├── api/
     │   ├── squareApiPlugin.js    # Vite dev-server middleware for /api/square/*
     │   └── instagramApiPlugin.js # Dev twin of /api/instagram (12-hour in-memory cache)
     ├── functions/
+    │   ├── api/_middleware.js    # GlitchTip setup for every /api/* function
     │   ├── api/instagram.js      # GET /api/instagram (prod; 12-hour edge cache)
     │   └── api/square/           # Cloudflare Pages Functions (prod /api/square/*)
     │       ├── catalog.js        # GET  /api/square/catalog
@@ -303,9 +315,12 @@ author-site/
         ├── assets/               # Author photos, book covers, podcast logos
         ├── components/           # Layout, Navigation, Footer, ShoppingCart, ...
         │   └── ui/               # Section, Eyebrow, Button, FramedImage, PullQuote, ...
-        ├── lib/                  # analytics.js (track, EVENTS), excerptReading.js
-        ├── pages/                # One file per route: / /books /podcast /about /store
-        │                         #   /contact /checkout/success
+        ├── data/                 # crownfallEditions.js (edition → Square item IDs)
+        ├── excerpts/             # Excerpt text (crownfall.js) and index.js
+        ├── lib/                  # analytics.js (track, EVENTS), excerptReading.js, errors.js (fetchJson)
+        ├── pages/                # One file per route: / /books /books/crownfall/excerpt /podcast
+        │                         #   /about /store /contact /checkout/success, and ErrorPage
+        │                         #   (NotFoundPage for `*`)
         └── hooks/
             ├── useCart.js         # Zustand cart store (persisted)
             ├── useExcerptReading.js # Excerpt reading depth on the selected chapter
@@ -317,15 +332,16 @@ author-site/
 
 Run from `client/`.
 
-| Command             | Purpose                                                                                                          |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`       | Vite dev server (default http://localhost:5173)                                                                  |
-| `npm run build`     | Production build to `client/dist/`                                                                               |
-| `npm test`          | Unit, then e2e                                                                                                   |
-| `npm run test:unit` | Vitest: both checkout implementations (Square SDK mocked); Instagram trim and edge cache                         |
-| `npm run test:e2e`  | Puppeteer: /store → cart → checkout, Home Instagram viewer, desktop + 390px, no horizontal scroll on every route |
-| `npm run preview`   | Serve the production build locally                                                                               |
-| `npm run lint`      | ESLint                                                                                                           |
+| Command              | Purpose                                                                                                                                                      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`        | Vite dev server (default http://localhost:5173)                                                                                                              |
+| `npm run build`      | Production build to `client/dist/`                                                                                                                           |
+| `npm run build:wiki` | `python3 wiki/build.py`: rebuilds `public/wiki/index.html` from `wiki/` (commit the result)                                                                  |
+| `npm test`           | Unit, then e2e                                                                                                                                               |
+| `npm run test:unit`  | Vitest: both checkout implementations (Square SDK mocked); Instagram trim and edge cache; errors; excerpt reading depth; Minilytics tags                     |
+| `npm run test:e2e`   | Puppeteer: /store → cart → checkout, Home Instagram viewer, errors, analytics events, the excerpt walk, desktop + 390px, no horizontal scroll on every route |
+| `npm run preview`    | Serve the production build locally                                                                                                                           |
+| `npm run lint`       | ESLint                                                                                                                                                       |
 
 `node scripts/design-check.mjs [--shots <dir>] [--shots-only]` drives every route at 1440 and
 390 on the e2e harness (the excerpt once per chapter tab, as `#chapter-N`): horizontal scroll, filigree overlapping text, filigree corners meeting
@@ -416,6 +432,11 @@ navigation or Square code.
   at desktop and 390px: one tile per post at the fixture's `medium` size, the video viewer
   (`src`, poster, Instagram link), album slides and count, the phone caption's two-line
   clamp and expand, Escape/close returning focus to the tile, and nothing rendered on a 502.
+- **Analytics** (`tests/e2e/analytics.e2e.test.js`, `tests/unit/excerptReading.test.js`,
+  `tests/unit/minilyticsPlugin.test.js`): the e2e installs a stand-in `window.minilytics` and
+  checks each event and its properties (store, checkout, links, newsletter, goals) and excerpt
+  reading depth with a controlled clock; the unit tests cover the reading-depth maths and the
+  tags `minilyticsPlugin` adds, or leaves out when a setting is missing.
 - **Errors** (`tests/e2e/errors.e2e.test.js`, `tests/unit/errors.test.js`): forces each store and
   checkout failure, checks the screen shows plain words and catches what is sent to GlitchTip.
 - **E2E** (`tests/e2e/`): starts the real `vite` CLI on a free port with the `square` package
@@ -458,7 +479,7 @@ navigation or Square code.
 
 ## Conventions
 
-- **Formatting:** Prettier defaults (`.prettierrc` is `{}`).
+- **Formatting:** Prettier with `printWidth: 120` and `bracketSameLine: true` (`client/.prettierrc`).
 - **ESLint:** `no-unused-vars` allows identifiers matching `^[A-Z_]`.
 - **File naming:** Components and pages are PascalCase `.jsx`. Hooks are camelCase `.js`
   starting with `use`. Static data modules are SCREAMING_SNAKE (`BOOK_DATA.jsx`).
@@ -472,7 +493,8 @@ navigation or Square code.
 - **`nodejs_compat` is required** on Cloudflare Pages for the Square SDK.
 - **Keep the two Square implementations in sync** (route, response shape, `checkoutOptions`).
 - **Env vars:** local dev reads `client/.env` / `.env.local`; production reads Cloudflare
-  Pages env vars. Both accept `SQUARE_*` or `VITE_SQUARE_*`. The local `.env.local` may hold
+  Pages env vars. The dev middleware accepts `SQUARE_*` or `VITE_SQUARE_*`; the Pages
+  Functions read only `SQUARE_ACCESS_TOKEN`, `SQUARE_LOCATION_ID` and `SQUARE_ENVIRONMENT`. The local `.env.local` may hold
   **production** credentials — never point tests or experiments at it.
 - **Branch previews use Square sandbox keys** (Preview env vars in Cloudflare Pages), so
   checkout on a preview never creates real payment links. `client/scripts/sync-sandbox-catalog.mjs`
