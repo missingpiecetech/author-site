@@ -70,6 +70,16 @@ const Footer = () => (
           ))}
           <li>
             <a
+              href="/wiki/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+            >
+              The Codex
+            </a>
+          </li>
+          <li>
+            <a
               href={SITE_INFO.pressKit}
               target="_blank"
               rel="noopener noreferrer"

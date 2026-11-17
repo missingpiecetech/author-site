@@ -61,6 +61,16 @@ const Navigation = () => {
               </Link>
             </li>
           ))}
+          <li>
+            <a
+              href="/wiki/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-b border-transparent pb-1 text-cream transition-colors hover:text-accent-hover"
+            >
+              The Codex
+            </a>
+          </li>
         </ul>
 
         <div className="flex items-center gap-3 lg:gap-4">
@@ -122,6 +132,20 @@ const Navigation = () => {
                 </Link>
               </li>
             ))}
+            <li>
+              <a
+                href="/wiki/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex h-14 items-center justify-between border-b border-rule font-display text-[1.5rem]/[2rem] font-semibold text-cream transition-colors hover:text-accent-hover"
+              >
+                The Codex
+                <span aria-hidden="true" className="text-accent">
+                  ↗
+                </span>
+              </a>
+            </li>
             <li>
               <button
                 type="button"

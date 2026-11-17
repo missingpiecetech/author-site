@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { createSquareApiPlugin } from "./api/squareApiPlugin";
 import { createInstagramApiPlugin } from "./api/instagramApiPlugin";
 import { minilyticsPlugin } from "./vite/minilyticsPlugin.js";
+import { wikiDevPlugin } from "./vite/wikiDevPlugin.js";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -16,6 +17,7 @@ export default defineConfig(({ mode }) => {
       createSquareApiPlugin(env),
       createInstagramApiPlugin(env),
       minilyticsPlugin(env),
+      wikiDevPlugin(),
     ],
   };
 });
