@@ -12,6 +12,7 @@
 
 import puppeteer from "puppeteer";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { ITEM_UNAVAILABLE } from "../../shared/errors.js";
 import { startServer } from "./support/server.js";
 import { STUB_PRODUCTS } from "./support/square-stub-products.js";
 import {
@@ -37,9 +38,7 @@ if (CROWNFALL_EDITIONS.length !== 4) {
   throw new Error("stub catalog must include all four Crownfall editions");
 }
 const edition = (format, signing) =>
-  CROWNFALL_EDITIONS.find(
-    (p) => p.edition.format === format && p.edition.signing === signing,
-  );
+  CROWNFALL_EDITIONS.find((p) => p.edition.format === format && p.edition.signing === signing);
 
 const SQUARE_HOST = /(^|\.)(squareup\.com|squareupsandbox\.com|square\.link)$/i;
 const STUB_CHECKOUT_HOST = "checkout.square.test";
@@ -79,14 +78,8 @@ const openPage = async (viewport, { dropItemIds } = {}) => {
   await page.setRequestInterception(true);
   page.on("request", async (request) => {
     const url = new URL(request.url());
-    if (
-      dropItemIds &&
-      url.pathname === "/api/square/catalog" &&
-      request.method() === "GET"
-    ) {
-      const full = await (
-        await fetch(`${server.baseUrl}/api/square/catalog`)
-      ).json();
+    if (dropItemIds && url.pathname === "/api/square/catalog" && request.method() === "GET") {
+      const full = await (await fetch(`${server.baseUrl}/api/square/catalog`)).json();
       request.respond({
         status: 200,
         contentType: "application/json",
@@ -110,10 +103,7 @@ const openPage = async (viewport, { dropItemIds } = {}) => {
       request.abort("blockedbyclient");
       return;
     }
-    if (
-      url.pathname === "/api/square/checkout" &&
-      request.method() === "POST"
-    ) {
+    if (url.pathname === "/api/square/checkout" && request.method() === "POST") {
       checkoutBodies.push(JSON.parse(request.postData() || "{}"));
     }
     request.continue();
@@ -123,8 +113,7 @@ const openPage = async (viewport, { dropItemIds } = {}) => {
 };
 
 const byTestId = (id) => `[data-testid="${id}"]`;
-const storeProduct = (itemId) =>
-  `${byTestId("store-product")}[data-product-id="${itemId}"]`;
+const storeProduct = (itemId) => `${byTestId("store-product")}[data-product-id="${itemId}"]`;
 const FORMAT_TOGGLE = (format) => byTestId(`edition-format-${format}`);
 const SIGNING_TOGGLE = (signing) => byTestId(`edition-${signing}`);
 const ALL_TOGGLES = [
@@ -134,8 +123,7 @@ const ALL_TOGGLES = [
   SIGNING_TOGGLE("unsigned"),
 ];
 
-const pressed = (page, selector) =>
-  page.$eval(selector, (el) => el.getAttribute("aria-pressed"));
+const pressed = (page, selector) => page.$eval(selector, (el) => el.getAttribute("aria-pressed"));
 
 // Picks a Crownfall edition with the two toggle groups and waits for the
 // listing to switch to that Square item.
@@ -149,22 +137,15 @@ const selectEdition = async (page, { format, signing }) => {
   expect(await pressed(page, SIGNING_TOGGLE(signing))).toBe("true");
 };
 
-const cartItem = (itemId) =>
-  `${byTestId("cart-panel")} ${byTestId("cart-item")}[data-product-id="${itemId}"]`;
+const cartItem = (itemId) => `${byTestId("cart-panel")} ${byTestId("cart-item")}[data-product-id="${itemId}"]`;
 
 const DESKTOP = { width: 1280, height: 900 };
 const MOBILE = { width: 390, height: 844, isMobile: true, hasTouch: true };
 
-const textOf = (page, selector) =>
-  page.$eval(selector, (el) => el.textContent.trim());
+const textOf = (page, selector) => page.$eval(selector, (el) => el.textContent.trim());
 
 const waitForText = (page, selector, expected) =>
-  page.waitForFunction(
-    (sel, want) => document.querySelector(sel)?.textContent.trim() === want,
-    {},
-    selector,
-    expected,
-  );
+  page.waitForFunction((sel, want) => document.querySelector(sel)?.textContent.trim() === want, {}, selector, expected);
 
 // The header cart toggle is hidden below md; phones reach the cart through
 // the mobile menu.
@@ -183,19 +164,10 @@ const openCart = {
 
 const dollars = (cents) => `$${(Number(cents) / 100).toFixed(2)}`;
 
-// Store -> add each product -> open cart -> set quantities -> checkout, then
-// assert what the browser sent, what the server asked Square for, and where
-// the browser ended up.
-const checkoutFlow = async (kind, lines) => {
-  const { page, blockedSquareRequests, checkoutBodies } = await openPage(
-    kind === "desktop" ? DESKTOP : MOBILE,
-  );
-  const createsBefore = server
-    .calls()
-    .filter((c) => c.type === "paymentLinks.create").length;
+const paymentLinkCreates = () => server.calls().filter((c) => c.type === "paymentLinks.create");
 
-  await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
-
+// On /store, adds each product to the cart from its card.
+const addFromStore = async (page, lines) => {
   for (const { product } of lines) {
     // Crownfall editions share one listing: pick the edition with its toggles
     // first. The listing then carries the selected item's id.
@@ -218,7 +190,9 @@ const checkoutFlow = async (kind, lines) => {
     {},
     lines.length,
   );
+};
 
+const openCartPanel = async (page, kind) => {
   await openCart[kind](page);
   await page.waitForSelector(`${byTestId("cart-panel")}[data-state="open"]`);
   // The panel slides in; on phones its controls start below the viewport, so
@@ -228,49 +202,53 @@ const checkoutFlow = async (kind, lines) => {
     {},
     byTestId("cart-panel"),
   );
+};
 
+// In the open cart, raises each line from 1 to its quantity.
+const setQuantities = async (page, lines) => {
   for (const { product, quantity } of lines) {
     await page.waitForSelector(cartItem(product.itemId));
     for (let q = 1; q < quantity; q += 1) {
-      await page.click(
-        `${cartItem(product.itemId)} ${byTestId("qty-increase")}`,
-      );
+      await page.click(`${cartItem(product.itemId)} ${byTestId("qty-increase")}`);
     }
-    await waitForText(
-      page,
-      `${cartItem(product.itemId)} ${byTestId("qty-value")}`,
-      String(quantity),
-    );
+  }
+};
+
+// The open cart holds exactly these lines, quantities, prices and subtotal.
+const expectCart = async (page, kind, lines) => {
+  for (const { product, quantity } of lines) {
+    await waitForText(page, `${cartItem(product.itemId)} ${byTestId("qty-value")}`, String(quantity));
     // The cart line is the selected catalog item at its own price.
     const lineText = await textOf(page, cartItem(product.itemId));
     expect(lineText).toContain(product.name);
     expect(lineText).toContain(dollars(product.cents * BigInt(quantity)));
   }
+  expect(
+    await page.$$eval(`${byTestId("cart-panel")} ${byTestId("cart-item")}`, (els) =>
+      els.map((el) => el.dataset.productId),
+    ),
+  ).toEqual(lines.map(({ product }) => product.itemId));
 
-  const subtotalCents = lines.reduce(
-    (sum, { product, quantity }) => sum + product.cents * BigInt(quantity),
-    0n,
-  );
-  expect(await textOf(page, byTestId("cart-subtotal"))).toBe(
-    dollars(subtotalCents),
-  );
+  const subtotalCents = lines.reduce((sum, { product, quantity }) => sum + product.cents * BigInt(quantity), 0n);
+  expect(await textOf(page, byTestId("cart-subtotal"))).toBe(dollars(subtotalCents));
   if (kind === "desktop") {
     const totalQuantity = lines.reduce((sum, l) => sum + l.quantity, 0);
-    expect(await textOf(page, byTestId("cart-count"))).toBe(
-      String(totalQuantity),
-    );
+    expect(await textOf(page, byTestId("cart-count"))).toBe(String(totalQuantity));
   }
+};
+
+// Clicks Checkout in the open cart, then asserts what the browser sent, what
+// the server asked Square for, and where the browser ended up.
+const checkoutAndExpect = async ({ page, blockedSquareRequests, checkoutBodies }, lines) => {
+  const createsBefore = paymentLinkCreates().length;
+  const bodiesBefore = checkoutBodies.length;
 
   await page.click(byTestId("checkout-button"));
-  await page.waitForFunction(
-    (host) => window.location.hostname === host,
-    { timeout: 15_000 },
-    STUB_CHECKOUT_HOST,
-  );
+  await page.waitForFunction((host) => window.location.hostname === host, { timeout: 15_000 }, STUB_CHECKOUT_HOST);
 
   // Browser -> server request: only what to buy; price, name and the return
   // address are the server's to decide.
-  expect(checkoutBodies).toEqual([
+  expect(checkoutBodies.slice(bodiesBefore)).toEqual([
     {
       items: lines.map(({ product, quantity }) => ({
         variationId: product.variationId,
@@ -280,9 +258,7 @@ const checkoutFlow = async (kind, lines) => {
   ]);
 
   // Server -> Square request, as captured by the stub.
-  const creates = server
-    .calls()
-    .filter((c) => c.type === "paymentLinks.create");
+  const creates = paymentLinkCreates();
   expect(creates).toHaveLength(createsBefore + 1);
   const { request, paymentLink } = creates.at(-1);
 
@@ -298,14 +274,24 @@ const checkoutFlow = async (kind, lines) => {
       basePriceMoney: { amount: product.cents, currency: "USD" },
     });
   });
-  expect(request.checkoutOptions.redirectUrl).toBe(
-    `${server.baseUrl}/checkout/success`,
-  );
+  expect(request.checkoutOptions.redirectUrl).toBe(`${server.baseUrl}/checkout/success`);
   expect(request.idempotencyKey).toEqual(expect.any(String));
 
   // The browser landed on exactly the URL Square returned.
   expect(page.url()).toBe(paymentLink.url);
   expect(blockedSquareRequests).toEqual([]);
+};
+
+// Store -> add each product -> open cart -> set quantities -> checkout.
+const checkoutFlow = async (kind, lines) => {
+  const opened = await openPage(kind === "desktop" ? DESKTOP : MOBILE);
+  const { page } = opened;
+  await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+  await addFromStore(page, lines);
+  await openCartPanel(page, kind);
+  await setQuantities(page, lines);
+  await expectCart(page, kind, lines);
+  await checkoutAndExpect(opened, lines);
 };
 
 describe("store checkout: Square is asked for $5.99 shipping and the browser follows the payment link", () => {
@@ -314,8 +300,7 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
       checkoutFlow("desktop", [{ product: cf, quantity: 1 }]));
   }
 
-  it("desktop: grid product, quantity 2", () =>
-    checkoutFlow("desktop", [{ product: PRINT, quantity: 2 }]));
+  it("desktop: grid product, quantity 2", () => checkoutFlow("desktop", [{ product: PRINT, quantity: 2 }]));
 
   it("desktop: two Crownfall editions and a grid product in one cart", () =>
     checkoutFlow("desktop", [
@@ -341,11 +326,7 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
     for (let q = 1; q < 25; q += 1) {
       await increase.evaluate((button) => button.click());
     }
-    await waitForText(
-      page,
-      `${storeProduct(PRINT.itemId)} ${byTestId("qty-value")}`,
-      "20",
-    );
+    await waitForText(page, `${storeProduct(PRINT.itemId)} ${byTestId("qty-value")}`, "20");
     expect(await increase.evaluate((button) => button.disabled)).toBe(true);
   });
 
@@ -379,9 +360,7 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
         basePriceMoney: { amount: CROWNFALL.cents, currency: "USD" },
       },
     ]);
-    expect(request.checkoutOptions.redirectUrl).toBe(
-      `${server.baseUrl}/checkout/success`,
-    );
+    expect(request.checkoutOptions.redirectUrl).toBe(`${server.baseUrl}/checkout/success`);
   });
 
   it("the server built its Square client from the dummy sandbox env, never real credentials", () => {
@@ -394,17 +373,97 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
   });
 });
 
+// Issue #41: the cart is persisted to localStorage so a visitor who reloads, or
+// comes back later, still has it. These reload the page and read the cart back.
+describe("the cart survives a page reload", () => {
+  const LINES = [
+    { product: edition("paperback", "signed"), quantity: 1 },
+    { product: PRINT, quantity: 2 },
+  ];
+
+  // Fills the cart on /store through the UI and closes the panel again.
+  const fillCart = async (page, kind) => {
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await addFromStore(page, LINES);
+    await openCartPanel(page, kind);
+    await setQuantities(page, LINES);
+    await expectCart(page, kind, LINES);
+  };
+
+  for (const kind of ["desktop", "mobile"]) {
+    it(`${kind}: reload on /store restores the lines, quantities and subtotal, and checkout sends them to Square`, async () => {
+      const opened = await openPage(kind === "desktop" ? DESKTOP : MOBILE);
+      const { page } = opened;
+      await fillCart(page, kind);
+
+      await page.reload({ waitUntil: "load" });
+
+      // The panel's open state is not stored: the visitor reopens the cart.
+      await page.waitForSelector(`${byTestId("cart-panel")}[data-state="closed"]`);
+      await openCartPanel(page, kind);
+      await expectCart(page, kind, LINES);
+      await checkoutAndExpect(opened, LINES);
+    });
+  }
+
+  it("the cart is site-wide: a fresh load of /books shows the same count and lines", async () => {
+    const { page } = await openPage(DESKTOP);
+    await fillCart(page, "desktop");
+
+    await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
+
+    await waitForText(page, byTestId("cart-count"), "3");
+    await openCartPanel(page, "desktop");
+    await expectCart(page, "desktop", LINES);
+  });
+
+  // The catalog changed between visits: the stored cart still holds an item
+  // Square no longer sells. This is the one case that edits localStorage,
+  // because no UI path can add an item the catalog does not have.
+  it("a stored item Square no longer sells is refused at checkout with a sentence, and checkout works once it is removed", async () => {
+    const RETIRED_ID = "E2E_ITEM_RETIRED";
+    const kept = [{ product: PRINT, quantity: 1 }];
+    const opened = await openPage(DESKTOP);
+    const { page, checkoutBodies } = opened;
+    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
+    await addFromStore(page, kept);
+    await page.evaluate((retiredId) => {
+      const stored = JSON.parse(localStorage.getItem("author-site-cart"));
+      stored.state.cartItems.push({
+        ...stored.state.cartItems[0],
+        id: retiredId,
+        variationId: "E2E_VAR_RETIRED",
+        name: "E2E Retired Item",
+      });
+      localStorage.setItem("author-site-cart", JSON.stringify(stored));
+    }, RETIRED_ID);
+
+    await page.reload({ waitUntil: "load" });
+    await waitForText(page, byTestId("cart-count"), "2");
+    await openCartPanel(page, "desktop");
+    await page.waitForSelector(cartItem(RETIRED_ID));
+
+    const createsBefore = paymentLinkCreates().length;
+    await page.click(byTestId("checkout-button"));
+    await waitForText(page, byTestId("checkout-error"), ITEM_UNAVAILABLE);
+    expect(checkoutBodies).toHaveLength(1);
+    expect(paymentLinkCreates()).toHaveLength(createsBefore);
+    expect(new URL(page.url()).pathname).toBe("/store");
+
+    // The sentence tells the visitor to remove the item; doing so unblocks checkout.
+    await page.click(`${cartItem(RETIRED_ID)} ${byTestId("qty-decrease")}`);
+    await page.waitForSelector(cartItem(RETIRED_ID), { hidden: true });
+    await expectCart(page, "desktop", kept);
+    await checkoutAndExpect(opened, kept);
+  });
+});
+
 // Which Crownfall item the listing shows, given whatever the catalog holds.
 const listingId = (page) =>
-  page.$eval(
-    `${byTestId("store-product")}:has(${FORMAT_TOGGLE("hardcover")})`,
-    (el) => el.dataset.productId,
-  );
+  page.$eval(`${byTestId("store-product")}:has(${FORMAT_TOGGLE("hardcover")})`, (el) => el.dataset.productId);
 
 const disabledToggles = (page) =>
-  page.$$eval(ALL_TOGGLES.join(","), (els) =>
-    els.filter((el) => el.disabled).map((el) => el.dataset.testid),
-  );
+  page.$$eval(ALL_TOGGLES.join(","), (els) => els.filter((el) => el.disabled).map((el) => el.dataset.testid));
 
 describe("Crownfall edition toggles map to Square items by id", () => {
   it("full catalog: one listing defaulting to signed hardcover, the other item in the grid", async () => {
@@ -413,17 +472,14 @@ describe("Crownfall edition toggles map to Square items by id", () => {
     await page.waitForSelector(FORMAT_TOGGLE("hardcover"));
 
     expect(await listingId(page)).toBe(CROWNFALL.itemId);
-    const ids = await page.$$eval(byTestId("store-product"), (els) =>
-      els.map((el) => el.dataset.productId),
-    );
+    const ids = await page.$$eval(byTestId("store-product"), (els) => els.map((el) => el.dataset.productId));
     expect(ids).toEqual([CROWNFALL.itemId, PRINT.itemId]);
     expect(await disabledToggles(page)).toEqual([]);
 
     // Toggles are labelled groups of pressed/unpressed pills.
     const groups = await page.$$eval('[role="group"]', (els) =>
       els.map((el) => ({
-        label: document.getElementById(el.getAttribute("aria-labelledby"))
-          ?.textContent,
+        label: document.getElementById(el.getAttribute("aria-labelledby"))?.textContent,
         pills: [...el.querySelectorAll("[aria-pressed]")].length,
       })),
     );
@@ -433,10 +489,11 @@ describe("Crownfall edition toggles map to Square items by id", () => {
     ]);
 
     // The ebook line links Amazon in a new tab.
-    const ebook = await page.$eval(
-      `${storeProduct(CROWNFALL.itemId)} a[href*="amazon.com"]`,
-      (a) => ({ target: a.target, rel: a.rel, text: a.textContent }),
-    );
+    const ebook = await page.$eval(`${storeProduct(CROWNFALL.itemId)} a[href*="amazon.com"]`, (a) => ({
+      target: a.target,
+      rel: a.rel,
+      text: a.textContent,
+    }));
     expect(ebook).toEqual({
       target: "_blank",
       rel: "noopener noreferrer",
@@ -454,10 +511,7 @@ describe("Crownfall edition toggles map to Square items by id", () => {
 
   it("an edition missing from both pairings has its toggle disabled", async () => {
     const { page } = await openPage(DESKTOP, {
-      dropItemIds: [
-        edition("hardcover", "unsigned").itemId,
-        edition("paperback", "unsigned").itemId,
-      ],
+      dropItemIds: [edition("hardcover", "unsigned").itemId, edition("paperback", "unsigned").itemId],
     });
     await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
     await page.waitForSelector(FORMAT_TOGGLE("hardcover"));
@@ -485,9 +539,7 @@ describe("Crownfall edition toggles map to Square items by id", () => {
 
     // Paperback signed -> Unsigned: the format flips to hardcover.
     await page.click(SIGNING_TOGGLE("unsigned"));
-    await page.waitForSelector(
-      storeProduct(edition("hardcover", "unsigned").itemId),
-    );
+    await page.waitForSelector(storeProduct(edition("hardcover", "unsigned").itemId));
     expect(await pressed(page, FORMAT_TOGGLE("hardcover"))).toBe("true");
     expect(await page.$(storeProduct(missing.itemId))).toBeNull();
   });
@@ -508,9 +560,7 @@ describe("Crownfall edition toggles map to Square items by id", () => {
     await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
     await page.waitForSelector(storeProduct(PRINT.itemId));
     expect(await page.$$(ALL_TOGGLES.join(","))).toEqual([]);
-    expect(
-      await page.$$eval(byTestId("store-product"), (els) => els.length),
-    ).toBe(1);
+    expect(await page.$$eval(byTestId("store-product"), (els) => els.length)).toBe(1);
   });
 });
 
@@ -553,9 +603,7 @@ describe("prefers-reduced-motion leaves no content invisible", () => {
     it(route, async () => {
       for (const viewport of [DESKTOP, MOBILE]) {
         const { page } = await openPage(viewport);
-        await page.emulateMediaFeatures([
-          { name: "prefers-reduced-motion", value: "reduce" },
-        ]);
+        await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
         await page.goto(`${server.baseUrl}${route}`, { waitUntil: "load" });
         await page.evaluate(async () => {
           const step = window.innerHeight / 2;
@@ -575,10 +623,7 @@ describe("prefers-reduced-motion leaves no content invisible", () => {
                 return false;
               }
               const box = el.getBoundingClientRect();
-              const hasContent =
-                el.textContent.trim() ||
-                el.tagName === "IMG" ||
-                el.querySelector("img");
+              const hasContent = el.textContent.trim() || el.tagName === "IMG" || el.querySelector("img");
               return box.width > 1 && box.height > 1 && hasContent;
             })
             .map((el) => `${el.tagName} ${el.textContent.trim().slice(0, 40)}`),
@@ -599,8 +644,7 @@ const XL = 1280; // Tailwind `xl`: full nav from here up, hamburger below
 describe("header: sticky, sized by --header-h, never wraps", () => {
   for (const width of [1440, 1280, 1100, 390]) {
     it(`${width}px`, async () => {
-      const viewport =
-        width === 390 ? MOBILE : { width, height: DESKTOP.height };
+      const viewport = width === 390 ? MOBILE : { width, height: DESKTOP.height };
       const { page } = await openPage(viewport);
       await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
@@ -608,18 +652,9 @@ describe("header: sticky, sized by --header-h, never wraps", () => {
       const header = await page.evaluate(() => {
         const el = document.querySelector("header");
         const visible = (node) =>
-          !!node &&
-          getComputedStyle(node).display !== "none" &&
-          node.getBoundingClientRect().width > 0;
-        const rem = parseFloat(
-          getComputedStyle(document.documentElement).fontSize,
-        );
-        const headerVar =
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue(
-              "--header-h",
-            ),
-          ) * rem;
+          !!node && getComputedStyle(node).display !== "none" && node.getBoundingClientRect().width > 0;
+        const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const headerVar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) * rem;
         const desktopList = el.querySelector("nav ul");
         // A label that wraps renders its text on more than one line box.
         const wrapped = [...el.querySelectorAll("a, button")]
@@ -627,9 +662,7 @@ describe("header: sticky, sized by --header-h, never wraps", () => {
           .filter((node) => {
             const range = document.createRange();
             range.selectNodeContents(node);
-            const tops = new Set(
-              [...range.getClientRects()].map((r) => Math.round(r.top)),
-            );
+            const tops = new Set([...range.getClientRects()].map((r) => Math.round(r.top)));
             return tops.size > 1;
           })
           .map((node) => node.textContent.trim());
@@ -637,25 +670,15 @@ describe("header: sticky, sized by --header-h, never wraps", () => {
         const outside = [...el.querySelector("nav").children]
           .filter(visible)
           .map((node) => node.getBoundingClientRect())
-          .filter(
-            (r) =>
-              r.left < 0 ||
-              r.right > window.innerWidth ||
-              r.top < bar.top ||
-              r.bottom > bar.bottom,
-          ).length;
+          .filter((r) => r.left < 0 || r.right > window.innerWidth || r.top < bar.top || r.bottom > bar.bottom).length;
         return {
           height: bar.height,
           headerVar,
           position: getComputedStyle(el).position,
           desktopLinks: visible(desktopList)
-            ? [...desktopList.querySelectorAll("a")].map((a) =>
-                a.textContent.trim(),
-              )
+            ? [...desktopList.querySelectorAll("a")].map((a) => a.textContent.trim())
             : null,
-          hamburger: visible(
-            document.querySelector('[data-testid="mobile-menu-toggle"]'),
-          ),
+          hamburger: visible(document.querySelector('[data-testid="mobile-menu-toggle"]')),
           wrapped,
           outside,
         };
@@ -676,21 +699,15 @@ describe("header: sticky, sized by --header-h, never wraps", () => {
         await page.waitForSelector(byTestId("mobile-cart-button"), {
           visible: true,
         });
-        const menu = await page.$$eval("#mobile-menu a", (links) =>
-          links.map((a) => a.firstChild.textContent.trim()),
-        );
+        const menu = await page.$$eval("#mobile-menu a", (links) => links.map((a) => a.firstChild.textContent.trim()));
         expect(menu).toEqual(NAV_LABELS);
-        expect(await textOf(page, byTestId("mobile-cart-button"))).toBe(
-          "Cart (0)",
-        );
+        expect(await textOf(page, byTestId("mobile-cart-button"))).toBe("Cart (0)");
       }
 
       // Still pinned to the top after scrolling down.
       await page.evaluate(() => window.scrollTo(0, 1500));
       await page.waitForFunction(() => window.scrollY > 0);
-      expect(
-        await page.$eval("header", (el) => el.getBoundingClientRect().top),
-      ).toBe(0);
+      expect(await page.$eval("header", (el) => el.getBoundingClientRect().top)).toBe(0);
     });
   }
 });
@@ -701,23 +718,14 @@ describe("footer and newsletter", () => {
     await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
     const footer = await page.$eval("footer", (el) => ({
       links: [...el.querySelectorAll("nav a")].map((a) => a.textContent.trim()),
-      routes: [...el.querySelectorAll("nav a")].map((a) =>
-        a.getAttribute("href"),
-      ),
+      routes: [...el.querySelectorAll("nav a")].map((a) => a.getAttribute("href")),
       socials: [...el.querySelectorAll("a[aria-label]")].map((a) => [
         a.getAttribute("aria-label"),
         new URL(a.href).hostname,
       ]),
     }));
     expect(footer.links).toEqual([...NAV_LABELS, "Press Kit"]);
-    expect(footer.routes.slice(0, 6)).toEqual([
-      "/",
-      "/books",
-      "/podcast",
-      "/about",
-      "/store",
-      "/contact",
-    ]);
+    expect(footer.routes.slice(0, 6)).toEqual(["/", "/books", "/podcast", "/about", "/store", "/contact"]);
     expect(footer.routes[6]).toMatch(/^https:\/\/drive\.google\.com\//);
     expect(footer.socials).toContainEqual(["Goodreads", "www.goodreads.com"]);
     for (const name of ["YouTube", "Instagram", "X", "Bluesky", "Threads"]) {
@@ -744,14 +752,11 @@ describe("footer and newsletter", () => {
       /^(Join the Journey|Never Miss a Release|Receive Updates)$/,
     );
     await page.click("#subscribe-button");
-    const join = await page.waitForSelector(
-      "::-p-xpath(//header//button[normalize-space()='Join the Circle'])",
-      { visible: true },
-    );
+    const join = await page.waitForSelector("::-p-xpath(//header//button[normalize-space()='Join the Circle'])", {
+      visible: true,
+    });
     await join.click();
-    const shows = await page.evaluate(() =>
-      window.__mlCalls.filter((call) => call[0] === "show"),
-    );
+    const shows = await page.evaluate(() => window.__mlCalls.filter((call) => call[0] === "show"));
     expect(shows).toEqual([
       ["show", "oQiRIg", true],
       ["show", "oQiRIg", true],
@@ -768,23 +773,17 @@ describe("design tokens", () => {
       body: getComputedStyle(document.body).backgroundColor,
       cormorant: document.fonts.check('600 20px "Cormorant Garamond"'),
       spectral: document.fonts.check('400 16px "Spectral"'),
-      loaded: [...document.fonts]
-        .filter((f) => f.status === "loaded")
-        .map((f) => f.family.replace(/"/g, "")),
+      loaded: [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/"/g, "")),
     }));
     expect(tokens.body).toBe("rgb(18, 16, 23)");
     expect(tokens.cormorant).toBe(true);
     expect(tokens.spectral).toBe(true);
-    expect(tokens.loaded).toEqual(
-      expect.arrayContaining(["Cormorant Garamond", "Spectral"]),
-    );
+    expect(tokens.loaded).toEqual(expect.arrayContaining(["Cormorant Garamond", "Spectral"]));
 
     await page.keyboard.press("Tab");
     // transition-colors also animates outline-color; read it once settled.
     await page.waitForFunction(
-      () =>
-        document.activeElement !== document.body &&
-        document.activeElement.getAnimations().length === 0,
+      () => document.activeElement !== document.body && document.activeElement.getAnimations().length === 0,
     );
     const outline = await page.evaluate(() => {
       const style = getComputedStyle(document.activeElement);
@@ -800,9 +799,7 @@ describe("prefers-reduced-motion: nothing animates", () => {
   for (const route of ROUTES) {
     it(route, async () => {
       const { page } = await openPage(DESKTOP);
-      await page.emulateMediaFeatures([
-        { name: "prefers-reduced-motion", value: "reduce" },
-      ]);
+      await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
       await page.goto(`${server.baseUrl}${route}`, { waitUntil: "load" });
       await page.evaluate(async () => {
         const step = window.innerHeight / 2;
@@ -815,9 +812,7 @@ describe("prefers-reduced-motion: nothing animates", () => {
         aos: document.querySelectorAll(".aos-init").length,
         running: document
           .getAnimations()
-          .filter(
-            (a) => !a.effect?.target?.closest?.('[data-testid="cart-panel"]'),
-          )
+          .filter((a) => !a.effect?.target?.closest?.('[data-testid="cart-panel"]'))
           .map((a) => a.animationName ?? a.transitionProperty),
       }));
       expect(motion).toEqual({ aos: 0, running: [] });
@@ -828,15 +823,11 @@ describe("prefers-reduced-motion: nothing animates", () => {
 describe("motion allowed: entrance animations still run", () => {
   it("/ initialises AOS and runs keyframe animations", async () => {
     const { page } = await openPage(DESKTOP);
-    await page.emulateMediaFeatures([
-      { name: "prefers-reduced-motion", value: "no-preference" },
-    ]);
+    await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "no-preference" }]);
     await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
     await page.waitForSelector(".aos-init");
     const keyframes = await page.evaluate(
-      () =>
-        document.getAnimations().filter((a) => a.animationName !== undefined)
-          .length,
+      () => document.getAnimations().filter((a) => a.animationName !== undefined).length,
     );
     expect(keyframes).toBeGreaterThan(0);
   });
@@ -856,9 +847,7 @@ describe("home scroll cue clears the hero buttons", () => {
   for (const viewport of SIZES) {
     it(`${viewport.width}px`, async () => {
       const { page } = await openPage(viewport);
-      await page.emulateMediaFeatures([
-        { name: "prefers-reduced-motion", value: "reduce" },
-      ]);
+      await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
       await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
       const geometry = await page.evaluate(() => {
@@ -920,9 +909,7 @@ describe("Crownfall excerpt", () => {
           heading: el.querySelector("h2").textContent,
         })),
       );
-      expect(rendered).toEqual(
-        chapters.map((c) => ({ id: chapterId(c), heading: chapterTitle(c) })),
-      );
+      expect(rendered).toEqual(chapters.map((c) => ({ id: chapterId(c), heading: chapterTitle(c) })));
       expect(await page.$(byTestId("excerpt-coming-soon"))).toBeNull();
     } else {
       await page.waitForSelector(byTestId("excerpt-coming-soon"));
@@ -937,71 +924,62 @@ describe("Crownfall excerpt", () => {
 
   // One chapter shows at a time, so this walks the tabs and reads the
   // visible panel each time.
-  it.runIf(chapters.length > 0)(
-    "every paragraph is set as written, with *italics* as <em>",
-    async () => {
-      const { page } = await openPage(MOBILE);
-      await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
-      await page.waitForSelector(byTestId("excerpt-chapter"));
-      const rendered = [];
-      for (const chapter of chapters) {
-        if (chapters.length > 1) {
-          await page.click(byTestId(`excerpt-tab-${chapter.number}`));
-        }
-        rendered.push(
-          await page.$$eval(byTestId("excerpt-chapter"), (els) => {
-            const shown = els.filter((el) => el.checkVisibility());
-            if (shown.length !== 1) return { shown: shown.map((el) => el.id) };
-            const [panel] = shown;
-            return {
-              id: panel.id,
-              paragraphs: [...panel.querySelectorAll("p")].map(
-                (p) => p.textContent,
-              ),
-              italics: [...panel.querySelectorAll("p em")].map(
-                (em) => em.textContent,
-              ),
-              hasMarkup: /[*\\]/.test(panel.textContent),
-            };
-          }),
-        );
+  it.runIf(chapters.length > 0)("every paragraph is set as written, with *italics* as <em>", async () => {
+    const { page } = await openPage(MOBILE);
+    await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
+    await page.waitForSelector(byTestId("excerpt-chapter"));
+    const rendered = [];
+    for (const chapter of chapters) {
+      if (chapters.length > 1) {
+        await page.click(byTestId(`excerpt-tab-${chapter.number}`));
       }
-      expect(rendered).toEqual(
-        chapters.map((c) => {
-          const prose = c.paragraphs.filter((p) => !isSceneBreak(p));
+      rendered.push(
+        await page.$$eval(byTestId("excerpt-chapter"), (els) => {
+          const shown = els.filter((el) => el.checkVisibility());
+          if (shown.length !== 1) return { shown: shown.map((el) => el.id) };
+          const [panel] = shown;
           return {
-            id: chapterId(c),
-            hasMarkup: false,
-            paragraphs: prose.map(plainText),
-            italics: prose.flatMap((p) =>
-              parseInline(p)
-                .filter((segment) => segment.italic)
-                .map((segment) => segment.text),
-            ),
+            id: panel.id,
+            paragraphs: [...panel.querySelectorAll("p")].map((p) => p.textContent),
+            italics: [...panel.querySelectorAll("p em")].map((em) => em.textContent),
+            hasMarkup: /[*\\]/.test(panel.textContent),
           };
         }),
       );
-    },
-  );
+    }
+    expect(rendered).toEqual(
+      chapters.map((c) => {
+        const prose = c.paragraphs.filter((p) => !isSceneBreak(p));
+        return {
+          id: chapterId(c),
+          hasMarkup: false,
+          paragraphs: prose.map(plainText),
+          italics: prose.flatMap((p) =>
+            parseInline(p)
+              .filter((segment) => segment.italic)
+              .map((segment) => segment.text),
+          ),
+        };
+      }),
+    );
+  });
 
   it.runIf(chapters.length > 1)(
     "chapter tabs follow clicks, arrow keys and the next-chapter button, every chapter end offers the book, and the hash follows them",
     async () => {
       const { page } = await openPage(MOBILE);
-      await page.emulateMediaFeatures([
-        { name: "prefers-reduced-motion", value: "reduce" },
-      ]);
+      await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
       await page.goto(`${server.baseUrl}${path}`, { waitUntil: "load" });
       await page.waitForSelector(byTestId("excerpt-chapter"));
       const historyLength = await page.evaluate(() => history.length);
       const current = () =>
         page.evaluate(() => {
-          const panel = [
-            ...document.querySelectorAll('[data-testid="excerpt-chapter"]'),
-          ].find((el) => el.checkVisibility());
-          const selected = [
-            ...document.querySelectorAll('[role="tab"]'),
-          ].filter((tab) => tab.getAttribute("aria-selected") === "true");
+          const panel = [...document.querySelectorAll('[data-testid="excerpt-chapter"]')].find((el) =>
+            el.checkVisibility(),
+          );
+          const selected = [...document.querySelectorAll('[role="tab"]')].filter(
+            (tab) => tab.getAttribute("aria-selected") === "true",
+          );
           return {
             hash: location.hash,
             panel: panel.id,
@@ -1010,9 +988,7 @@ describe("Crownfall excerpt", () => {
               .filter((tab) => tab.tabIndex === 0)
               .map((tab) => tab.getAttribute("aria-controls")),
             headingTop: panel.querySelector("h2").getBoundingClientRect().top,
-            headerBottom: document
-              .querySelector("header")
-              .getBoundingClientRect().bottom,
+            headerBottom: document.querySelector("header").getBoundingClientRect().bottom,
             hasEnd: !!document.querySelector('[data-testid="excerpt-end"]'),
           };
         });
@@ -1041,17 +1017,13 @@ describe("Crownfall excerpt", () => {
       expectChapter(await current(), chapters.length - 1);
       await page.keyboard.press("ArrowRight");
       expectChapter(await current(), 0);
-      expect(
-        await page.evaluate(() =>
-          document.activeElement.getAttribute("aria-controls"),
-        ),
-      ).toBe(chapterId(chapters[0]));
+      expect(await page.evaluate(() => document.activeElement.getAttribute("aria-controls"))).toBe(
+        chapterId(chapters[0]),
+      );
 
       for (let index = 1; index < chapters.length; index += 1) {
         const end = await page.evaluate(() => {
-          const panel = document.querySelector(
-            '[data-testid="excerpt-chapter"]:not([hidden])',
-          );
+          const panel = document.querySelector('[data-testid="excerpt-chapter"]:not([hidden])');
           const next = panel.querySelector('[data-testid="excerpt-next"]');
           return {
             label: [...next.childNodes]
@@ -1065,84 +1037,55 @@ describe("Crownfall excerpt", () => {
           label: chapterTitle(chapters[index]),
           buy: "/store",
         });
-        expect(
-          await page.$(
-            `aria/Next: ${chapterTitle(chapters[index])}[role="button"]`,
-          ),
-        ).not.toBeNull();
-        await page.click(
-          `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`,
-        );
+        expect(await page.$(`aria/Next: ${chapterTitle(chapters[index])}[role="button"]`)).not.toBeNull();
+        await page.click(`[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`);
         state = await current();
         expectChapter(state, index);
         expect(state.hash).toBe(`#${chapterId(chapters[index])}`);
         expect(state.headingTop).toBeGreaterThanOrEqual(state.headerBottom);
         expect(state.headingTop).toBeLessThan(state.headerBottom + 120);
       }
-      expect(
-        await page.$(
-          `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`,
-        ),
-      ).toBeNull();
-      expect(
-        await page.$(
-          `[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-buy")}`,
-        ),
-      ).toBeNull();
-      expect(
-        await page.$eval(
-          `${byTestId("excerpt-end")} a[href="/store"]`,
-          (a) => a.pathname,
-        ),
-      ).toBe("/store");
+      expect(await page.$(`[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-next")}`)).toBeNull();
+      expect(await page.$(`[data-testid="excerpt-chapter"]:not([hidden]) ${byTestId("excerpt-buy")}`)).toBeNull();
+      expect(await page.$eval(`${byTestId("excerpt-end")} a[href="/store"]`, (a) => a.pathname)).toBe("/store");
       expect(await page.evaluate(() => history.length)).toBe(historyLength);
     },
   );
 
-  it.runIf(chapters.length > 1)(
-    "a chapter hash opens that chapter below the sticky header",
-    async () => {
-      for (const chapter of chapters) {
-        const { page } = await openPage(MOBILE);
-        await page.emulateMediaFeatures([
-          { name: "prefers-reduced-motion", value: "reduce" },
-        ]);
-        const target = chapterId(chapter);
-        await page.goto(`${server.baseUrl}${path}#${target}`, {
-          waitUntil: "load",
-        });
-        await page.evaluate(() => document.fonts.ready);
-        await new Promise((r) => setTimeout(r, 300));
-        const { top, headerBottom, isShown, isSelected } = await page.evaluate(
-          (id, tab) => {
-            const panel = document.getElementById(id);
-            return {
-              top: panel.querySelector("h2").getBoundingClientRect().top,
-              headerBottom: document
-                .querySelector("header")
-                .getBoundingClientRect().bottom,
-              isShown: panel.checkVisibility(),
-              isSelected:
-                document
-                  .querySelector(`[data-testid="${tab}"]`)
-                  .getAttribute("aria-selected") === "true",
-            };
-          },
-          target,
-          `excerpt-tab-${chapter.number}`,
-        );
-        expect({ target, isShown, isSelected }).toEqual({
-          target,
-          isShown: true,
-          isSelected: true,
-        });
-        expect(top).toBeGreaterThanOrEqual(headerBottom);
-        expect(top).toBeLessThan(headerBottom + 120);
-        await context.close();
-        context = undefined;
-      }
-    },
-  );
+  it.runIf(chapters.length > 1)("a chapter hash opens that chapter below the sticky header", async () => {
+    for (const chapter of chapters) {
+      const { page } = await openPage(MOBILE);
+      await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
+      const target = chapterId(chapter);
+      await page.goto(`${server.baseUrl}${path}#${target}`, {
+        waitUntil: "load",
+      });
+      await page.evaluate(() => document.fonts.ready);
+      await new Promise((r) => setTimeout(r, 300));
+      const { top, headerBottom, isShown, isSelected } = await page.evaluate(
+        (id, tab) => {
+          const panel = document.getElementById(id);
+          return {
+            top: panel.querySelector("h2").getBoundingClientRect().top,
+            headerBottom: document.querySelector("header").getBoundingClientRect().bottom,
+            isShown: panel.checkVisibility(),
+            isSelected: document.querySelector(`[data-testid="${tab}"]`).getAttribute("aria-selected") === "true",
+          };
+        },
+        target,
+        `excerpt-tab-${chapter.number}`,
+      );
+      expect({ target, isShown, isSelected }).toEqual({
+        target,
+        isShown: true,
+        isSelected: true,
+      });
+      expect(top).toBeGreaterThanOrEqual(headerBottom);
+      expect(top).toBeLessThan(headerBottom + 120);
+      await context.close();
+      context = undefined;
+    }
+  });
 
   it(`Home ${chapters.length ? "shows the opening and links to the excerpt" : "hides Read an Excerpt"}`, async () => {
     const { page } = await openPage(DESKTOP);
@@ -1150,13 +1093,8 @@ describe("Crownfall excerpt", () => {
     await page.waitForSelector("h1");
     const link = await page.$(byTestId("excerpt-keep-reading"));
     if (chapters.length) {
-      expect(await page.$eval("#excerpt-heading", (el) => el.textContent)).toBe(
-        chapterTitle(chapters[0]),
-      );
-      await Promise.all([
-        page.waitForFunction((p) => location.pathname === p, {}, path),
-        link.click(),
-      ]);
+      expect(await page.$eval("#excerpt-heading", (el) => el.textContent)).toBe(chapterTitle(chapters[0]));
+      await Promise.all([page.waitForFunction((p) => location.pathname === p, {}, path), link.click()]);
       await page.waitForSelector(byTestId("excerpt-chapter"));
       expect(
         await page.$$eval(byTestId("excerpt-chapter"), (els) =>
