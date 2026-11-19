@@ -438,9 +438,9 @@ navigation or Square code.
 - **E2E** (`tests/e2e/`): starts the real `vite` CLI on a free port with the `square` package
   swapped for an in-process stub (`support/register-square-stub.mjs`) — nothing reaches
   Square, and inherited `SQUARE_*` env vars are stripped. Drives /store → cart → checkout for
-  each of the four Crownfall editions and a grid product at desktop and 390px (cart line,
-  checkout body and Square line item carry the right item/variation ID and price, plus the
-  $5.99 shipping fee), and checks every route for horizontal scroll at 390px and, with
+  each of the four Crownfall editions and a grid product at desktop, and for a grid product
+  at 390px through the mobile menu's cart (cart line, checkout body and Square line item
+  carry the right item/variation ID and price, plus the $5.99 shipping fee), and checks every route for horizontal scroll at 390px and, with
   `prefers-reduced-motion: reduce`, for content left at opacity 0 or still animating.
   The harness sets `INSTAGRAM_FEED_FIXTURE` to `support/instagram-fixture.json` (built from
   the live feed: IMAGE, VIDEO and CAROUSEL_ALBUM posts), so the dev twin serves it instead
