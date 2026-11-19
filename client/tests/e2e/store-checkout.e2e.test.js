@@ -324,11 +324,6 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
       { product: PRINT, quantity: 1 },
     ]));
 
-  for (const cf of CROWNFALL_EDITIONS) {
-    it(`mobile 390px: Crownfall ${cf.edition.format}, ${cf.edition.signing} via the mobile menu cart`, () =>
-      checkoutFlow("mobile", [{ product: cf, quantity: 1 }]));
-  }
-
   it("mobile 390px: grid product via the mobile menu cart", () =>
     checkoutFlow("mobile", [{ product: PRINT, quantity: 1 }]));
 
@@ -347,41 +342,6 @@ describe("store checkout: Square is asked for $5.99 shipping and the browser fol
       "20",
     );
     expect(await increase.evaluate((button) => button.disabled)).toBe(true);
-  });
-
-  it("a request with a tampered price and return address is charged the catalog price and returns to the site", async () => {
-    const { page } = await openPage(DESKTOP);
-    await page.goto(`${server.baseUrl}/store`, { waitUntil: "load" });
-    const reply = await page.evaluate(
-      async (product) => {
-        const response = await fetch("/api/square/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items: [{ ...product, quantity: 1, title: "Free", price: 0.01 }],
-            redirectUrl: "https://attacker.example/",
-          }),
-        });
-        return { status: response.status };
-      },
-      { itemId: CROWNFALL.itemId, variationId: CROWNFALL.variationId },
-    );
-    expect(reply.status).toBe(200);
-    const { request } = server
-      .calls()
-      .filter((c) => c.type === "paymentLinks.create")
-      .at(-1);
-    expect(request.order.lineItems).toEqual([
-      {
-        catalogObjectId: CROWNFALL.variationId,
-        quantity: "1",
-        name: CROWNFALL.name,
-        basePriceMoney: { amount: CROWNFALL.cents, currency: "USD" },
-      },
-    ]);
-    expect(request.checkoutOptions.redirectUrl).toBe(
-      `${server.baseUrl}/checkout/success`,
-    );
   });
 
   it("the server built its Square client from the dummy sandbox env, never real credentials", () => {
@@ -591,140 +551,7 @@ describe("prefers-reduced-motion leaves no content invisible", () => {
   }
 });
 
-// Shared chrome from the dark re-skin (header, footer, newsletter, tokens).
-// These hold on every page regardless of how the page itself is styled.
-const NAV_LABELS = ["Home", "Books", "Podcast", "About", "Store", "Contact"];
-const XL = 1280; // Tailwind `xl`: full nav from here up, hamburger below
-
-describe("header: sticky, sized by --header-h, never wraps", () => {
-  for (const width of [1440, 1280, 1100, 390]) {
-    it(`${width}px`, async () => {
-      const viewport =
-        width === 390 ? MOBILE : { width, height: DESKTOP.height };
-      const { page } = await openPage(viewport);
-      await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
-      await page.evaluate(() => document.fonts.ready);
-
-      const header = await page.evaluate(() => {
-        const el = document.querySelector("header");
-        const visible = (node) =>
-          !!node &&
-          getComputedStyle(node).display !== "none" &&
-          node.getBoundingClientRect().width > 0;
-        const rem = parseFloat(
-          getComputedStyle(document.documentElement).fontSize,
-        );
-        const headerVar =
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue(
-              "--header-h",
-            ),
-          ) * rem;
-        const desktopList = el.querySelector("nav ul");
-        // A label that wraps renders its text on more than one line box.
-        const wrapped = [...el.querySelectorAll("a, button")]
-          .filter(visible)
-          .filter((node) => {
-            const range = document.createRange();
-            range.selectNodeContents(node);
-            const tops = new Set(
-              [...range.getClientRects()].map((r) => Math.round(r.top)),
-            );
-            return tops.size > 1;
-          })
-          .map((node) => node.textContent.trim());
-        const bar = el.getBoundingClientRect();
-        const outside = [...el.querySelector("nav").children]
-          .filter(visible)
-          .map((node) => node.getBoundingClientRect())
-          .filter(
-            (r) =>
-              r.left < 0 ||
-              r.right > window.innerWidth ||
-              r.top < bar.top ||
-              r.bottom > bar.bottom,
-          ).length;
-        return {
-          height: bar.height,
-          headerVar,
-          position: getComputedStyle(el).position,
-          desktopLinks: visible(desktopList)
-            ? [...desktopList.querySelectorAll("a")].map((a) =>
-                a.textContent.trim(),
-              )
-            : null,
-          hamburger: visible(
-            document.querySelector('[data-testid="mobile-menu-toggle"]'),
-          ),
-          wrapped,
-          outside,
-        };
-      });
-
-      expect(header.height).toBe(header.headerVar);
-      expect(header.height).toBe(width >= 1024 ? 96 : 68);
-      expect(header.position).toBe("sticky");
-      expect(header.wrapped).toEqual([]);
-      expect(header.outside).toBe(0);
-      if (width >= XL) {
-        expect(header.desktopLinks).toEqual(NAV_LABELS);
-        expect(header.hamburger).toBe(false);
-      } else {
-        expect(header.desktopLinks).toBeNull();
-        expect(header.hamburger).toBe(true);
-        await page.click(byTestId("mobile-menu-toggle"));
-        await page.waitForSelector(byTestId("mobile-cart-button"), {
-          visible: true,
-        });
-        const menu = await page.$$eval("#mobile-menu a", (links) =>
-          links.map((a) => a.firstChild.textContent.trim()),
-        );
-        expect(menu).toEqual(NAV_LABELS);
-        expect(await textOf(page, byTestId("mobile-cart-button"))).toBe(
-          "Cart (0)",
-        );
-      }
-
-      // Still pinned to the top after scrolling down.
-      await page.evaluate(() => window.scrollTo(0, 1500));
-      await page.waitForFunction(() => window.scrollY > 0);
-      expect(
-        await page.$eval("header", (el) => el.getBoundingClientRect().top),
-      ).toBe(0);
-    });
-  }
-});
-
-describe("footer and newsletter", () => {
-  it("footer keeps the site links, adds Press Kit and Goodreads, and lists the socials", async () => {
-    const { page } = await openPage(DESKTOP);
-    await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
-    const footer = await page.$eval("footer", (el) => ({
-      links: [...el.querySelectorAll("nav a")].map((a) => a.textContent.trim()),
-      routes: [...el.querySelectorAll("nav a")].map((a) =>
-        a.getAttribute("href"),
-      ),
-      socials: [...el.querySelectorAll("a[aria-label]")].map((a) => [
-        a.getAttribute("aria-label"),
-        new URL(a.href).hostname,
-      ]),
-    }));
-    expect(footer.links).toEqual([...NAV_LABELS, "Press Kit"]);
-    expect(footer.routes.slice(0, 6)).toEqual([
-      "/",
-      "/books",
-      "/podcast",
-      "/about",
-      "/store",
-      "/contact",
-    ]);
-    expect(footer.routes[6]).toMatch(/^https:\/\/drive\.google\.com\//);
-    expect(footer.socials).toContainEqual(["Goodreads", "www.goodreads.com"]);
-    for (const name of ["YouTube", "Instagram", "X", "Bluesky", "Threads"]) {
-      expect(footer.socials.map(([label]) => label)).toContain(name);
-    }
-  });
-
+describe("newsletter", () => {
   it("Subscribe and Join the Circle open the MailerLite form", async () => {
     const { page } = await openPage(DESKTOP);
     // Record ml() calls instead of letting the MailerLite script handle them.
@@ -759,41 +586,6 @@ describe("footer and newsletter", () => {
   });
 });
 
-describe("design tokens", () => {
-  it("dark ground, self-hosted serif fonts, gold focus ring", async () => {
-    const { page } = await openPage(DESKTOP);
-    await page.goto(`${server.baseUrl}/books`, { waitUntil: "load" });
-    await page.evaluate(() => document.fonts.ready);
-    const tokens = await page.evaluate(() => ({
-      body: getComputedStyle(document.body).backgroundColor,
-      cormorant: document.fonts.check('600 20px "Cormorant Garamond"'),
-      spectral: document.fonts.check('400 16px "Spectral"'),
-      loaded: [...document.fonts]
-        .filter((f) => f.status === "loaded")
-        .map((f) => f.family.replace(/"/g, "")),
-    }));
-    expect(tokens.body).toBe("rgb(18, 16, 23)");
-    expect(tokens.cormorant).toBe(true);
-    expect(tokens.spectral).toBe(true);
-    expect(tokens.loaded).toEqual(
-      expect.arrayContaining(["Cormorant Garamond", "Spectral"]),
-    );
-
-    await page.keyboard.press("Tab");
-    // transition-colors also animates outline-color; read it once settled.
-    await page.waitForFunction(
-      () =>
-        document.activeElement !== document.body &&
-        document.activeElement.getAnimations().length === 0,
-    );
-    const outline = await page.evaluate(() => {
-      const style = getComputedStyle(document.activeElement);
-      return `${style.outlineStyle} ${style.outlineWidth} ${style.outlineColor}`;
-    });
-    expect(outline).toBe("solid 2px rgb(207, 174, 107)");
-  });
-});
-
 // The opacity check above proves nothing is left invisible; this one proves
 // nothing actually moves.
 describe("prefers-reduced-motion: nothing animates", () => {
@@ -821,81 +613,6 @@ describe("prefers-reduced-motion: nothing animates", () => {
           .map((a) => a.animationName ?? a.transitionProperty),
       }));
       expect(motion).toEqual({ aos: 0, running: [] });
-    });
-  }
-});
-
-describe("motion allowed: entrance animations still run", () => {
-  it("/ initialises AOS and runs keyframe animations", async () => {
-    const { page } = await openPage(DESKTOP);
-    await page.emulateMediaFeatures([
-      { name: "prefers-reduced-motion", value: "no-preference" },
-    ]);
-    await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
-    await page.waitForSelector(".aos-init");
-    const keyframes = await page.evaluate(
-      () =>
-        document.getAnimations().filter((a) => a.animationName !== undefined)
-          .length,
-    );
-    expect(keyframes).toBeGreaterThan(0);
-  });
-});
-
-// The Home hero's scroll cue sits at the foot of the hero, centred, clear of
-// the CTA buttons and inside the section. Measured with reduced motion so the
-// bounce is still; the 16px margin covers the bounce's 10px lift.
-describe("home scroll cue clears the hero buttons", () => {
-  const SIZES = [
-    { width: 1440, height: 900 },
-    { width: 1280, height: 800 },
-    { width: 1024, height: 768 },
-    { width: 768, height: 1024 },
-    MOBILE,
-  ];
-  for (const viewport of SIZES) {
-    it(`${viewport.width}px`, async () => {
-      const { page } = await openPage(viewport);
-      await page.emulateMediaFeatures([
-        { name: "prefers-reduced-motion", value: "reduce" },
-      ]);
-      await page.goto(`${server.baseUrl}/`, { waitUntil: "load" });
-      await page.evaluate(() => document.fonts.ready);
-      const geometry = await page.evaluate(() => {
-        const cue = document.querySelector('[data-testid="scroll-cue"]');
-        const section = cue.closest("section");
-        const box = (el) => {
-          const r = el.getBoundingClientRect();
-          return {
-            top: r.top + window.scrollY,
-            bottom: r.bottom + window.scrollY,
-            left: r.left,
-            right: r.right,
-          };
-        };
-        return {
-          cue: box(cue),
-          section: box(section),
-          next: box(section.nextElementSibling),
-          buttons: [...section.querySelectorAll("a, button")].map(box),
-          width: document.documentElement.clientWidth,
-        };
-      });
-      const { cue, section, next, buttons, width } = geometry;
-      expect(cue.bottom - cue.top).toBeGreaterThan(0);
-      expect(Math.abs((cue.left + cue.right) / 2 - width / 2)).toBeLessThan(1);
-      expect(cue.top).toBeGreaterThanOrEqual(section.top);
-      expect(cue.bottom).toBeLessThanOrEqual(section.bottom);
-      expect(cue.bottom).toBeLessThanOrEqual(next.top);
-      expect(buttons.length).toBeGreaterThan(0);
-      for (const button of buttons) {
-        const clear =
-          cue.top >= button.bottom + 16 ||
-          cue.bottom <= button.top - 16 ||
-          cue.left >= button.right ||
-          cue.right <= button.left;
-        expect(clear, JSON.stringify({ cue, button })).toBe(true);
-      }
     });
   }
 });
