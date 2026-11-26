@@ -48,7 +48,7 @@ let offsiteRequests;
 
 beforeAll(async () => {
   server = await startServer();
-  browser = await puppeteer.launch({ headless: "new" });
+  browser = await puppeteer.launch({ headless: "shell" });
 });
 
 afterAll(async () => {

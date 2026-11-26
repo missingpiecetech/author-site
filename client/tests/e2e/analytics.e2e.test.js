@@ -49,7 +49,7 @@ beforeAll(async () => {
     throw new Error("the excerpt tests need at least two chapters of text");
   }
   server = await startServer();
-  browser = await puppeteer.launch({ headless: "new" });
+  browser = await puppeteer.launch({ headless: "shell" });
 });
 
 afterAll(async () => {
@@ -61,6 +61,24 @@ afterEach(async () => {
   await context?.close();
   context = undefined;
 });
+
+/**
+ * Puts the tab in the background or brings it back. Headless shell never hides
+ * a tab when another takes the front, so set the state the browser would
+ * report and fire the event it would send.
+ */
+const setTabHidden = (page, hidden) =>
+  page.evaluate((isHidden) => {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => (isHidden ? "hidden" : "visible"),
+    });
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => isHidden,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  }, hidden);
 
 /**
  * A fresh context and page. With `tracker` (default) a stand-in
@@ -324,11 +342,7 @@ describe("analytics: excerpt reading depth", () => {
     const offsets = await paragraphOffsets(page);
     await scrollTo(page, centreOn(offsets[1], DESKTOP));
 
-    const other = await context.newPage();
-    await other.bringToFront();
-    await page.waitForFunction(() => document.visibilityState === "hidden", {
-      polling: 50,
-    });
+    await setTabHidden(page, true);
     // A background tab gets no real input; dispatch it, so only the hidden
     // tab, not idleness, can explain an unread block.
     for (let step = 0; step < 20; step += 1) {
@@ -337,10 +351,7 @@ describe("analytics: excerpt reading depth", () => {
         window.dispatchEvent(new PointerEvent("pointermove"));
       });
     }
-    await page.bringToFront();
-    await page.waitForFunction(() => document.visibilityState === "visible", {
-      polling: 50,
-    });
+    await setTabHidden(page, false);
     await scrollTo(page, centreOn(offsets[1], DESKTOP) + 10);
     await settle(page);
     expect(named("excerpt_block_read")).toEqual([]);

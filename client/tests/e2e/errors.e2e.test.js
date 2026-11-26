@@ -22,7 +22,7 @@ let browser;
 
 beforeAll(async () => {
   server = await startServer({ env: { PUBLIC_GLITCHTIP_DSN: FAKE_DSN } });
-  browser = await puppeteer.launch({ headless: true });
+  browser = await puppeteer.launch({ headless: "shell" });
 }, 90_000);
 
 afterAll(async () => {

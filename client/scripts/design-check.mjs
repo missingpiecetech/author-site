@@ -495,7 +495,7 @@ const scrollCueGeometry = (page) =>
 const main = async () => {
   const server = await startServer();
   console.log(`harness on ${server.baseUrl} (vite pid ${server.pid})`);
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({ headless: "shell" });
   const open = async (viewport, reduced = false) => {
     const context = await browser.createBrowserContext();
     const page = await context.newPage();

@@ -147,7 +147,7 @@ try {
   }
 
   browser = await puppeteer.launch({
-    headless: "new",
+    headless: "shell",
     args: ["--disable-blink-features=AutomationControlled"],
   });
   const page = await browser.newPage();
