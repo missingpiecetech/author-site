@@ -457,6 +457,10 @@ navigation or Square code.
   toggle; a single missing pairing is never selected (the other toggle flips); with no
   mapped item there is no listing and everything goes to the grid. If Square items are ever
   recreated, update the table and the stub together.
+- **Puppeteer launches with `headless: "shell"`** (suites and `scripts/`), so a run does not
+  depend on the Mac's display being awake. Shell never hides a background tab, so a test of
+  hidden-tab behavior sets `document.visibilityState` and fires `visibilitychange` itself
+  (`setTabHidden` in `analytics.e2e.test.js`).
 - **The e2e selects only by `data-testid`.** Restyle freely, but keep these hooks:
   `store-product` (+ `data-product-id`; on the Crownfall listing it is the selected
   edition's item ID), `add-to-cart`, `qty-increase`, `qty-decrease`, `qty-value`,
